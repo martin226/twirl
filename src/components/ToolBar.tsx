@@ -80,10 +80,11 @@ const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
     ) : (
         <button 
             onClick={() => setIsVisible(true)}
-            className="absolute right-0 top-4 p-2 bg-[#F6F5F0] border-l border-t border-b border-gray-200 rounded-l-lg shadow-lg text-gray-500 hover:text-gray-700 transition-colors z-50"
+            className="absolute right-0 top-4 p-2 bg-[#F6F5F0] border-l border-t border-b border-gray-200 rounded-l-lg shadow-lg text-gray-500 hover:text-gray-700 transition-colors z-50 flex items-center gap-2"
             title="Show toolbar"
         >
             <ChevronLeft size={20} />
+            <span className="font-serif pr-1">Toolbar</span>
         </button>
     );
 };

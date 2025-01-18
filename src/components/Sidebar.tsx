@@ -30,16 +30,16 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
                 return (
                     <div className="space-y-4 p-4">
                         <div className="text-center">
-                            <div className="w-20 h-20 bg-gray-800 rounded-full mx-auto mb-3 flex items-center justify-center">
-                                <User size={40} className="text-gray-400" />
+                            <div className="w-20 h-20 bg-gray-100 rounded-full mx-auto mb-3 flex items-center justify-center">
+                                <User size={40} className="text-gray-500" />
                             </div>
-                            <h3 className="font-medium text-gray-200">{user?.email || 'Not logged in'}</h3>
+                            <h3 className="font-medium text-gray-900 font-serif">{user?.email || 'Not logged in'}</h3>
                         </div>
                         <div className="space-y-2 pt-4">
-                            <button className="w-full p-2 text-left hover:bg-gray-800 rounded text-gray-300">
+                            <button className="w-full p-2 text-left hover:bg-gray-100 rounded text-gray-700 font-serif">
                                 Profile Settings
                             </button>
-                            <button className="w-full p-2 text-left text-red-400 hover:bg-gray-800 rounded">
+                            <button className="w-full p-2 text-left text-red-600 hover:bg-gray-100 rounded font-serif">
                                 Sign Out
                             </button>
                         </div>
@@ -48,17 +48,25 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
             case 'settings':
                 return (
                     <div className="space-y-4 p-4">
-                        <h3 className="font-medium text-gray-200">Settings</h3>
+                        <h3 className="font-medium text-gray-900 font-serif">Settings</h3>
                         <div className="space-y-2">
-                            <div className="flex items-center justify-between text-gray-300">
-                                <span>Dark Mode</span>
-                                <button className="p-2 bg-gray-800 rounded">On</button>
+                            <div className="flex items-center justify-between text-gray-700">
+                                <span className="font-serif">Dark Mode</span>
+                                <button className="p-2 bg-gray-100 rounded font-serif">On</button>
                             </div>
                         </div>
                     </div>
                 );
             default:
-                return null;
+                return (
+                    <div className="space-y-4 p-4">
+                        <div className="space-y-2">
+                            <div className="flex items-center justify-between text-gray-700">
+                                <span className="font-serif">This is the home page</span>
+                            </div>
+                        </div>
+                    </div>
+                );
         }
     };
 
