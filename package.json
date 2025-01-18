@@ -9,6 +9,7 @@
     "@auth0/auth0-react": "^2.2.4",
     "@heroui/button": "^2.2.9",
     "@supabase/supabase-js": "^2.47.16",
+    "axios": "^1.7.9",
     "fastapi": "^0.0.8",
     "lucide-react": "^0.469.0",
     "mongodb": "^6.5.0",

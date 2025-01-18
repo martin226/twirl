@@ -101,7 +101,8 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible }) => {
                 </div>
             </div>
             {/* Bing Popup shows up only when user presses enter, useState*/}
-            {showBingPopup && <BingPopup query={message}/>}
+            
+            {showBingPopup && <BingPopup a={" "+message+" "+"png jpg"+" "}/>}
         </div>
     );
 };

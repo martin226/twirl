@@ -1,3 +1,4 @@
+"""
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
@@ -5,6 +6,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from azure.cognitiveservices.search.imagesearch import ImageSearchClient
 from azure.cognitiveservices.search.websearch.models import SafeSearch
 from msrest.authentication import CognitiveServicesCredentials
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 subscription_key = "9043ce489bf840d4af621be0bfaa1a15"
 
@@ -19,23 +30,13 @@ client = ImageSearchClient(
 # Hotfix SDK 
 client.config.base_url = "{Endpoint}/v7.0"
 
-app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 class Query(BaseModel):
     user_query: str
 
-@app.post("/api/images")
+@app.post("/api/search_images")
 async def search_images(query: Query):
     try:
-        image_data = client.images.search(query="Whatever", count=6)
-        print("\r\nSearched for Query: \" Whatever \"")
+        image_data = client.images.search(query=query, count=6)
 
         '''
         Images
@@ -54,3 +55,4 @@ async def search_images(query: Query):
     except Exception as err:
         print("Encountered exception. {}".format(err))
         raise HTTPException(status_code=500, detail=f"Error occurred: {str(err)}")
+    """

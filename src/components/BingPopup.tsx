@@ -2,7 +2,7 @@ import React from "react"
 import { useState } from "react"
 import BingSearchBar from "./BingSearchBar"
 
-const BingPopup: React.FC <{query: string}> = ({query}) => {
+const BingPopup: React.FC <{a: string}> = ({a}) => {
     const [isVisible, setIsVisible] = useState(true);
     const [showBingSearchBar, setShowBingSearchBar] = useState(false);
 
@@ -42,7 +42,7 @@ const BingPopup: React.FC <{query: string}> = ({query}) => {
                 </div>
             </div>
             )}
-            {showBingSearchBar && <BingSearchBar query={query} />}
+            {showBingSearchBar && <BingSearchBar a={a} />}
         </div>
     )
 }

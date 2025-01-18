@@ -5,7 +5,6 @@ from pydantic import BaseModel
 from datetime import datetime
 import asyncio
 from typing import List
-
 load_dotenv()
 
 async def create_supabase() -> Client:
