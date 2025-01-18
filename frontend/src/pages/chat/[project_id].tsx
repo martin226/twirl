@@ -18,7 +18,7 @@ const ChatPage: React.FC = () => {
     const { user, setUser } = useUser();
     const [isAuthenticated, setIsAuthenticated] = useState(true);
     const [isSignup, setIsSignup] = useState(false);
-    const [isMenuMode, setIsMenuMode] = useState(false);
+    const [isMenuMode, setIsMenuMode] = useState(true);
     const [currentSection, setCurrentSection] = useState<'home' |'settings' | 'account'>('home');
     const [isVisible, setIsVisible] = useState(true);
     const [currentProject, setCurrentProject] = useState(null);

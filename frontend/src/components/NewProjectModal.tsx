@@ -25,7 +25,6 @@ const NewProjectModal: React.FC<NewProjectModalProps> = ({ isOpen, onClose, onCr
 
         try {
             const response = await onCreateProject(projectName);
-            console.log(response);
             onClose();
         } catch (err) {
             setError('Failed to create chronicle');

@@ -16,6 +16,12 @@ interface ChatProps {
     setToolbarVisible: (visible: boolean) => void;
 }
 
+interface Message {
+    is_user: boolean;
+    content: string;
+    image?: string[];
+    created_at: string;
+}
 const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVisible }) => {
     const [message, setMessage] = useState('');
     const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -23,14 +29,19 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
     const [showChatLog, setShowChatLog] = useState(false);
 
-    const [chatLog, setChatLog] = useState([
-        {isUser: true, message: "Hello, how are you?", image: ["/cat.jpg","/cat.jpg","/cat.jpg"]},
-        {isUser: false, message: "I'm fine, thank you for asking.", image: []},
-        {isUser: true, message: "What's your name?", image: []},
-        {isUser: false, message: "My name is John.", image: []},
-        {isUser: true, message: "What's your favorite color?", image: []},
-        {isUser: false, message: "My favorite color is blue.", image: []},
-    ]);
+    const [chatLog, setChatLog] = useState<Message[]>([]);
+    const chatLogRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (project?.messages) {
+            const messagesWithImages = project.messages.map((msg: { is_user: boolean; content: string; created_at: string }) => ({
+                ...msg,
+                image: [] // Add empty image array to each message
+            }));
+            setChatLog(messagesWithImages);
+        }
+        console.log(project?.messages);
+    }, [project]);
 
     // Auto-resize textarea as content grows
     useEffect(() => {
@@ -49,7 +60,6 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                     width: offsetWidth,
                     height: offsetHeight
                 });
-                console.log('Message Area Dimensions:', { width: offsetWidth, height: offsetHeight });
             }
         };
 
@@ -59,12 +69,46 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
         return () => window.removeEventListener('resize', updateDimensions);
     }, []);
 
+    // Auto-scroll when messages update
+    useEffect(() => {
+        if (chatLogRef.current) {
+            chatLogRef.current.scrollTop = chatLogRef.current.scrollHeight;
+        }
+    }, [chatLog, showChatLog]);
+
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            // Handle send message
+            const newMessage = {
+                is_user: true,
+                content: message,
+                created_at: new Date().toISOString(),
+                image: []
+            };
+
+            // Update chat log immediately
+            setChatLog(prev => [...prev, newMessage]);
+            setMessage(''); // Clear input
+
+            // Send to backend
+            const sendMessage = async () => {
+                try {
+                    const response = await fetch('http://localhost:8000/api/messages', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ ...newMessage, project_id: project.id }),
+                    });
+                    const data = await response.json();
+                } catch (error) {
+                    console.error('Failed to send message:', error);
+                }
+            };
+            sendMessage();
         }
     };
+    
 
     return (
         <div className={`absolute left-[15vw] right-0 h-screen bg-[#F6F5F0] flex flex-col ${toolbarVisible ? 'right-[15vw]' : 'right-0'}`}>
@@ -86,7 +130,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
             {/* Messages Area */}
             {!showChatLog && <div 
                 ref={messageAreaRef}
-                className="relative flex-1 overflow-y-auto space-y-4 custom-scrollbar border-8 border-red-500"
+                className="relative flex-1 overflow-y-auto space-y-4 custom-scrollbar"
             >
                 <Stats parent={messageAreaRef} className="!absolute" />
                 <Canvas>
@@ -99,7 +143,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
 
             {/* Floating Toggle ChatLog */}
             {showChatLog && (
-                <div className="flex-1 p-6 overflow-y-auto ml-[5vw] mr-[5vw]"
+                <div ref={chatLogRef} className="flex-1 p-6 overflow-y-auto ml-[5vw] mr-[5vw] mb-[15vh]"
                     style={{ scrollbarWidth: 'none' }} 
                 >
                     <div className="flex flex-col gap-8">
@@ -107,10 +151,10 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                             <div key={index} className="border-l-4 pl-6 py-2 space-y-3 hover:bg-white transition-colors">
                                 <div className="flex items-center gap-3">
                                     <span className="font-serif font-bold text-gray-900">
-                                        {message.isUser ? 'User Entry' : 'System Response'}
+                                        {message?.is_user ? 'User Entry' : 'System Response'}
                                     </span>
                                     <span className="text-sm font-serif italic text-gray-500">
-                                        {new Date().toLocaleTimeString('en-US', { 
+                                        {new Date(message?.created_at).toLocaleTimeString('en-US', { 
                                             hour: 'numeric', 
                                             minute: '2-digit',
                                             hour12: true 
@@ -118,11 +162,11 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                                     </span>
                                 </div>
                                 <div className="font-serif text-gray-700 leading-relaxed">
-                                    {message.message}
+                                    {message.content}
                                 </div>
-                                {message.image.length > 0 && (
+                                {message?.image && message?.image?.length > 0 && (
                                     <div className="grid grid-cols-3 gap-4 mt-4">
-                                        {message.image.map((image, imgIndex) => (
+                                        {message?.image?.map((image, imgIndex) => (
                                             <div key={imgIndex} className="aspect-square overflow-hidden border border-gray-200">
                                                 <img 
                                                     src={image} 

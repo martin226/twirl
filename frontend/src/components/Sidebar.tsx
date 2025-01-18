@@ -19,7 +19,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
     const { project, setProject } = useProject();   
 
     // Filter chats based on search query
-    console.log(project);
     const filteredChats = project.filter((chat: any) => 
         chat.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         chat.messages.some((message: any) => message.content.toLowerCase().includes(searchQuery.toLowerCase()))

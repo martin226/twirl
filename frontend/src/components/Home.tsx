@@ -10,15 +10,12 @@ interface HomeProps {
 const Home: React.FC<HomeProps> = ({ setIsModalOpen }) => {
     const { project, setProject } = useProject();
     const router = useRouter();
-    useEffect(() => {
-        console.log("project", project);
-    }, [project]);
+
     useEffect(() => {
         const fetchProjects = async () => {
             try {
                 const response = await fetch('http://localhost:8000/api/project/all');
                 const data = await response.json();
-                console.log(data);
                 setProject(data.projects || []);
             } catch (error) {
                 console.error('Failed to fetch projects:', error);
@@ -32,7 +29,6 @@ const Home: React.FC<HomeProps> = ({ setIsModalOpen }) => {
                     body: JSON.stringify({ title: 'New Project' }),
                 });
                 const data = await response.json();
-                console.log("new project", data);
             } catch (error) {
                 console.error('Failed to create new project:', error);
             }
