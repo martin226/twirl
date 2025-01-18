@@ -79,6 +79,7 @@ const ChatPage: React.FC = () => {
                     project={project}
                     user={user}
                     toolbarVisible={isVisible}
+                    setToolbarVisible={setIsVisible}
                 />
             </div>
             <div className="">

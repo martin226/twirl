@@ -60,10 +60,13 @@ const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
     return isVisible ? (
         <div className="absolute right-0 top-0 w-[15vw] h-full bg-[#F6F5F0] border-l border-gray-200 shadow-lg z-50 flex flex-col">
             {/* Header */}
-            <div className="p-5 border-b border-gray-200 flex items-center justify-between">
-                <h2 className="text-xl font-serif font-bold text-gray-900">
-                    Formatting
-                </h2>
+            <div className="p-5 border-b-2 border-gray-900 flex items-center justify-between">
+                <div>
+                    <div className="text-xs font-serif tracking-[0.2em] text-gray-500 mb-1">TOOLS</div>
+                    <h2 className="text-2xl font-serif font-bold text-gray-900">
+                        TOOLBAR
+                    </h2>
+                </div>
                 <button 
                     onClick={() => setIsVisible(false)}
                     className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-700 transition-colors"

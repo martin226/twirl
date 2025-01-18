@@ -73,11 +73,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
     return (
         <div className="absolute left-0 top-0 w-[15vw] h-full bg-[#F6F5F0] border-r border-gray-200 shadow-lg z-50 sidebar flex flex-col">
             {/* Header with Search */}
-            <div className="p-5 border-b border-gray-200">
+            <div className="p-5 border-b-2 border-gray-900">
                 <div className="flex items-center justify-between mb-4">
-                    <span className="text-xl font-serif font-bold text-gray-900">
-                        The Daily Chat
-                    </span>
+                    <div>
+                        <div className="text-xs font-serif tracking-[0.2em] text-gray-500 mb-1">EDITION I</div>
+                        <span className="text-2xl font-serif font-bold text-gray-900">
+                            OPTIONS
+                        </span>
+                    </div>
                     <button 
                         onClick={() => setIsMenuMode(!isMenuMode)}
                         className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-600 transition-colors"
@@ -90,10 +93,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
                     <input
                         type="text"
-                        placeholder="Search conversations..."
+                        placeholder="Search archives..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full bg-white text-sm rounded-lg pl-9 pr-4 py-2 border border-gray-200 focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 text-gray-900 placeholder-gray-400"
+                        className="w-full bg-white text-sm rounded-lg pl-9 pr-4 py-2 border border-gray-200 focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 text-gray-900 placeholder-gray-400 font-serif"
                     />
                 </div>
             </div>
