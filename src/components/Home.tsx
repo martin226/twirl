@@ -1,168 +1,85 @@
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import { deleteProject, newProject } from '../services/api';
-import { useUser } from '../contexts/UserContext';
-import { fetchAllProjects } from '../services/api';
-import { Globe, Lock, Users } from 'lucide-react';
-import ProjectContextMenu from './ProjectContextMenu';
+import React from 'react';
+import { Newspaper, Feather, Coffee, BookOpen } from 'lucide-react';
 
 interface HomeProps {
-    setIsModalOpen: (isModalOpen: boolean) => void;
+    setIsModalOpen: (isOpen: boolean) => void;
     projects: any[];
-    setProjects: React.Dispatch<React.SetStateAction<any[]>>;
-}
-
-interface ContextMenu {
-    show: boolean;
-    x: number;
-    y: number;
-    projectId: string;
+    setProjects: (projects: any[]) => void;
 }
 
 const Home: React.FC<HomeProps> = ({ setIsModalOpen, projects, setProjects }) => {
-    const { user } = useUser();
-    const router = useRouter();
-    const [contextMenu, setContextMenu] = useState<ContextMenu>({
-        show: false,
-        x: 0,
-        y: 0,
-        projectId: ''
-    });
-
-    useEffect(() => {
-        if (user) {
-            fetchAllProjects(user.id).then(projects => {
-                setProjects(projects);
-            });
-        }
-    }, [user]);
-
-    const handleProjectClick = (projectId: string) => {
-        router.push(`/Chat/${projectId}`);
-    };
-
-    //right click project panel to open context menu
-    const handleContextMenu = (e: React.MouseEvent, projectId: string) => {
-        e.preventDefault();
-        setContextMenu({
-            show: true,
-            x: e.pageX,
-            y: e.pageY,
-            projectId
-        });
-    };
-
-    const handleEditProject = () => {
-        setContextMenu({ ...contextMenu, show: false });
-    };
-
-    const handleDeleteProject = async () => {
-        try {
-            await deleteProject(contextMenu.projectId);
-            setProjects(prevProjects => prevProjects.filter((project: any) => project.id !== contextMenu.projectId));
-            setContextMenu({ ...contextMenu, show: false });
-        } catch (error) {
-            console.error('Failed to delete project:', error);
-        }
-    };
-
     return (
-        <div className="w-full h-full bg-gray-900 p-8 overflow-y-auto max-h-screen text-gray-100">
-            <div className="max-w-4xl mx-auto space-y-8">
-                {/* Welcome Section */}
-                <div className="bg-gray-800 rounded-xl shadow-md p-6 border border-gray-700">
-                    <h1 className="text-2xl font-bold text-gray-100 mb-2">Welcome to Node Editor</h1>
-                    <p className="text-gray-400">Create and manage your node-based workflows</p>
+        <div className="flex-1 p-8 bg-[#F6F5F0] overflow-y-auto">
+            {/* Decorative Header */}
+            <div className="max-w-4xl mx-auto mb-12 text-center">
+                <div className="flex justify-center mb-4">
+                    <div className="h-px w-32 bg-gray-300 self-center"></div>
+                    <Feather className="mx-4 text-gray-400" size={24} />
+                    <div className="h-px w-32 bg-gray-300 self-center"></div>
                 </div>
+                <h1 className="font-serif text-4xl font-bold text-gray-900 mb-2">The Daily Chronicle</h1>
+                <div className="text-sm text-gray-500 font-serif italic">Est. 2024</div>
+                <div className="flex justify-center items-center gap-3 mt-4 text-gray-400">
+                    <Coffee size={16} />
+                    <div className="h-1 w-1 rounded-full bg-gray-300"></div>
+                    <BookOpen size={16} />
+                    <div className="h-1 w-1 rounded-full bg-gray-300"></div>
+                    <Newspaper size={16} />
+                </div>
+            </div>
 
-                {/* Recent Projects and Quick Actions */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="bg-gray-800 rounded-xl shadow-md p-6 border border-gray-700 hover:shadow-lg transition-all duration-200">
-                        <div className="flex flex-col items-center text-center">
-                            <h3 className="text-lg font-medium text-gray-400 mb-3">Total Chat</h3>
-                            <p className="text-6xl font-bold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent leading-none mb-3">
-                                {projects.length}
-                            </p>
-                            <div className="h-1 w-24 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full"></div>
+            <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Stats Card */}
+                <div className="bg-white rounded-lg shadow-md p-8 border border-gray-100 hover:shadow-lg transition-all duration-200">
+                    <div className="flex flex-col items-center text-center">
+                        <h3 className="font-serif text-lg text-gray-900 mb-3">Volume Statistics</h3>
+                        <p className="text-6xl font-serif font-bold text-gray-900 leading-none mb-3">
+                            {projects.length}
+                        </p>
+                        <div className="text-sm text-gray-500 font-serif italic mb-4">Active Conversations</div>
+                        <div className="flex justify-center items-center gap-2">
+                            <div className="h-px w-12 bg-gray-200"></div>
+                            <div className="w-2 h-2 rounded-full bg-gray-300"></div>
+                            <div className="h-px w-12 bg-gray-200"></div>
                         </div>
                     </div>
+                </div>
 
-                    <div className="bg-gray-800 rounded-xl shadow-md p-6 border border-gray-700">
-                        <h2 className="text-lg font-semibold text-gray-100 mb-4">Quick Actions</h2>
-                        <div className="space-y-3">
+                {/* Actions Card */}
+                <div className="bg-white rounded-lg shadow-md p-8 border border-gray-100">
+                    <div className="flex flex-col items-center text-center">
+                        <h3 className="font-serif text-lg text-gray-900 mb-6">Editorial Actions</h3>
+                        <div className="space-y-4 w-full max-w-xs">
                             <button 
                                 onClick={() => setIsModalOpen(true)}
-                                className="w-full p-3 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-lg hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition-all duration-200"
+                                className="w-full px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-serif group relative overflow-hidden"
                             >
-                                New Project
+                                <div className="absolute inset-0 bg-white/10 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-300"></div>
+                                <span className="relative">Begin New Conversation</span>
                             </button>
-                            <button className="w-full p-3 bg-gray-700 text-gray-200 rounded-lg hover:bg-gray-600">
-                                Import Project
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Project Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {[...projects].reverse().map(project => (
-                        <div 
-                            key={project.id}
-                            onClick={() => handleProjectClick(project.id)}
-                            onContextMenu={(e) => handleContextMenu(e, project.id)}
-                            className="bg-gray-800 rounded-xl shadow-md p-6 border border-gray-700 hover:shadow-lg transition-shadow cursor-pointer"
-                        >
-                            <div className="flex justify-between items-start mb-4">
-                                <h3 className="text-lg font-semibold text-gray-100 truncate">
-                                    {project.name}
-                                </h3>
-                                {project.is_public ? (
-                                    <Globe className="text-green-400" size={20} />
-                                ) : (
-                                    <Lock className="text-gray-400" size={20} />
-                                )}
-                            </div>
                             
-                            <div className="flex items-center text-gray-400 mb-2">
-                                <Users size={16} className="mr-2" />
-                                <span className="text-sm">
-                                    {project.collaborators.length === 0 
-                                        ? 'No collaborators' 
-                                        : `${project.collaborators.length} collaborator${project.collaborators.length !== 1 ? 's' : ''}`}
-                                </span>
+                            <div className="flex items-center gap-3 my-4">
+                                <div className="h-px flex-1 bg-gray-200"></div>
+                                <span className="font-serif text-sm text-gray-400">or</span>
+                                <div className="h-px flex-1 bg-gray-200"></div>
                             </div>
 
-                            <div className="flex flex-wrap gap-2 mt-3">
-                                {/* {project.collaborators.map(collaborator => (
-                                    <span 
-                                        key={collaborator.id}
-                                        className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full truncate max-w-[150px]"
-                                        title={collaborator.email}
-                                    >
-                                        {collaborator.email}
-                                    </span>
-                                ))} */}
-                            </div>
+                            <button className="w-full px-6 py-3 bg-white border-2 border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-serif">
+                                Import Archive
+                            </button>
                         </div>
-                    ))}
-                </div>
-
-                {projects.length === 0 && (
-                    <div className="text-center py-6">
-                        <p className="text-gray-400">No projects yet. Create your first project!</p>
                     </div>
-                )}
+                </div>
+            </div>
 
-                {contextMenu.show && (
-                    <ProjectContextMenu
-                        x={contextMenu.x}
-                        y={contextMenu.y}
-                        onEdit={handleEditProject}
-                        onDelete={handleDeleteProject}
-                        onClose={() => setContextMenu({ ...contextMenu, show: false })}
-                    />
-                )}
-            </div>          
+            {/* Decorative Footer */}
+            <div className="max-w-4xl mx-auto mt-12 pt-8 border-t border-gray-200">
+                <div className="flex justify-center items-center gap-4 text-gray-400">
+                    <div className="font-serif italic text-sm">Quality Conversations Since 2024</div>
+                    <div className="h-1 w-1 rounded-full bg-gray-300"></div>
+                    <div className="font-serif italic text-sm">All Rights Reserved</div>
+                </div>
+            </div>
         </div>
     );
 };

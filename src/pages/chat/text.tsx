@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import Chat from '../../components/Chat';
 import Sidebar from '../../components/Sidebar';
-import { openWhiteboard, newProject, fetchAllProjects } from '../../services/api';
+import { openChat, newProject, fetchAllProjects } from '../../services/api';
 import { useProject } from '../../contexts/ProjectContext';
 import { useUser } from '@/src/contexts/UserContext';
 import Signup from '@/src/components/Signup';
@@ -31,7 +31,7 @@ const ChatPage: React.FC = () => {
     useEffect(() => {
         if (user && project_id) {
             setProject(null);
-            openWhiteboard(user.id, project_id as string)
+            openChat(user.id, project_id as string)
                 .then(projectData => {
                     if (projectData) {
                         setProject(projectData);
