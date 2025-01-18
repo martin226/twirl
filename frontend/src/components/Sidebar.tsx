@@ -10,13 +10,20 @@ interface SidebarProps {
     setIsMenuMode: (isMenuMode: boolean) => void;
     currentSection: 'home' | 'settings' | 'account';
     setCurrentSection: (section: 'home' | 'settings' | 'account') => void;
+    setIsAuthenticated: (isAuthenticated: boolean) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, currentSection, setCurrentSection }) => {
+const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, currentSection, setCurrentSection, setIsAuthenticated }) => {
     const { user } = useUser();
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState('');   
     const { project, setProject } = useProject();   
+
+    const handleSignOut = () => {
+        localStorage.clear();
+        setIsAuthenticated(false);
+        // router.push('/login');
+    };
 
     // Filter chats based on search query
     const filteredChats = project.filter((chat: any) => 
@@ -52,7 +59,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
                             <button className="w-full p-2 text-left hover:bg-gray-100 rounded text-gray-700 font-serif">
                                 Profile Settings
                             </button>
-                            <button className="w-full p-2 text-left text-red-600 hover:bg-gray-100 rounded font-serif">
+                            <button 
+                                onClick={handleSignOut}
+                                className="w-full p-2 text-left text-red-600 hover:bg-gray-100 rounded font-serif"
+                            >
                                 Sign Out
                             </button>
                         </div>
@@ -65,7 +75,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
                         <div className="space-y-2">
                             <div className="flex items-center justify-between text-gray-700">
                                 <span className="font-serif">Dark Mode</span>
-                                <button className="p-2 bg-gray-100 rounded font-serif">On</button>
+                                <button className="p-2 bg-gray-100 rounded font-serif">Off</button>
                             </div>
                         </div>
                     </div>

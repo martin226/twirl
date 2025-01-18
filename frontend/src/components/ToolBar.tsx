@@ -1,89 +1,403 @@
-import React, { useState } from 'react';
-import { Bold, Italic, List, Link, Image, Code, Quote, ChevronRight, ChevronLeft } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { ChevronRight, ChevronLeft, ChevronDown } from 'lucide-react';
 
 interface ToolBarProps {
     isVisible: boolean;
     setIsVisible: (isVisible: boolean) => void;
 }
 
-interface SliderOption {
+interface Parameter {
+    group: boolean;
     name: string;
-    value: number;
-    min: number;
-    max: number;
+    type?: string;
+    value?: number;
+    min_value?: number;
+    max_value?: number;
+    parameters?: Parameter[];
 }
 
-interface DisplacementOption {
-    name: string;
-    x: number;
-    y: number;
-    z: number;
-}
+const ParameterGroup: React.FC<{ 
+    parameter: Parameter, 
+    level: number,
+    path: number[],
+    onUpdate: (path: number[], newValue: number) => void 
+}> = ({ parameter, level, path, onUpdate }) => {
+    const [isOpen, setIsOpen] = useState(true);
+    const paddingLeft = `${level * 1}rem`;
 
-interface ColorOption {
-    name: string;
-    value: string;
-}
+    if (parameter.group) {
+        return (
+            <div className="space-y-2">
+                <button
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="w-full flex items-center justify-between p-2 hover:bg-gray-100 rounded text-left"
+                    style={{ paddingLeft }}
+                >
+                    <span className="text-sm font-serif">{parameter.name}</span>
+                    <ChevronDown 
+                        size={16} 
+                        className={`transform transition-transform ${isOpen ? '' : '-rotate-90'}`}
+                    />
+                </button>
+                {isOpen && parameter.parameters && (
+                    <div className="space-y-2">
+                        {parameter.parameters.map((param, index) => (
+                            <ParameterGroup 
+                                key={`${param.name}-${index}`} 
+                                parameter={param} 
+                                level={level + 1}
+                                path={[...path, index]}
+                                onUpdate={onUpdate}
+                            />
+                        ))}
+                    </div>
+                )}
+            </div>
+        );
+    }
 
-interface OtherOption {
-    name: string;
-    value: number;
-}
+    // Handle different parameter types
+    switch (parameter.type) {
+        case 'slider':
+            return (
+                <div className="space-y-1" style={{ paddingLeft }}>
+                    <div className="flex justify-between items-center">
+                        <span className="text-sm font-serif">{parameter.name}</span>
+                        <span className="text-sm font-serif text-gray-500">{parameter.value}</span>
+                    </div>
+                    <input
+                        type="range"
+                        min={parameter.min_value}
+                        max={parameter.max_value}
+                        value={parameter.value}
+                        onChange={(e) => onUpdate(path, Number(e.target.value))}
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-gray-900"
+                    />
+                </div>
+            );
+        case 'none':
+            return (
+                <div className="space-y-1" style={{ paddingLeft }}>
+                    <div className="flex justify-between items-center">
+                        <span className="text-sm font-serif">{parameter.name}</span>
+                        <input
+                            type="number"
+                            value={parameter.value}
+                            onChange={(e) => onUpdate(path, Number(e.target.value))}
+                            className="w-24 px-2 py-1 text-sm bg-white border border-gray-200 rounded-lg text-gray-900 font-mono focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
+                        />
+                    </div>
+                </div>
+            );
+        default:
+            return null;
+    }
+};
 
 const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
-    const [colors, setColors] = useState<ColorOption[]>([
+    const [receivedChanges] = useState<Parameter[]>([
         {
-            name: 'Chair Leg',
-            value: '#FF0000'
+            "group": true,
+            "name": "Table Top",
+            "parameters": [
+                {
+                    "group": false,
+                    "name": "table_top_length",
+                    "type": "slider",
+                    "min_value": 800,
+                    "max_value": 2000,
+                    "value": 1200
+                },
+                {
+                    "group": false,
+                    "name": "table_top_width",
+                    "type": "slider",
+                    "min_value": 600,
+                    "max_value": 1200,
+                    "value": 800
+                },
+                {
+                    "group": false,
+                    "name": "table_top_thickness",
+                    "type": "slider",
+                    "min_value": 20,
+                    "max_value": 50,
+                    "value": 30
+                }
+            ]
         },
         {
-            name: 'Chair Seat',
-            value: '#0000FF'
+          "group": true,
+          "name": "Table Legs",
+          "parameters": [
+            {
+              "group": false,
+              "name": "leg_radius",
+              "type": "slider",
+              "min_value": 20,
+              "max_value": 50,
+              "value": 30
+            },
+            {
+              "group": false,
+              "name": "leg_height",
+              "type": "slider",
+              "min_value": 400,
+              "max_value": 800,
+              "value": 700
+            },
+            {
+              "group": true,
+              "name": "Leg 1",
+              "parameters": [
+                {
+                  "group": true,
+                  "name": "Translation",
+                  "parameters": [
+                    {
+                      "group": false,
+                      "name": "leg1_x",
+                      "type": "none",
+                      "value": 0
+                    },
+                    {
+                      "group": false,
+                      "name": "leg1_y",
+                      "type": "none",
+                      "value": 0
+                    },
+                    {
+                      "group": false,
+                      "name": "leg1_z",
+                      "type": "none",
+                      "value": 0
+                    }
+                  ]
+                },
+                {
+                  "group": true,
+                  "name": "Rotation",
+                  "parameters": [
+                    {
+                      "group": false,
+                      "name": "leg1_rot_x",
+                      "type": "none",
+                      "value": 0
+                    },
+                    {
+                      "group": false,
+                      "name": "leg1_rot_y",
+                      "type": "none",
+                      "value": 0
+                    },
+                    {
+                      "group": false,
+                      "name": "leg1_rot_z",
+                      "type": "none",
+                      "value": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "group": true,
+              "name": "Leg 2",
+              "parameters": [
+                {
+                  "group": true,
+                  "name": "Translation",
+                  "parameters": [
+                    {
+                      "group": false,
+                      "name": "leg2_x",
+                      "type": "none",
+                      "value": 0
+                    },
+                    {
+                      "group": false,
+                      "name": "leg2_y",
+                      "type": "none",
+                      "value": 0
+                    },
+                    {
+                      "group": false,
+                      "name": "leg2_z",
+                      "type": "none",
+                      "value": 0
+                    }
+                  ]
+                },
+                {
+                  "group": true,
+                  "name": "Rotation",
+                  "parameters": [
+                    {
+                      "group": false,
+                      "name": "leg2_rot_x",
+                      "type": "none",
+                      "value": 0
+                    },
+                    {
+                      "group": false,
+                      "name": "leg2_rot_y",
+                      "type": "none",
+                      "value": 0
+                    },
+                    {
+                      "group": false,
+                      "name": "leg2_rot_z",
+                      "type": "none",
+                      "value": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "group": true,
+              "name": "Leg 3",
+              "parameters": [
+                {
+                  "group": true,
+                  "name": "Translation",
+                  "parameters": [
+                    {
+                      "group": false,
+                      "name": "leg3_x",
+                      "type": "none",
+                      "value": 0
+                    },
+                    {
+                      "group": false,
+                      "name": "leg3_y",
+                      "type": "none",
+                      "value": 0
+                    },
+                    {
+                      "group": false,
+                      "name": "leg3_z",
+                      "type": "none",
+                      "value": 0
+                    }
+                  ]
+                },
+                {
+                  "group": true,
+                  "name": "Rotation",
+                  "parameters": [
+                    {
+                      "group": false,
+                      "name": "leg3_rot_x",
+                      "type": "none",
+                      "value": 0
+                    },
+                    {
+                      "group": false,
+                      "name": "leg3_rot_y",
+                      "type": "none",
+                      "value": 0
+                    },
+                    {
+                      "group": false,
+                      "name": "leg3_rot_z",
+                      "type": "none",
+                      "value": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "group": true,
+              "name": "Leg 4",
+              "parameters": [
+                {
+                  "group": true,
+                  "name": "Translation",
+                  "parameters": [
+                    {
+                      "group": false,
+                      "name": "leg4_x",
+                      "type": "none",
+                      "value": 0
+                    },
+                    {
+                      "group": false,
+                      "name": "leg4_y",
+                      "type": "none",
+                      "value": 0
+                    },
+                    {
+                      "group": false,
+                      "name": "leg4_z",
+                      "type": "none",
+                      "value": 0
+                    }
+                  ]
+                },
+                {
+                  "group": true,
+                  "name": "Rotation",
+                  "parameters": [
+                    {
+                      "group": false,
+                      "name": "leg4_rot_x",
+                      "type": "none",
+                      "value": 0
+                    },
+                    {
+                      "group": false,
+                      "name": "leg4_rot_y",
+                      "type": "none",
+                      "value": 0
+                    },
+                    {
+                      "group": false,
+                      "name": "leg4_rot_z",
+                      "type": "none",
+                      "value": 0
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         }
     ]);
+    const [parameters, setParameters] = useState<Parameter[]>([]);
 
-    const [scaleFactor, setScaleFactor] = useState<number>(1);
-
-    const [sliders, setSliders] = useState<SliderOption[]>([
-        {
-            name: 'Chair Leg',
-            value: 100,
-            min: 0,
-            max: 200
-        },
-        {
-            name: 'Chair Seat',
-            value: 200,
-            min: 0,
-            max: 400
-        }
-    ]);
-
-    const [displacements, setDisplacements] = useState<DisplacementOption[]>([
-        {
-            name: 'Chair Leg',
-            x: 0,
-            y: 0,
-            z: 0
-        }
-    ]);
+    useEffect(() => {
+        setParameters(receivedChanges);
+    }, []);
 
     const handleApplyChanges = () => {
-        console.log('apply changes');
+        console.log('Applied changes:', parameters);
+        return parameters;
     };
 
-    const handleSliderChange = (index: number, newValue: number) => {
-        const updatedSliders = [...sliders];
-        updatedSliders[index].value = newValue;
-        setSliders(updatedSliders);
+    const updateParameter = (paramPath: number[], newValue: number) => {
+        setParameters(prevParams => {
+            const newParams = JSON.parse(JSON.stringify(prevParams));
+            let current = newParams;
+            
+            // Navigate to the parent of the target parameter
+            for (let i = 0; i < paramPath.length - 1; i++) {
+                if (current[paramPath[i]]?.parameters) {
+                    current = current[paramPath[i]].parameters;
+                }
+            }
+            
+            // Update the value of the target parameter
+            const lastIndex = paramPath[paramPath.length - 1];
+            if (current[lastIndex]) {
+                current[lastIndex].value = newValue;
+            }
+            
+            return newParams;
+        });
     };
 
-    const handleColorChange = (index: number, newValue: string) => {
-        const updatedColors = [...colors];
-        updatedColors[index].value = newValue;
-        setColors(updatedColors);
-    };
-    
     return isVisible ? (
         <div className="absolute right-0 top-0 w-[15vw] h-full bg-[#F6F5F0] border-l border-gray-200 shadow-lg z-50 flex flex-col">
             {/* Header */}
@@ -103,143 +417,23 @@ const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
                 </button>
             </div>
 
-            {/* Tools Section */}
-            <div className="p-4 space-y-4 overflow-y-auto overflow-x-hidden">
-                {/* Colors Section */}
-                <div className="space-y-2">
-                    <h3 className="font-serif text-xs font-bold text-gray-900 uppercase tracking-wider">
-                        Colors
-                    </h3>
-                    {colors.map((color, index) => (
-                        <div key={color.name} className="space-y-1">
-                            <div className="flex justify-between items-center">
-                                <span className="text-sm font-serif">{color.name}</span>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm font-serif text-gray-500">{color.value}</span>
-                                    <div className="relative">
-                                        <div 
-                                            className="w-6 h-6 rounded border border-gray-200"
-                                            style={{ backgroundColor: color.value }}
-                                        />
-                                        <input
-                                            type="color"
-                                            value={color.value}
-                                            onChange={(e) => handleColorChange(index, e.target.value)}
-                                            className="absolute inset-0 opacity-0 cursor-pointer"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
-                {/* Slider Section */}
-                <div className="space-y-2">
-                    <h3 className="font-serif text-xs font-bold text-gray-900 uppercase tracking-wider">
-                        Sliders
-                    </h3>
-                    <div className="space-y-3">
-                        {sliders.map((slider, index) => (
-                            <div key={slider.name} className="space-y-1">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-sm font-serif">{slider.name}</span>
-                                    <span className="text-sm font-serif text-gray-500">{slider.value}</span>
-                                </div>
-                                <input
-                                    type="range"
-                                    min={slider.min}
-                                    max={slider.max}
-                                    value={slider.value}
-                                    onChange={(e) => handleSliderChange(index, Number(e.target.value))}
-                                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-gray-900"
-                                />
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Displacements Section */}
-                <div className="space-y-2">
-                    <h3 className="font-serif text-xs font-bold text-gray-900 uppercase tracking-wider">
-                        Displacements
-                    </h3>
-                </div>
-                <div className="space-y-3">
-                    {displacements.map((displacement, index) => (
-                        <div key={displacement.name} className="space-y-1">
-                            <div className="flex justify-between items-center">
-                                <span className="text-sm font-serif">{displacement.name}</span>
-                            </div>
-                            <div className="grid grid-cols-3 gap-2 mt-2">
-                                <div className="space-y-1">
-                                    <label className="text-xs font-serif text-gray-500">X</label>
-                                    <input
-                                        type="number"
-                                        value={displacement.x}
-                                        onChange={(e) => {
-                                            const newDisplacements = [...displacements];
-                                            newDisplacements[index].x = Number(e.target.value);
-                                            setDisplacements(newDisplacements);
-                                        }}
-                                        className="w-full px-2 py-1 text-sm bg-white border border-gray-200 rounded-lg text-gray-900 font-mono focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
-                                    />
-                                </div>
-                                <div className="space-y-1">
-                                    <label className="text-xs font-serif text-gray-500">Y</label>
-                                    <input
-                                        type="number"
-                                        value={displacement.y}
-                                        onChange={(e) => {
-                                            const newDisplacements = [...displacements];
-                                            newDisplacements[index].y = Number(e.target.value);
-                                            setDisplacements(newDisplacements);
-                                        }}
-                                        className="w-full px-2 py-1 text-sm bg-white border border-gray-200 rounded-lg text-gray-900 font-mono focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
-                                    />
-                                </div>
-                                <div className="space-y-1">
-                                    <label className="text-xs font-serif text-gray-500">Z</label>
-                                    <input
-                                        type="number"
-                                        value={displacement.z}
-                                        onChange={(e) => {
-                                            const newDisplacements = [...displacements];
-                                            newDisplacements[index].z = Number(e.target.value);
-                                            setDisplacements(newDisplacements);
-                                        }}
-                                        className="w-full px-2 py-1 text-sm bg-white border border-gray-200 rounded-lg text-gray-900 font-mono focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-                {/* Other Section */}
-                <div className="space-y-2">
-                    <h3 className="font-serif text-xs font-bold text-gray-900 uppercase tracking-wider">
-                        Other
-                    </h3>
-                    <div className="space-y-1">
-                        <div className="flex justify-between items-center">
-                            <span className="text-sm font-serif">Scale Factor</span>
-                            <input
-                                type="number"
-                                className="w-24 px-2 py-1 text-sm bg-white border border-gray-200 rounded-lg text-gray-900 font-mono focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
-                                value={scaleFactor}
-                                onChange={(e) => {
-                                    setScaleFactor(Number(e.target.value));
-                                }}
-                            />
-                        </div>
-                    </div>
-                </div>
+            {/* Parameters Section */}
+            <div className="flex-1 p-4 space-y-4 overflow-y-auto overflow-x-hidden">
+                {parameters.map((parameter, index) => (
+                    <ParameterGroup 
+                        key={`${parameter.name}-${index}`} 
+                        parameter={parameter} 
+                        level={0}
+                        path={[index]}
+                        onUpdate={updateParameter}
+                    />
+                ))}
             </div>
 
-            {/* submit toggles button */}
+            {/* Apply Changes Button */}
             <button 
                 className="ml-[5%] w-[90%] mt-auto mb-4 bg-gray-900 text-white py-3 font-serif tracking-wide text-sm border-t border-gray-200"
-                onClick={() => { handleApplyChanges() }}
+                onClick={handleApplyChanges}
             >
                 APPLY CHANGES
             </button>

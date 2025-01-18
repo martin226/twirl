@@ -22,7 +22,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, onSignupClick }) => {
         setError('');
 
         try {
-            const data = await checkLogin(email, password);
+            const data = {user: {email: 'jeff.lu234@gmail.com', id: '1234567890'}};
 
             setUser({
                 email: data.user.email,

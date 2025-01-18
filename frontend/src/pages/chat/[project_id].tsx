@@ -70,6 +70,7 @@ const ChatPage: React.FC = () => {
                     setIsMenuMode={setIsMenuMode}
                     currentSection={currentSection}
                     setCurrentSection={setCurrentSection}
+                    setIsAuthenticated={setIsAuthenticated}
                 />
             </div>
             <div className="">

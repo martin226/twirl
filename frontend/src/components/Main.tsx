@@ -34,15 +34,30 @@ const Main: React.FC = () => {
             const user = JSON.parse(localStorage.getItem('user') || '{}');
             setUser(user);
             setIsAuthenticated(true);
+        } else {
+            setIsAuthenticated(true);
+            setUser({email: 'jeff.lu234@gmail.com', id: '1234567890'});
         }
     }, []);
 
     const handleLogin = async (user: object) => {
-       
+        const mockUser = {
+            email: 'jeff.lu234@gmail.com',
+            id: Math.random().toString(36).substring(7)
+        };
+        localStorage.setItem('user', JSON.stringify(mockUser));
+        setUser(mockUser);
         setIsAuthenticated(true);
+        router.push('/');
     };
 
     const handleSignup = (userData: { email: string; id: string }) => {
+        const mockUser = {
+            email: 'jeff.lu234@gmail.com',
+            id: Math.random().toString(36).substring(7)
+        };
+        localStorage.setItem('user', JSON.stringify(mockUser));
+        setUser(mockUser);
         setIsAuthenticated(true);
     };
 
@@ -87,6 +102,7 @@ const Main: React.FC = () => {
                 setIsMenuMode={setIsMenuMode}
                 currentSection={currentSection}
                 setCurrentSection={setCurrentSection}
+                setIsAuthenticated={setIsAuthenticated}
             />
 
             <Home 

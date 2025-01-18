@@ -147,7 +147,7 @@ const Home: React.FC<HomeProps> = ({ setIsModalOpen }) => {
                 {/* Project Cards */}
                 <div className="max-w-4xl mx-auto mt-12">
                     <div className="border-b-2 border-gray-900 mb-6">
-                        <h2 className="font-serif text-2xl font-bold text-gray-900 pb-2">Latest Chronicles</h2>
+                        <h2 className="font-serif text-2xl font-bold text-gray-900 pb-2">LATEST MODELS</h2>
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
