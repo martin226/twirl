@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from typing import Optional
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -6,6 +7,13 @@ from pydantic import BaseModel
 from db import Database, MessageCreate
 # from llm.steps import run_pipeline, new_prompt
 from llm.core import openscad, followup, GenerationRequest, FollowupRequest
+=======
+from pydantic import BaseModel
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+
+from db import Database, MessageCreate
+>>>>>>> cdd2f48476af2cb9207f2291e28f4e670768c2d4
 
 app = FastAPI()
 
@@ -21,16 +29,30 @@ app.add_middleware(
 async def root():
     return {"message": "Bannna spplsh qwerty rainbow elphant c@ke jungle gymn rapidlly bqlloon tacobell flwg htursdays knoghts peanutbuttr colarbradta gumboots marsupila pongle fzzbuzz heckle orangutat jamtoast scriblle feflect crakberriess esprsoo tayble magicaly rnade reingbow qwertie flapjacckz dalmations akrobas strwbrry gorjess laptp frrrizz popkorn carprt happyface dramabatcs flpside artick lulz slivrsun racoonnn counterbalanc doggoz"}
 
+<<<<<<< HEAD
 @app.post("/api/project")
 async def new_project(title: str):
     db = await Database.new()
     return await db.create_project(title)
+=======
+class ProjectCreate(BaseModel):
+    title: str
+
+@app.post("/api/project")
+async def new_project(project: ProjectCreate):
+    db = await Database.new()
+    return await db.create_project(project.title)
+>>>>>>> cdd2f48476af2cb9207f2291e28f4e670768c2d4
 
 @app.get("/api/project/all")
 async def all_projects():
     db = await Database.new()
     projects = await db.get_all_projects()
+<<<<<<< HEAD
     return {"projects": projects.data}
+=======
+    return {"projects": projects}
+>>>>>>> cdd2f48476af2cb9207f2291e28f4e670768c2d4
 
 @app.delete("/api/messages/{project_id}")
 async def delete_project(project_id: int):
@@ -39,7 +61,10 @@ async def delete_project(project_id: int):
 
 @app.post("/api/messages")
 async def add_message(message: MessageCreate):
+<<<<<<< HEAD
     # this api
+=======
+>>>>>>> cdd2f48476af2cb9207f2291e28f4e670768c2d4
     db = await Database.new()
     return await db.add_message(message)
 
@@ -49,6 +74,7 @@ async def get_project(project_id: int):
     project = await db.get_project(project_id)
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
+<<<<<<< HEAD
     return project
 
 class InitialMessage(BaseModel):
@@ -112,3 +138,6 @@ async def update_artifact(artifact_id: int, openscad_code: str):
 async def create_artifact(message_id: int, openscad_code: str):
     db = await Database.new()
     return await db.create_artifact(openscad_code, message_id)
+=======
+    return project
+>>>>>>> cdd2f48476af2cb9207f2291e28f4e670768c2d4
