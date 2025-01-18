@@ -14,7 +14,7 @@ const Main: React.FC = () => {
     const { user, setUser } = useUser();
 
     //authentication varaibles
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(true);
     const [isSignup, setIsSignup] = useState(false);
 
     //sidebar varaibles
