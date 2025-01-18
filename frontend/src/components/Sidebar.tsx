@@ -161,7 +161,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
                                                     </span>
                                                 </div>
                                                 <span className="text-xs text-gray-500 truncate pl-4 font-serif italic">
-                                                    {chat.messages[0].content}
+                                                    {chat.messages.length > 0 ? chat.messages[0].content : "No messages yet"}
                                                 </span>
                                             </button>
                                         ))}

@@ -7,6 +7,7 @@ import Login from '../components/Login';
 import Signup from './Signup';
 import { useUser } from '../contexts/UserContext';
 import NewProjectModal from './NewProjectModal';
+import { useRouter } from 'next/router';
 
 
 const Main: React.FC = () => {
@@ -24,6 +25,9 @@ const Main: React.FC = () => {
     //home varaibles
     const [currentView, setCurrentView] = useState<'home' | 'Whiteboard'>('home');
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    //router
+    const router = useRouter(); 
 
     useEffect(() => {
         if (localStorage.getItem('user')) {
@@ -53,19 +57,22 @@ const Main: React.FC = () => {
         );
     }
 
-    const handleCreateProject = async (projectName: string, collaborators: any[], isPublic: boolean) => {
+    const handleCreateProject = async (projectName: string) => {
         try {
             // Mock return while commented out
-            return { project_id: 'temp-id' };
+            // return { project_id: 'temp-id' };
+
+            const response = await fetch('http://localhost:8000/api/project', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ title: projectName }),
+            });
+            const data = await response.json();
+            router.push(`/chat/${data.id}`);
+            return data;
             
-            // When uncommenting the API calls, remove the mock return above
-            // const response = await newProject(user?.id || '', projectName, collaborators, isPublic);
-            // if (user) {
-            //     const updatedProjects = await fetchAllProjects(user.id);
-            //     setHomeProjects(updatedProjects);
-            // }
-            // setIsModalOpen(false);
-            // return response;
         } catch (error) {
             console.error('Failed to create project:', error);
             throw error; // Propagate error to modal

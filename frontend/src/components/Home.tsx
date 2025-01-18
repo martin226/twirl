@@ -10,7 +10,9 @@ interface HomeProps {
 const Home: React.FC<HomeProps> = ({ setIsModalOpen }) => {
     const { project, setProject } = useProject();
     const router = useRouter();
-
+    useEffect(() => {
+        console.log("project", project);
+    }, [project]);
     useEffect(() => {
         const fetchProjects = async () => {
             try {
@@ -122,7 +124,7 @@ const Home: React.FC<HomeProps> = ({ setIsModalOpen }) => {
                                             {chat.title}
                                         </h3>
                                         <p className="text-sm text-gray-500 font-serif italic line-clamp-2">
-                                            {chat.messages[0].content}
+                                            {chat.messages.length > 0 ? chat.messages[0].content : "No messages yet"}
                                         </p>
                                     </div>
                                     <button 

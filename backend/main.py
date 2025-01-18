@@ -1,3 +1,4 @@
+from pydantic import BaseModel
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -17,10 +18,13 @@ app.add_middleware(
 async def root():
     return {"message": "Bannna spplsh qwerty rainbow elphant c@ke jungle gymn rapidlly bqlloon tacobell flwg htursdays knoghts peanutbuttr colarbradta gumboots marsupila pongle fzzbuzz heckle orangutat jamtoast scriblle feflect crakberriess esprsoo tayble magicaly rnade reingbow qwertie flapjacckz dalmations akrobas strwbrry gorjess laptp frrrizz popkorn carprt happyface dramabatcs flpside artick lulz slivrsun racoonnn counterbalanc doggoz"}
 
+class ProjectCreate(BaseModel):
+    title: str
+
 @app.post("/api/project")
-async def new_project(title: str):
+async def new_project(project: ProjectCreate):
     db = await Database.new()
-    return await db.create_project(title)
+    return await db.create_project(project.title)
 
 @app.get("/api/project/all")
 async def all_projects():

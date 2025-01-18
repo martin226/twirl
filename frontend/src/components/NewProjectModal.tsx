@@ -8,14 +8,11 @@ interface Collaborator {
 interface NewProjectModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onCreateProject: (projectName: string, collaborators: Collaborator[], isPublic: boolean) => Promise<{ project_id: string }>;
+    onCreateProject: (projectName: string) => Promise<{ project_id: string }>;
 }
 
 const NewProjectModal: React.FC<NewProjectModalProps> = ({ isOpen, onClose, onCreateProject }) => {
     const [projectName, setProjectName] = useState('');
-    const [collaboratorEmail, setCollaboratorEmail] = useState('');
-    const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
-    const [isPublic, setIsPublic] = useState(false);
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
@@ -27,7 +24,8 @@ const NewProjectModal: React.FC<NewProjectModalProps> = ({ isOpen, onClose, onCr
         setIsLoading(true);
 
         try {
-            await onCreateProject(projectName, collaborators, isPublic);
+            const response = await onCreateProject(projectName);
+            console.log(response);
             onClose();
         } catch (err) {
             setError('Failed to create chronicle');
@@ -36,16 +34,6 @@ const NewProjectModal: React.FC<NewProjectModalProps> = ({ isOpen, onClose, onCr
         }
     };
 
-    const addCollaborator = () => {
-        if (collaboratorEmail && !collaborators.find(c => c.email === collaboratorEmail)) {
-            setCollaborators([...collaborators, { email: collaboratorEmail }]);
-            setCollaboratorEmail('');
-        }
-    };
-
-    const removeCollaborator = (email: string) => {
-        setCollaborators(collaborators.filter(c => c.email !== email));
-    };
 
     return (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
@@ -76,60 +64,8 @@ const NewProjectModal: React.FC<NewProjectModalProps> = ({ isOpen, onClose, onCr
                         />
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-serif font-medium text-gray-700 mb-2">
-                            Invite Contributors
-                        </label>
-                        <div className="flex gap-2">
-                            <input
-                                type="email"
-                                value={collaboratorEmail}
-                                onChange={(e) => setCollaboratorEmail(e.target.value)}
-                                className="flex-1 px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-900 font-serif focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
-                                placeholder="Enter email address"
-                            />
-                            <button
-                                type="button"
-                                onClick={addCollaborator}
-                                className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 font-serif transition-colors"
-                            >
-                                Add
-                            </button>
-                        </div>
-                    </div>
 
-                    {collaborators.length > 0 && (
-                        <div className="flex flex-wrap gap-2">
-                            {collaborators.map(collaborator => (
-                                <span
-                                    key={collaborator.email}
-                                    className="inline-flex items-center gap-1 px-3 py-1 bg-white border border-gray-200 rounded-full text-sm text-gray-700 font-serif"
-                                >
-                                    {collaborator.email}
-                                    <button
-                                        type="button"
-                                        onClick={() => removeCollaborator(collaborator.email)}
-                                        className="text-gray-400 hover:text-gray-600"
-                                    >
-                                        ×
-                                    </button>
-                                </span>
-                            ))}
-                        </div>
-                    )}
-
-                    <div className="flex items-center gap-2 py-2">
-                        <input
-                            type="checkbox"
-                            id="isPublic"
-                            checked={isPublic}
-                            onChange={(e) => setIsPublic(e.target.checked)}
-                            className="w-4 h-4 rounded border-gray-300 text-gray-900 focus:ring-gray-400"
-                        />
-                        <label htmlFor="isPublic" className="text-sm text-gray-700 font-serif">
-                            Make this chronicle public
-                        </label>
-                    </div>
+                
 
                     {error && (
                         <p className="text-red-600 text-sm font-serif italic text-center">{error}</p>

@@ -73,7 +73,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                 <div className="text-center">
                     <div className="text-sm font-serif tracking-[0.3em] text-gray-500 mb-1">MAKE IT HAPPEN</div>
                     <h1 className="text-5xl font-serif font-black text-gray-900 tracking-tight mb-2">
-                        {!showChatLog ? project?.name?.toUpperCase() || 'LOADING...' : 'ACTIVITIES'}
+                        {!showChatLog ? project?.title?.toUpperCase() || 'LOADING...' : 'ACTIVITIES'}
                     </h1>
                     <div className="flex items-center justify-center gap-3">
                         <div className="h-px w-20 bg-gray-400"></div>
