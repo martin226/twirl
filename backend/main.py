@@ -26,7 +26,7 @@ async def new_project(title: str):
 async def all_projects():
     db = await Database.new()
     projects = await db.get_all_projects()
-    return {"projects": projects.data}
+    return {"projects": projects}
 
 @app.delete("/api/messages/{project_id}")
 async def delete_project(project_id: int):

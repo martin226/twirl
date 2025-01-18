@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Newspaper, Feather, Coffee, BookOpen, ArrowRight, Clock, MessageSquare } from 'lucide-react';
 import { useProject } from '../contexts/ProjectContext';
 import { useRouter } from 'next/router';
@@ -10,6 +10,34 @@ interface HomeProps {
 const Home: React.FC<HomeProps> = ({ setIsModalOpen }) => {
     const { project, setProject } = useProject();
     const router = useRouter();
+
+    useEffect(() => {
+        const fetchProjects = async () => {
+            try {
+                const response = await fetch('http://localhost:8000/api/project/all');
+                const data = await response.json();
+                console.log(data);
+                setProject(data.projects || []);
+            } catch (error) {
+                console.error('Failed to fetch projects:', error);
+            }
+        };
+
+        const newProject = async () => {
+            try {
+                const response = await fetch('http://localhost:8000/api/project', {
+                    method: 'POST',
+                    body: JSON.stringify({ title: 'New Project' }),
+                });
+                const data = await response.json();
+                console.log("new project", data);
+            } catch (error) {
+                console.error('Failed to create new project:', error);
+            }
+        };
+        
+        fetchProjects();
+    }, []);
 
     return (
         <div className="flex-1 h-screen overflow-y-auto bg-[#F6F5F0] custom-scrollbar">
@@ -38,7 +66,7 @@ const Home: React.FC<HomeProps> = ({ setIsModalOpen }) => {
                         <div className="flex flex-col items-center text-center">
                             <h3 className="font-serif text-lg text-gray-900 mb-3">Volume Statistics</h3>
                             <p className="text-6xl font-serif font-bold text-gray-900 leading-none mb-3">
-                                {project.length}
+                                {project?.length || 0}
                             </p>
                             <div className="text-sm text-gray-500 font-serif italic mb-4">Active Conversations</div>
                             <div className="flex justify-center items-center gap-2">
@@ -91,10 +119,10 @@ const Home: React.FC<HomeProps> = ({ setIsModalOpen }) => {
                                 <div className="flex items-start justify-between mb-4">
                                     <div className="flex-1">
                                         <h3 className="font-serif text-lg font-bold text-gray-900 mb-2 line-clamp-1">
-                                            {chat.name}
+                                            {chat.title}
                                         </h3>
                                         <p className="text-sm text-gray-500 font-serif italic line-clamp-2">
-                                            {chat.lastMessage}
+                                            {chat.messages[0].content}
                                         </p>
                                     </div>
                                     <button 

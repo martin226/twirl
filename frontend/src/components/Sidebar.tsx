@@ -19,9 +19,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
     const { project, setProject } = useProject();   
 
     // Filter chats based on search query
+    console.log(project);
     const filteredChats = project.filter((chat: any) => 
-        chat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        chat.lastMessage.toLowerCase().includes(searchQuery.toLowerCase())
+        chat.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        chat.messages.some((message: any) => message.content.toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
     const renderContent = () => {
@@ -156,11 +157,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-1 h-1 rounded-full bg-gray-400"></div>
                                                     <span className="font-serif font-medium text-sm text-gray-900 truncate flex-1">
-                                                        {chat.name}
+                                                        {chat.title}
                                                     </span>
                                                 </div>
                                                 <span className="text-xs text-gray-500 truncate pl-4 font-serif italic">
-                                                    {chat.lastMessage}
+                                                    {chat.messages[0].content}
                                                 </span>
                                             </button>
                                         ))}

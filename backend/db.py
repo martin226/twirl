@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from pydantic import BaseModel
 from datetime import datetime
 import asyncio
+from typing import List
 
 load_dotenv()
 
@@ -34,7 +35,7 @@ class ProjectResponse(BaseModel):
     id: int
     title: str
     created_at: datetime
-    messages: list[MessageResponse] = []
+    messages: List[MessageResponse] = []
 
     class Config:
         from_attributes = True
@@ -59,6 +60,10 @@ class Database:
 
     async def get_all_projects(self):
         projects = await self.client.table("project").select("*").execute()
+        # get all messages for each project
+        for project in projects.data:
+            messages = await self.client.table("messages").select("*").eq("project_id", project["id"]).execute()
+            project["messages"] = messages.data
         return projects.data
 
     async def add_message(self, message_data: MessageCreate):
@@ -70,7 +75,7 @@ class Database:
         messages = await self.client.table("messages").select("*").eq("project_id", project_id).execute()
         return ProjectResponse(id=project.data[0]["id"], title=project.data[0]["title"], created_at=project.data[0]["created_at"], messages=messages.data) if project.data else None
     
-    async def delete_projects(self, ids: list[int]):
+    async def delete_projects(self, ids: List[int]):
         return await self.client.table("project").delete().in_("id", ids).execute()
     
     async def delete_project(self, id: int):
