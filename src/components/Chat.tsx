@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Paperclip, Send } from 'lucide-react';
+import { Button, ButtonGroup } from  '@heroui/button'
 import ToolBar from './ToolBar';
+import BingPopup from './BingPopup';
 
 interface ChatProps {
     project: any;
@@ -96,6 +98,8 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible }) => {
                     </div>
                 </div>
             </div>
+            {/* Bing Popup shows up only when user presses enter, useState*/}
+            <BingPopup />
         </div>
     );
 };

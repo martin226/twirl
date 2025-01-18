@@ -76,7 +76,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
             <div className="p-5 border-b border-gray-200">
                 <div className="flex items-center justify-between mb-4">
                     <span className="text-xl font-serif font-bold text-gray-900">
-                        The Daily Chat
+                        The Daily Chat 123
                     </span>
                     <button 
                         onClick={() => setIsMenuMode(!isMenuMode)}
