@@ -16,18 +16,18 @@ const ChatPage: React.FC = () => {
     const { project_id } = router.query;
     const { project, setProject } = useProject();
     const { user, setUser } = useUser();
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(true);
     const [isSignup, setIsSignup] = useState(false);
     const [isMenuMode, setIsMenuMode] = useState(false);
     const [currentSection, setCurrentSection] = useState<'home' |'settings' | 'account'>('home');
 
-    useEffect(() => {
-        if (localStorage.getItem('user')) {
-            const user = JSON.parse(localStorage.getItem('user') || '{}');
-            setUser(user);
-            setIsAuthenticated(true);
-        }
-    }, []);
+    // useEffect(() => {
+    //     if (localStorage.getItem('user')) {
+    //         const user = JSON.parse(localStorage.getItem('user') || '{}');
+    //         setUser(user);
+    //         setIsAuthenticated(true);
+    //     }
+    // }, []);
 
     useEffect(() => {
         if (user && project_id) {
