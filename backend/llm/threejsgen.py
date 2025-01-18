@@ -1,15 +1,21 @@
 import anthropic
+import base64
+import httpx
+
+description = "Generate a model of pine tree."
+image_url = "https://media.sketchfab.com/models/c1d140fc15bd40928989d0ca79365e13/thumbnails/465f602c45454d8f813cc54198930c24/76d9c131a5314d98bf271617a3a43378.jpeg"
+image_media_type = "image/jpeg"
+image_data = base64.standard_b64encode(httpx.get(image_url).content).decode("utf-8")
 
 client = anthropic.Anthropic(
     # defaults to os.environ.get("ANTHROPIC_API_KEY")
-    api_key="my_api_key",
 )
 
 # Replace placeholders like {{description}} with real values,
 # because the SDK does not support variables.
 message = client.messages.create(
     model="claude-3-5-sonnet-20241022",
-    max_tokens=4096,
+    max_tokens=8192,
     temperature=1,
     messages=[
         {
@@ -21,7 +27,15 @@ message = client.messages.create(
                 },
                 {
                     "type": "text",
-                    "text": "You are Imagine3D, an expert AI assistant specializing in generating accurate, error-free Three.js scripts based on textual descriptions or images of 3D objects. Your task is to create precise, functional 3D models that can be directly used in a Three.js environment.\n\nHere is the description of the 3D object you need to model:\n\n<description>\n{{description}}\n</description>\n\nPlease follow these guidelines to create the Three.js script:\n\n1. Analyze the Input:\n   - For textual descriptions, carefully extract all dimensions, shapes, features, and spatial relationships.\n   - For images, if mentioned, interpret the 3D structure as accurately as possible.\n\n2. Use Three.js Best Practices:\n   - Use valid Three.js syntax only.\n   - Utilize appropriate geometries, materials, and lighting.\n   - Ensure the scene is properly set up with camera and renderer.\n   - Avoid redundant or unused components in the script.\n   - Ensure readability and maintainability.\n\n3. Dimensions and Units:\n   - Use appropriate units for Three.js (typically scene units).\n   - If units are ambiguous, make reasonable assumptions based on context.\n   - When given ranges, use random but realistic values within the specified range.\n\n4. Script Structure:\n   - Use 2 spaces for indentation.\n   - Organize the script into logical sections:\n     a. Scene, camera, and renderer setup\n     b. Geometry and material creation\n     c. Object positioning and scaling\n     d. Lighting setup\n     e. Animation (if applicable)\n     f. Render loop\n\n5. Verification:\n   - Check for syntax errors.\n   - Ensure all objects and variables are used correctly.\n   - Validate that the generated script will execute without additional user input.\n\nBefore generating the final output, wrap your model planning inside <model_planning> tags:\n1. Extract all features and relationships from the input.\n2. Organize these features into a structured plan for the Three.js model.\n3. Sketch out the basic structure of the Three.js script, including main objects and functions.\n4. Plan out the materials and textures to be used for each part of the model.\n5. Design the lighting setup, including type, position, and intensity of lights.\n6. Consider potential animations or interactive elements that could enhance the model.\n7. Identify potential challenges in implementing the model and how to address them.\n8. Summarize the structured plan to ensure alignment with the user's intent.\n\nProvide your ThreeJS code inside <threejs_output> tags. \n\nRemember to provide a complete, executable Three.js script that can be directly copied and pasted into a web environment without errors."
+                    "text": f"You are Imagine3D, an expert AI assistant specializing in generating accurate, error-free Three.js scripts based on textual descriptions or images of 3D objects. Your task is to create precise, functional 3D models that can be directly used in a Three.js environment.\n\nHere is the description of the 3D object you need to model:\n\n<description>\n{description}\n</description>\n\nPlease follow these guidelines to create the Three.js script:\n\n1. Analyze the Input:\n   - For textual descriptions, carefully extract all dimensions, shapes, features, and spatial relationships.\n   - For images, if mentioned, interpret the 3D structure as accurately as possible.\n\n2. Use Three.js Best Practices:\n   - Use valid Three.js syntax only.\n   - Utilize appropriate geometries, materials, and lighting.\n   - Ensure the scene is properly set up with camera and renderer.\n   - Avoid redundant or unused components in the script.\n   - Ensure readability and maintainability.\n\n3. Dimensions and Units:\n   - Use appropriate units for Three.js (typically scene units).\n   - If units are ambiguous, make reasonable assumptions based on context.\n   - When given ranges, use random but realistic values within the specified range.\n\n4. Script Structure:\n   - Use 2 spaces for indentation.\n   - Organize the script into logical sections:\n     a. Scene, camera, and renderer setup\n     b. Geometry and material creation\n     c. Object positioning and scaling\n     d. Lighting setup\n     e. Animation (if applicable)\n     f. Render loop\n\n5. Verification:\n   - Check for syntax errors.\n   - Ensure all objects and variables are used correctly.\n   - Validate that the generated script will execute without additional user input.\n\nBefore generating the final output, wrap your model planning inside <model_planning> tags:\n1. Extract all features and relationships from the input.\n2. Organize these features into a structured plan for the Three.js model.\n3. Sketch out the basic structure of the Three.js script, including main objects and functions.\n4. Plan out the materials and textures to be used for each part of the model.\n5. Design the lighting setup, including type, position, and intensity of lights.\n6. Consider potential animations or interactive elements that could enhance the model.\n7. Identify potential challenges in implementing the model and how to address them.\n8. Summarize the structured plan to ensure alignment with the user's intent.\n\nProvide your ThreeJS code inside <threejs_output> tags. \n\nRemember to provide a complete, executable Three.js script that can be directly copied and pasted into a web environment without errors."
+                },
+                {
+                    "type": "image",
+                    "source": {
+                        "type": "base64",
+                        "media_type": image_media_type,
+                        "data": image_data
+                    }
                 }
             ]
         },
