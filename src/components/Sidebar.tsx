@@ -60,9 +60,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
             default:
                 return (
                     <div className="space-y-4 p-4">
+                        <h3 className="font-medium text-gray-900 font-serif">Settings</h3>
                         <div className="space-y-2">
                             <div className="flex items-center justify-between text-gray-700">
-                                <span className="font-serif">This is the home page</span>
+                                <span className="font-serif">Dark Mode</span>
+                                <button className="p-2 bg-gray-100 rounded font-serif">On</button>
                             </div>
                         </div>
                     </div>
