@@ -24,7 +24,6 @@ const Main: React.FC = () => {
     //home varaibles
     const [currentView, setCurrentView] = useState<'home' | 'Whiteboard'>('home');
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [homeProjects, setHomeProjects] = useState<any[]>([]);
 
     useEffect(() => {
         if (localStorage.getItem('user')) {
@@ -81,13 +80,10 @@ const Main: React.FC = () => {
                 setIsMenuMode={setIsMenuMode}
                 currentSection={currentSection}
                 setCurrentSection={setCurrentSection}
-                projects={homeProjects}
             />
 
             <Home 
                 setIsModalOpen={setIsModalOpen}
-                projects={homeProjects}
-                setProjects={setHomeProjects}
             />
 
             <NewProjectModal 

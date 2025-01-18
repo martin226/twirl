@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Menu, X, Settings, Home, User, MessageSquare, Search } from 'lucide-react';
 import { useUser } from '../contexts/UserContext';
 import { useRouter } from 'next/router';
+import { useProject } from '../contexts/ProjectContext';
 
 interface SidebarProps {
     isHome: boolean;
@@ -9,19 +10,16 @@ interface SidebarProps {
     setIsMenuMode: (isMenuMode: boolean) => void;
     currentSection: 'home' | 'settings' | 'account';
     setCurrentSection: (section: 'home' | 'settings' | 'account') => void;
-    projects?: Array<{ id: string; name: string; lastMessage: string; }>;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, currentSection, setCurrentSection, projects = [] }) => {
+const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, currentSection, setCurrentSection }) => {
     const { user } = useUser();
     const router = useRouter();
-    const [searchQuery, setSearchQuery] = useState('');
-
-    // Dummy chats for demonstration
-   
+    const [searchQuery, setSearchQuery] = useState('');   
+    const { project, setProject } = useProject();   
 
     // Filter chats based on search query
-    const filteredChats = projects.filter(chat => 
+    const filteredChats = project.filter((chat: any) => 
         chat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         chat.lastMessage.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -95,41 +93,45 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
             {/* Main Content Area */}
             <div className="flex-1 overflow-hidden flex flex-col">
                 {isMenuMode ? (
-                    <div className="p-3">
-                        <div className="space-y-0.5">
-                            <button 
-                                onClick={() => router.push('/')}
-                                className="w-full p-2.5 text-left hover:bg-gray-100 rounded-lg flex items-center gap-3 text-gray-700 transition-colors group font-medium"
-                            >
-                                <Home size={18} className="text-gray-500" /> 
-                                <span className="text-sm">Front Page</span>
-                            </button>
-                            <button 
-                                onClick={() => { setCurrentSection('settings'); setIsMenuMode(false); }}
-                                className="w-full p-2.5 text-left hover:bg-gray-100 rounded-lg flex items-center gap-3 text-gray-700 transition-colors group font-medium"
-                            >
-                                <Settings size={18} className="text-gray-500" /> 
-                                <span className="text-sm">Settings</span>
-                            </button>
-                            <button 
-                                onClick={() => { setCurrentSection('account'); setIsMenuMode(false); }}
-                                className="w-full p-2.5 text-left hover:bg-gray-100 rounded-lg flex items-center gap-3 text-gray-700 transition-colors group font-medium"
-                            >
-                                <User size={18} className="text-gray-500" /> 
-                                <span className="text-sm">Account</span>
-                            </button>
+                    <div className="h-full flex flex-col">
+                        <div className="p-3">
+                            <div className="space-y-0.5">
+                                <button 
+                                    onClick={() => router.push('/')}
+                                    className="w-full p-2.5 text-left hover:bg-gray-100 rounded-lg flex items-center gap-3 text-gray-700 transition-colors group font-medium"
+                                >
+                                    <Home size={18} className="text-gray-500" /> 
+                                    <span className="text-sm">Front Page</span>
+                                </button>
+                                <button 
+                                    onClick={() => { setCurrentSection('settings'); setIsMenuMode(false); }}
+                                    className="w-full p-2.5 text-left hover:bg-gray-100 rounded-lg flex items-center gap-3 text-gray-700 transition-colors group font-medium"
+                                >
+                                    <Settings size={18} className="text-gray-500" /> 
+                                    <span className="text-sm">Settings</span>
+                                </button>
+                                <button 
+                                    onClick={() => { setCurrentSection('account'); setIsMenuMode(false); }}
+                                    className="w-full p-2.5 text-left hover:bg-gray-100 rounded-lg flex items-center gap-3 text-gray-700 transition-colors group font-medium"
+                                >
+                                    <User size={18} className="text-gray-500" /> 
+                                    <span className="text-sm">Account</span>
+                                </button>
+                            </div>
                         </div>
 
-                        <div className="flex-1 min-h-0">
-                            <div className="h-full overflow-y-auto px-3 py-4 custom-scrollbar">
-                                <div className="flex items-center justify-between mb-3">
-                                    <h3 className="font-serif text-xs font-bold text-gray-900 uppercase tracking-wider">
-                                        Latest Conversations
-                                    </h3>
-                                    <span className="text-xs text-gray-500 font-medium">{filteredChats.length}</span>
+                        <div className="flex-1 overflow-hidden">
+                            <div className="h-full px-3 py-4 overflow-y-auto custom-scrollbar">
+                                <div className="sticky top-0 bg-[#F6F5F0] pb-2 mb-2">
+                                    <div className="flex items-center justify-between">
+                                        <h3 className="font-serif text-xs font-bold text-gray-900 uppercase tracking-wider">
+                                            Latest Conversations
+                                        </h3>
+                                        <span className="text-xs text-gray-500 font-medium">{filteredChats.length}</span>
+                                    </div>
                                 </div>
                                 <div className="space-y-2">
-                                    {filteredChats.map(chat => (
+                                    {filteredChats.map((chat: any) => (
                                         <button
                                             key={chat.id}
                                             onClick={() => router.push(`/chat/${chat.id}`)}
