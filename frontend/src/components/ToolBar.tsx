@@ -388,7 +388,7 @@ const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
         };
         
         flattenParameters(parameters);
-        
+        //test
         // Update OpenSCAD code with new parameter values
         let updatedCode = openscad;
         parameterMap.forEach((value, name) => {
