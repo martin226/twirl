@@ -79,6 +79,10 @@ class Database:
 
     async def get_all_projects(self):
         projects = await self.client.table("project").select("*").execute()
+        # messages to each project
+        for project in projects.data:
+            messages = await self.client.table("messages").select("*").eq("project_id", project["id"]).execute()
+            project["messages"] = messages.data
         return projects.data
 
     async def add_message(self, message_data: MessageCreate):

@@ -3,9 +3,11 @@ import base64
 import httpx
 from dotenv import load_dotenv
 
-description = "Generate a model of a small terracotta plant pot."
-image_url = "https://www.slanchogled.com/wp-content/uploads/2022/02/product_1928.jpg"
-image_media_type = "image/jpeg"
+load_dotenv()
+
+description = "Generate a model of a wooden chair, with spindle on all four sides"
+image_url = "https://cdn.discordapp.com/attachments/1329642374162550848/1330286008813617172/nordviken-chair-antique-stain__0832454_pe777681_s5.png?ex=678d6ce4&is=678c1b64&hm=adc64520ae9ba743d2f00a9c546cb0e807719276f450aaa9d9e9e92b79ed8ee3&"
+image_media_type = "image/png"
 image_data = base64.standard_b64encode(httpx.get(image_url).content).decode("utf-8")
 
 client = anthropic.Anthropic(

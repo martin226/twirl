@@ -1,11 +1,14 @@
+import base64
 from typing import Optional
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from db import Database, MessageCreate
 # from llm.steps import run_pipeline, new_prompt
 from llm.core import openscad, followup, GenerationRequest, FollowupRequest
+from fastapi import Form
+from pydantic import BaseModel
 
 app = FastAPI()
 
@@ -53,45 +56,59 @@ async def get_project(project_id: int):
         raise HTTPException(status_code=404, detail="Project not found")
     return project
 
-class InitialMessage(BaseModel):
-    description: str
-    image_url: Optional[str] = None
-    image_data: Optional[str] = None
-    image_media_type: Optional[str] = None
-
 @app.post("/api/initial_message/{project_id}")
-async def post_initial_message(project_id: int, msg: InitialMessage):
+async def post_initial_message(
+    project_id: int,
+    description: str = Form(...),
+    image_url: Optional[str] = Form(None),
+    image_data: Optional[UploadFile] = Form(None),
+    image_media_type: Optional[str] = Form(None)
+):
     db = await Database.new()
     project = await db.get_project(project_id)
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
     
-    # result = await run_pipeline(msg.description, msg.image_url, msg.image_media_type)
-    # result = await new_prompt(msg.description, msg.image_url, msg.image_media_type)
-    result = await openscad(GenerationRequest(description=msg.description, image_url=msg.image_url, image_data=msg.image_data, image_media_type=msg.image_media_type))
+    file_content = await image_data.read() if image_data else None
+        
+    # Convert file content to Base64
+    base64_content = base64.b64encode(file_content).decode("utf-8") if file_content else None
+    
+    result = await openscad(GenerationRequest(
+        description=description,
+        image_url=image_url,
+        image_data=base64_content,
+        image_media_type=image_media_type
+    ))
 
     print("Result:", result)
 
     return result
 
-class FollowupRequest(BaseModel):
-    original_prompt: str
-    openscad_output: str
-    instructions: str
-    image_url: Optional[str] = None
-    image_data: Optional[str] = None
-    image_media_type: Optional[str] = None
-
 @app.post("/api/followup_message/{project_id}")
-async def post_followup_message(project_id: int, msg: FollowupRequest):
+async def post_followup_message(
+    project_id: int,
+    original_prompt: str = Form(...),
+    openscad_output: str = Form(...),
+    instructions: str = Form(...),
+    image_url: Optional[str] = Form(None),
+    image_data: Optional[UploadFile] = Form(None),
+    image_media_type: Optional[str] = Form(None)
+):
     db = await Database.new()
     project = await db.get_project(project_id)
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
     
-    # result = await run_pipeline(msg.description, msg.image_url, msg.image_media_type)
-    # result = await new_prompt(msg.description, msg.image_url, msg.image_media_type)
-    result = await followup(msg)
+    request = FollowupRequest(
+        original_prompt=original_prompt,
+        openscad_output=openscad_output,
+        instructions=instructions,
+        image_url=image_url,
+        image_data=image_data,
+        image_media_type=image_media_type
+    )
+    result = await followup(request)
 
     print("Result:", result)
 

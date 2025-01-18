@@ -1,12 +1,11 @@
-import { create } from 'zustand'
+import { create } from "zustand";
 
-interface PdrState {
-  dpr: number
-  setDpr: (dpr: number) => void
+interface WorkerState {
+  worker: Worker | null;
+  setWorker: (worker: Worker) => void;
 }
 
-export const usePdrStore = create<PdrState>()((set) => ({
-  dpr: 0,
-  setDpr: (dpr) => set(() => ({ dpr })),
-}))
-
+export const usePdrStore = create<WorkerState>()((set) => ({
+    worker: null,
+    setWorker: (worker) => set({ worker }),
+}));

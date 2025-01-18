@@ -5,6 +5,7 @@ import { Canvas } from '@react-three/fiber';
 import dynamic from 'next/dynamic';
 import ModelViewer from './ModelViewer';
 import ExportModal from './ExportModal';
+import { usePdrStore } from '../contexts/store';
 
 const Stats = dynamic(() => import('@react-three/drei').then((mod) => mod.Stats), {
     ssr: false
@@ -20,12 +21,12 @@ interface ChatProps {
 interface Message {
     is_user: boolean;
     content: string;
-    image?: string[];
+    image?: File[];
     created_at: string;
 }
 const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVisible }) => {
     const [message, setMessage] = useState('');
-    const [attachedImages, setAttachedImages] = useState<string[]>([]);
+    const [attachedImages, setAttachedImages] = useState<File[]>([]);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const dropZoneRef = useRef<HTMLDivElement>(null);
@@ -36,6 +37,8 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
 
     const [chatLog, setChatLog] = useState<Message[]>([]);
     const chatLogRef = useRef<HTMLDivElement>(null);
+
+    const { worker, setWorker } = usePdrStore();
 
     useEffect(() => {
         if (project?.messages) {
@@ -58,6 +61,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
 
     // Measure message area dimensions
     useEffect(() => {
+        if (!worker) setWorker(new Worker('/worker.js', { type: 'module' }));
         const updateDimensions = () => {
             if (messageAreaRef.current) {
                 const { offsetWidth, offsetHeight } = messageAreaRef.current;
@@ -97,13 +101,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
         
         Array.from(files).forEach(file => {
             if (file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    if (e.target?.result) {
-                        setAttachedImages(prev => [...prev, e.target!.result as string]);
-                    }
-                };
-                reader.readAsDataURL(file);
+                setAttachedImages(prev => [...prev, file]);
             }
         });
     };
@@ -145,19 +143,42 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
             setMessage(''); // Clear input
             setAttachedImages([]); // Clear attached images
 
+            const formData = new FormData();
+            formData.append('description', message);
+            if (attachedImages.length > 0) {
+                formData.append('image_media_type', attachedImages[0]?.type || "");
+                formData.append("image_data", attachedImages[0]);
+            }
             // Send to backend
             const sendMessage = async () => {
-                try {
-                    const response = await fetch('http://localhost:8000/api/messages', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ ...newMessage, project_id: project.id }),
-                    });
-                    const data = await response.json();
-                } catch (error) {
-                    console.error('Failed to send message:', error);
+                if (project.messages.length == 0) {
+                    try {
+                        const response = await fetch(`http://localhost:8000/api/initial_message/${project.id}`, {
+                            method: 'POST',
+                            body: formData,
+                        });
+                        const data = await response.json();
+                        console.log('Message received:', data);
+                        // setScadCode(data);
+                        const outputFile = 'ok.stl';
+                        if (worker) worker.postMessage({ scadCode: data, outputFile });
+                    } catch (error) {
+                        console.error('Failed to send message:', error);
+                    }
+                } else {
+                    try {
+                        const response = await fetch(`http://localhost:8000/api/followup_message/${project.id}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'multipart/form-data',
+                            },
+                            body: formData,
+                        });
+                        const data = await response.json();
+                        console.log('Message received:', data);
+                    } catch (error) {
+                        console.error('Failed to send message:', error);
+                    }
                 }
             };
             sendMessage();
@@ -249,7 +270,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                                         {message?.image?.map((image, imgIndex) => (
                                             <div key={imgIndex} className="aspect-square overflow-hidden border border-gray-200">
                                                 <img 
-                                                    src={image} 
+                                                    src={URL.createObjectURL(image)} 
                                                     alt="log attachment" 
                                                     className="w-full h-full object-cover hover:scale-105 transition-transform" 
                                                 />
@@ -288,8 +309,8 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                             <div className="flex gap-2 flex-wrap">
                                 {attachedImages.map((image, index) => (
                                     <div key={index} className="relative group">
-                                        <img 
-                                            src={image} 
+                                        <img
+                                            src={URL.createObjectURL(image)} 
                                             alt="attachment preview" 
                                             className="w-16 h-16 object-cover rounded-lg border border-gray-200"
                                         />
