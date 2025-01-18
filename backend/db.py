@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from pydantic import BaseModel
 from datetime import datetime
 import asyncio
+from typing import List
 
 load_dotenv()
 
@@ -16,6 +17,9 @@ class MessageCreate(BaseModel):
     is_user: bool
     content: str
     project_id: int
+
+class ArtifactCreate(BaseModel):
+    openscad_code: str
 
 class MessageResponse(BaseModel):
     id: int
@@ -34,7 +38,7 @@ class ProjectResponse(BaseModel):
     id: int
     title: str
     created_at: datetime
-    messages: list[MessageResponse] = []
+    messages: List[MessageResponse] = []
 
     class Config:
         from_attributes = True
@@ -48,10 +52,26 @@ class Database:
         self = cls()
         self.client = await create_supabase()
         return self
-
-    async def get_client(self):
-        self.client = await create_supabase()
-        return self.client
+    
+    async def create_artifact(self, openscad_code: str, message_id: int):
+        response = await self.client.table("artifacts").insert({"openscad_code": openscad_code, "message_id": message_id}).execute()
+        return response.data
+    
+    async def get_artifact(self, artifact_id: int):
+        artifact = await self.client.table("artifacts").select("*").eq("id", artifact_id).execute()
+        return artifact.data[0] if artifact.data else None
+    
+    async def get_artifact_by_message(self, message_id: int):
+        artifact = await self.client.table("artifacts").select("*").eq("message_id", message_id).execute()
+        return artifact.data[0] if artifact.data else None
+    
+    async def update_artifact(self, artifact_id: int, openscad_code: str):
+        response = await self.client.table("artifacts").update({"openscad_code": openscad_code}).eq("id", artifact_id).execute()
+        return response.data[0] if response.data else None
+    
+    async def update_artifact_by_message(self, message_id: int, openscad_code: str):
+        response = await self.client.table("artifacts").update({"openscad_code": openscad_code}).eq("message_id", message_id).execute()
+        return response.data[0] if response.data else None
 
     async def create_project(self, title: str):
         response = await self.client.table("project").insert({"title": title}).execute()
@@ -63,14 +83,14 @@ class Database:
 
     async def add_message(self, message_data: MessageCreate):
         response = await self.client.table("messages").insert(message_data.model_dump()).execute()
-        return response.data
+        return response.data[0] if response.data else None
 
     async def get_project(self, project_id: int):
         project = await self.client.table("project").select("*").eq("id", project_id).execute()
         messages = await self.client.table("messages").select("*").eq("project_id", project_id).execute()
         return ProjectResponse(id=project.data[0]["id"], title=project.data[0]["title"], created_at=project.data[0]["created_at"], messages=messages.data) if project.data else None
     
-    async def delete_projects(self, ids: list[int]):
+    async def delete_projects(self, ids: List[int]):
         return await self.client.table("project").delete().in_("id", ids).execute()
     
     async def delete_project(self, id: int):
@@ -80,10 +100,13 @@ if __name__ == "__main__":
     async def main():
         db = await Database.new()
         project = await db.create_project("Test Project")
-        await db.add_message(MessageCreate(is_user=True, content="Hello!", project_id=project.id))
+        message = await db.add_message(MessageCreate(is_user=True, content="Hello!", project_id=project.id))
 
         test_get_project = await db.get_project(project.id)
         print(test_get_project)
+
+        artifact = await db.create_artifact("module test() { echo(\"Hello, world!\"); }", message["id"])
+        print(artifact)
 
         await db.delete_project(project.id)
 

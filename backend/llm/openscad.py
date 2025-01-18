@@ -1,6 +1,7 @@
 import anthropic
 import base64
 import httpx
+from dotenv import load_dotenv
 
 description = "Generate a model of a small terracotta plant pot."
 image_url = "https://www.slanchogled.com/wp-content/uploads/2022/02/product_1928.jpg"
