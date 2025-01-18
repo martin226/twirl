@@ -25,7 +25,7 @@ async def new_project(title: str):
 @app.get("/api/all-projects/")
 async def all_projects():
     db = await Database.new()
-    projects = await db.client.table("project").select("*").execute()
+    projects = await db.get_all_projects()
     return {"projects": projects.data}
 
 @app.delete("/api/delete-project/")

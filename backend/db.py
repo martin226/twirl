@@ -57,6 +57,10 @@ class Database:
         response = await self.client.table("project").insert({"title": title}).execute()
         return ProjectResponse(id=response.data[0]["id"], title=title, created_at=response.data[0]["created_at"])
 
+    async def get_all_projects(self):
+        projects = await self.client.table("project").select("*").execute()
+        return projects.data
+
     async def add_message(self, message_data: MessageCreate):
         response = await self.client.table("messages").insert(message_data.model_dump()).execute()
         return response.data
