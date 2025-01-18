@@ -135,7 +135,7 @@ rotate([0, 0, 0])
 color("silver")
 cylinder(h=base_height+0.1, r=10, $fn=30);
                         `;
-                        const outputFile = 'cube.stl';
+                        const outputFile = 'test.3mf';
                         worker.postMessage({ scadCode, outputFile });
                     }
                 }}>Try itch</button>
