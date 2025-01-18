@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Bold, Italic, List, Link, Image, Code, Quote, ChevronRight, ChevronLeft } from 'lucide-react';
 
 interface ToolBarProps {
@@ -6,7 +6,57 @@ interface ToolBarProps {
     setIsVisible: (isVisible: boolean) => void;
 }
 
+interface SliderOption {
+    name: string;
+    value: number;
+    min: number;
+    max: number;
+}
+
+interface ColorOption {
+    name: string;
+    value: string;
+}
+
 const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
+    const [colors, setColors] = useState<ColorOption[]>([
+        {
+            name: 'Chair Leg',
+            value: '#FF0000'
+        },
+        {
+            name: 'Chair Seat',
+            value: '#0000FF'
+        }
+    ]);
+
+    const [sliders, setSliders] = useState<SliderOption[]>([
+        {
+            name: 'Chair Leg',
+            value: 100,
+            min: 0,
+            max: 200
+        },
+        {
+            name: 'Chair Seat',
+            value: 200,
+            min: 0,
+            max: 400
+        }
+    ]);
+
+    const handleSliderChange = (index: number, newValue: number) => {
+        const updatedSliders = [...sliders];
+        updatedSliders[index].value = newValue;
+        setSliders(updatedSliders);
+    };
+
+    const handleColorChange = (index: number, newValue: string) => {
+        const updatedColors = [...colors];
+        updatedColors[index].value = newValue;
+        setColors(updatedColors);
+    };
+    
     return isVisible ? (
         <div className="absolute right-0 top-0 w-[15vw] h-full bg-[#F6F5F0] border-l border-gray-200 shadow-lg z-50 flex flex-col">
             {/* Header */}
@@ -25,47 +75,57 @@ const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
 
             {/* Tools Section */}
             <div className="p-4 space-y-4">
+                {/* Colors Section */}
                 <div className="space-y-2">
                     <h3 className="font-serif text-xs font-bold text-gray-900 uppercase tracking-wider">
-                        Text Style
+                        Colors
                     </h3>
-                    <div className="grid grid-cols-2 gap-2">
-                        <button className="p-2.5 hover:bg-gray-100 rounded-lg flex items-center gap-2 text-gray-700 transition-colors">
-                            <Bold size={18} className="text-gray-500" />
-                            <span className="text-sm font-serif">Bold</span>
-                        </button>
-                        <button className="p-2.5 hover:bg-gray-100 rounded-lg flex items-center gap-2 text-gray-700 transition-colors">
-                            <Italic size={18} className="text-gray-500" />
-                            <span className="text-sm font-serif">Italic</span>
-                        </button>
-                    </div>
+                    {colors.map((color, index) => (
+                        <div key={color.name} className="space-y-1">
+                            <div className="flex justify-between items-center">
+                                <span className="text-sm font-serif">{color.name}</span>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-sm font-serif text-gray-500">{color.value}</span>
+                                    <div className="relative">
+                                        <div 
+                                            className="w-6 h-6 rounded border border-gray-200"
+                                            style={{ backgroundColor: color.value }}
+                                        />
+                                        <input
+                                            type="color"
+                                            value={color.value}
+                                            onChange={(e) => handleColorChange(index, e.target.value)}
+                                            className="absolute inset-0 opacity-0 cursor-pointer"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
 
+                {/* Slider Section */}
                 <div className="space-y-2">
                     <h3 className="font-serif text-xs font-bold text-gray-900 uppercase tracking-wider">
-                        Insert
+                        Sliders
                     </h3>
-                    <div className="space-y-1">
-                        <button className="w-full p-2.5 hover:bg-gray-100 rounded-lg flex items-center gap-2 text-gray-700 transition-colors">
-                            <List size={18} className="text-gray-500" />
-                            <span className="text-sm font-serif">List</span>
-                        </button>
-                        <button className="w-full p-2.5 hover:bg-gray-100 rounded-lg flex items-center gap-2 text-gray-700 transition-colors">
-                            <Link size={18} className="text-gray-500" />
-                            <span className="text-sm font-serif">Link</span>
-                        </button>
-                        <button className="w-full p-2.5 hover:bg-gray-100 rounded-lg flex items-center gap-2 text-gray-700 transition-colors">
-                            <Image size={18} className="text-gray-500" />
-                            <span className="text-sm font-serif">Image</span>
-                        </button>
-                        <button className="w-full p-2.5 hover:bg-gray-100 rounded-lg flex items-center gap-2 text-gray-700 transition-colors">
-                            <Code size={18} className="text-gray-500" />
-                            <span className="text-sm font-serif">Code</span>
-                        </button>
-                        <button className="w-full p-2.5 hover:bg-gray-100 rounded-lg flex items-center gap-2 text-gray-700 transition-colors">
-                            <Quote size={18} className="text-gray-500" />
-                            <span className="text-sm font-serif">Quote</span>
-                        </button>
+                    <div className="space-y-3">
+                        {sliders.map((slider, index) => (
+                            <div key={slider.name} className="space-y-1">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-sm font-serif">{slider.name}</span>
+                                    <span className="text-sm font-serif text-gray-500">{slider.value}</span>
+                                </div>
+                                <input
+                                    type="range"
+                                    min={slider.min}
+                                    max={slider.max}
+                                    value={slider.value}
+                                    onChange={(e) => handleSliderChange(index, Number(e.target.value))}
+                                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-gray-900"
+                                />
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>
