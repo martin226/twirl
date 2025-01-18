@@ -10,6 +10,8 @@ interface ChatProps {
 const Chat: React.FC<ChatProps> = ({ project, user }) => {
     const [message, setMessage] = useState('');
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const messageAreaRef = useRef<HTMLDivElement>(null);
+    const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
     // Auto-resize textarea as content grows
     useEffect(() => {
@@ -19,6 +21,25 @@ const Chat: React.FC<ChatProps> = ({ project, user }) => {
         }
     }, [message]);
 
+    // Measure message area dimensions
+    useEffect(() => {
+        const updateDimensions = () => {
+            if (messageAreaRef.current) {
+                const { offsetWidth, offsetHeight } = messageAreaRef.current;
+                setDimensions({
+                    width: offsetWidth,
+                    height: offsetHeight
+                });
+                console.log('Message Area Dimensions:', { width: offsetWidth, height: offsetHeight });
+            }
+        };
+
+        updateDimensions();
+        window.addEventListener('resize', updateDimensions);
+
+        return () => window.removeEventListener('resize', updateDimensions);
+    }, []);
+
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
@@ -27,7 +48,7 @@ const Chat: React.FC<ChatProps> = ({ project, user }) => {
     };
 
     return (
-        <div className="absolute left-[15vw] right-[15vw] h-screen bg-[#F6F5F0] flex flex-col ">
+        <div className="absolute left-[15vw] right-[15vw] h-screen bg-[#F6F5F0] flex flex-col">
             {/* Chat Header */}
             <div className="p-4 border-b border-gray-200 bg-white/50 backdrop-blur-sm">
                 <h2 className="text-xl font-serif font-bold text-gray-900">
@@ -36,8 +57,12 @@ const Chat: React.FC<ChatProps> = ({ project, user }) => {
             </div>
 
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar border-8 border-red-500">
-               
+            <div 
+                ref={messageAreaRef}
+                className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar border-8 border-red-500"
+            >
+               width: {dimensions.width} <br />
+               height: {dimensions.height}
             </div>
 
             {/* Floating Input Area */}
