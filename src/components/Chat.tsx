@@ -15,6 +15,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible }) => {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const messageAreaRef = useRef<HTMLDivElement>(null);
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+    const [showBingPopup, setShowBingPopup] = useState(false)
 
     // Auto-resize textarea as content grows
     useEffect(() => {
@@ -46,6 +47,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible }) => {
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
+            setShowBingPopup(true);
             // Handle send message
         }
     };
@@ -99,7 +101,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible }) => {
                 </div>
             </div>
             {/* Bing Popup shows up only when user presses enter, useState*/}
-            <BingPopup />
+            {showBingPopup && <BingPopup query={message}/>}
         </div>
     );
 };

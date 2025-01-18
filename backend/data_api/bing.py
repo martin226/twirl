@@ -1,9 +1,11 @@
-# Import required modules.
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
+
 from azure.cognitiveservices.search.imagesearch import ImageSearchClient
 from azure.cognitiveservices.search.websearch.models import SafeSearch
 from msrest.authentication import CognitiveServicesCredentials
 
-# Replace with your subscription key.
 subscription_key = "9043ce489bf840d4af621be0bfaa1a15"
 
 # Instantiate the client and replace with your endpoint.
@@ -17,28 +19,38 @@ client = ImageSearchClient(
 # Hotfix SDK 
 client.config.base_url = "{Endpoint}/v7.0"
 
-try:
-     # Make a request. Replace Yosemite if you'd like.
-     image_data = client.images.search(query="Whatever", count=6)
-     print("\r\nSearched for Query: \" Whatever \"")
+app = FastAPI()
 
-     '''
-     Images
-     If the search response contains images, the first result's name and url
-     are printed.
-     '''
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-     if image_data.value:
-          print("\r\nImage Results: {} Images Found!".format(len(image_data.value)))
+class Query(BaseModel):
+    user_query: str
 
-          for i in range (6):
-               found_image = image_data.value[i]
-               print(str(i+1)+") Thumbnail URL: {} ".format(found_image.thumbnail_url))
-               print(str(i+1)+") Image URL: {} ".format(found_image.content_url))
+@app.post("/api/images")
+async def search_images(query: Query):
+    try:
+        image_data = client.images.search(query="Whatever", count=6)
+        print("\r\nSearched for Query: \" Whatever \"")
 
-     else:
-         print("Didn't find any images...")
+        '''
+        Images
+        If the search response contains images, the first result's name and url
+        are printed.
+        '''
 
-         
-except Exception as err:
-     print("Encountered exception. {}".format(err))
+        if image_data.value:
+            print("\r\nImage Results: {} Images Found!".format(len(image_data.value)))
+            image_urls = [img.content_url for img in image_data.value[:6]]
+            return {"image_urls": image_urls}
+        else:
+            print("Didn't find any images...")
+            return{"image_urls": []}
+
+    except Exception as err:
+        print("Encountered exception. {}".format(err))
+        raise HTTPException(status_code=500, detail=f"Error occurred: {str(err)}")
