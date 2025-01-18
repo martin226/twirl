@@ -5,9 +5,10 @@ import ToolBar from './ToolBar';
 interface ChatProps {
     project: any;
     user: any;
+    toolbarVisible: boolean;
 }
 
-const Chat: React.FC<ChatProps> = ({ project, user }) => {
+const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible }) => {
     const [message, setMessage] = useState('');
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const messageAreaRef = useRef<HTMLDivElement>(null);
@@ -48,7 +49,7 @@ const Chat: React.FC<ChatProps> = ({ project, user }) => {
     };
 
     return (
-        <div className="absolute left-[15vw] right-[15vw] h-screen bg-[#F6F5F0] flex flex-col">
+        <div className={`absolute left-[15vw] right-0 h-screen bg-[#F6F5F0] flex flex-col ${toolbarVisible ? 'right-[15vw]' : 'right-0'}`}>
             {/* Chat Header */}
             <div className="p-4 border-b border-gray-200 bg-white/50 backdrop-blur-sm">
                 <h2 className="text-xl font-serif font-bold text-gray-900">

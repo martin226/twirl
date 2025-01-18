@@ -20,7 +20,7 @@ const ChatPage: React.FC = () => {
     const [isSignup, setIsSignup] = useState(false);
     const [isMenuMode, setIsMenuMode] = useState(false);
     const [currentSection, setCurrentSection] = useState<'home' |'settings' | 'account'>('home');
-
+    const [isVisible, setIsVisible] = useState(true);
     useEffect(() => {
         if (localStorage.getItem('user')) {
             const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -78,10 +78,14 @@ const ChatPage: React.FC = () => {
                 <Chat 
                     project={project}
                     user={user}
+                    toolbarVisible={isVisible}
                 />
             </div>
             <div className="">
-                <ToolBar />
+                <ToolBar 
+                    isVisible={isVisible}
+                    setIsVisible={setIsVisible}
+                />
             </div>
 
         </div>
