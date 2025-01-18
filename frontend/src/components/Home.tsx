@@ -86,8 +86,8 @@ const Home: React.FC<HomeProps> = ({ setIsModalOpen }) => {
                         <Feather className="mx-4 text-gray-400" size={24} />
                         <div className="h-px w-32 bg-gray-300 self-center"></div>
                     </div>
-                    <h1 className="font-serif text-4xl font-bold text-gray-900 mb-2">MANAGE YOUR IMAGINATIONS</h1>
-                    <div className="text-sm text-gray-500 font-serif italic">Est. 2024</div>
+                    <h1 className="font-serif text-5xl font-bold text-gray-900 mb-2">MANAGE YOUR IMAGINATIONS</h1>
+                    <div className="text-sm text-gray-500 font-serif italic">Inspire, Imagine, Invent</div>
                     <div className="flex justify-center items-center gap-3 mt-4 text-gray-400">
                         <Coffee size={16} />
                         <div className="h-1 w-1 rounded-full bg-gray-300"></div>
@@ -204,7 +204,7 @@ const Home: React.FC<HomeProps> = ({ setIsModalOpen }) => {
                 {/* Decorative Footer */}
                 <div className="max-w-4xl mx-auto mt-12 pt-8 border-t border-gray-200">
                     <div className="flex justify-center items-center gap-4 text-gray-400">
-                        <div className="font-serif italic text-sm">Quality Conversations Since 2024</div>
+                        <div className="font-serif italic text-sm">Quality Conversations Since 1939</div>
                         <div className="h-1 w-1 rounded-full bg-gray-300"></div>
                         <div className="font-serif italic text-sm">All Rights Reserved</div>
                     </div>

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Paperclip, Send, MessageSquare, ScrollText, Boxes, Download } from 'lucide-react';
+import { Paperclip, Send, MessageSquare, ScrollText, Boxes, Download, Image as ImageIcon } from 'lucide-react';
 import ToolBar from './ToolBar';
 import { Canvas } from '@react-three/fiber';
 import dynamic from 'next/dynamic';
@@ -25,7 +25,10 @@ interface Message {
 }
 const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVisible }) => {
     const [message, setMessage] = useState('');
+    const [attachedImages, setAttachedImages] = useState<string[]>([]);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const dropZoneRef = useRef<HTMLDivElement>(null);
     const messageAreaRef = useRef<HTMLDivElement>(null);
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
     const [showChatLog, setShowChatLog] = useState(false);
@@ -89,6 +92,44 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
         setChatLog(prev => [...prev, newMessage]);
     }
 
+    const handleImageAttachment = (files: FileList | null) => {
+        if (!files) return;
+        
+        Array.from(files).forEach(file => {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    if (e.target?.result) {
+                        setAttachedImages(prev => [...prev, e.target!.result as string]);
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    };
+
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
+        if (dropZoneRef.current) {
+            dropZoneRef.current.classList.add('border-gray-400');
+        }
+    };
+
+    const handleDragLeave = (e: React.DragEvent) => {
+        e.preventDefault();
+        if (dropZoneRef.current) {
+            dropZoneRef.current.classList.remove('border-gray-400');
+        }
+    };
+
+    const handleDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        if (dropZoneRef.current) {
+            dropZoneRef.current.classList.remove('border-gray-400');
+        }
+        handleImageAttachment(e.dataTransfer.files);
+    };
+
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
@@ -96,12 +137,13 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                 is_user: true,
                 content: message,
                 created_at: new Date().toISOString(),
-                image: []
+                image: attachedImages
             };
 
             // Update chat log immediately
             setChatLog(prev => [...prev, newMessage]);
             setMessage(''); // Clear input
+            setAttachedImages([]); // Clear attached images
 
             // Send to backend
             const sendMessage = async () => {
@@ -241,30 +283,76 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
 
                 {/* Input Area */}
                 <div className="flex-1 bg-white rounded-2xl shadow-lg border border-gray-200 p-4">
-                    <div className="flex items-end gap-2">
-                        <button className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-700 transition-colors">
-                            <Paperclip size={20} />
-                        </button>
-                        <div className="flex-1 bg-white rounded-xl border border-gray-200">
-                            <textarea
-                                ref={textareaRef}
-                                value={message}
-                                onChange={(e) => setMessage(e.target.value)}
-                                onKeyDown={handleKeyDown}
-                                placeholder="Write your message..."
-                                className="w-full bg-transparent text-gray-900 p-3 font-serif resize-none overflow-hidden focus:outline-none min-h-[5.5vh] max-h-[20vh]"
-                                style={{ lineHeight: '1.5' }}
-                                rows={1}
+                    <div className="flex flex-col gap-2">
+                        {attachedImages.length > 0 && (
+                            <div className="flex gap-2 flex-wrap">
+                                {attachedImages.map((image, index) => (
+                                    <div key={index} className="relative group">
+                                        <img 
+                                            src={image} 
+                                            alt="attachment preview" 
+                                            className="w-16 h-16 object-cover rounded-lg border border-gray-200"
+                                        />
+                                        <button
+                                            onClick={() => setAttachedImages(prev => prev.filter((_, i) => i !== index))}
+                                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        <div className="flex items-end gap-2">
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                className="hidden"
+                                accept="image/*"
+                                multiple
+                                onChange={(e) => handleImageAttachment(e.target.files)}
                             />
+                            <button 
+                                onClick={() => fileInputRef.current?.click()}
+                                className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-700 transition-colors"
+                            >
+                                <ImageIcon size={20} />
+                            </button>
+                            <div 
+                                ref={dropZoneRef}
+                                className="flex-1 bg-white rounded-xl border border-gray-200 transition-colors"
+                                onDragOver={handleDragOver}
+                                onDragLeave={handleDragLeave}
+                                onDrop={handleDrop}
+                            >
+                                <textarea
+                                    ref={textareaRef}
+                                    value={message}
+                                    onChange={(e) => setMessage(e.target.value)}
+                                    onKeyDown={handleKeyDown}
+                                    placeholder="Write your message... (drag and drop images here)"
+                                    className="w-full bg-transparent text-gray-900 p-3 font-serif resize-none overflow-hidden focus:outline-none min-h-[5.5vh] max-h-[20vh]"
+                                    style={{ lineHeight: '1.5' }}
+                                    rows={1}
+                                />
+                            </div>
+                            <button
+                                onClick={() => {
+                                    if (message.trim() || attachedImages.length > 0) {
+                                        const event = { key: 'Enter', shiftKey: false, preventDefault: () => {} } as React.KeyboardEvent;
+                                        handleKeyDown(event);
+                                    }
+                                }}
+                                className={`p-3 bg-gray-900 rounded-lg text-white transition-colors ${
+                                    !message.trim() && attachedImages.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-800'
+                                }`}
+                                disabled={!message.trim() && attachedImages.length === 0}
+                            >
+                                <Send size={20} />
+                            </button>
                         </div>
-                        <button
-                            className={`p-3 bg-gray-900 rounded-lg text-white transition-colors ${
-                                !message.trim() ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-800'
-                            }`}
-                            disabled={!message.trim()}
-                        >
-                            <Send size={20} />
-                        </button>
                     </div>
                 </div>
 

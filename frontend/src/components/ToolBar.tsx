@@ -365,6 +365,7 @@ const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
           ]
         }
     ]);
+    const [openscad, setOpenscad] = useState<string>("");
     const [parameters, setParameters] = useState<Parameter[]>([]);
 
     useEffect(() => {
@@ -372,6 +373,31 @@ const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
     }, []);
 
     const handleApplyChanges = () => {
+        // Create a flat map of all parameters for easy lookup
+        const parameterMap = new Map<string, number>();
+        
+        const flattenParameters = (params: Parameter[], prefix = '') => {
+            params.forEach(param => {
+                if (!param.group && param.name && param.value !== undefined) {
+                    parameterMap.set(param.name, param.value);
+                }
+                if (param.parameters) {
+                    flattenParameters(param.parameters, `${prefix}${param.name}_`);
+                }
+            });
+        };
+        
+        flattenParameters(parameters);
+        
+        // Update OpenSCAD code with new parameter values
+        let updatedCode = openscad;
+        parameterMap.forEach((value, name) => {
+            // Match variable declarations like: name = 123;
+            const regex = new RegExp(`(${name}\\s*=\\s*)[\\d.-]+;`, 'g');
+            updatedCode = updatedCode.replace(regex, `$1${value};`);
+        });
+        
+        setOpenscad(updatedCode);
         console.log('Applied changes:', parameters);
         return parameters;
     };
@@ -397,25 +423,25 @@ const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
             return newParams;
         });
     };
-
+    
     return isVisible ? (
         <div className="absolute right-0 top-0 w-[300px] max-w-[90vw] h-full bg-[#F6F5F0] border-l border-gray-200 shadow-lg z-50 flex flex-col">
             {/* Header */}
             <div className="sticky top-0 p-4 border-b-2 border-gray-900 bg-[#F6F5F0] z-10">
                 <div className="flex items-center justify-between mb-2">
                     <div className="text-xs font-serif tracking-[0.2em] text-gray-500">TOOLS</div>
-                    <button 
-                        onClick={() => setIsVisible(false)}
-                        className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-700 transition-colors"
-                        title="Minimize toolbar"
-                    >
+                <button 
+                    onClick={() => setIsVisible(false)}
+                    className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-700 transition-colors"
+                    title="Minimize toolbar"
+                >
                         <ChevronRight size={18} />
-                    </button>
+                </button>
                 </div>
                 <h2 className="text-xl font-serif font-bold text-gray-900">
                     TOOLBAR
                 </h2>
-            </div>
+                                </div>
 
             {/* Parameters Section */}
             <div className="flex-1 px-3 py-2 space-y-3 overflow-y-auto overflow-x-hidden custom-scrollbar">
@@ -427,18 +453,18 @@ const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
                             path={[index]}
                             onUpdate={updateParameter}
                         />
-                    </div>
-                ))}
+                        </div>
+                    ))}
             </div>
 
             {/* Apply Changes Button */}
             <div className="sticky bottom-0 p-4 bg-[#F6F5F0] border-t border-gray-200 z-10">
-                <button 
+            <button 
                     className="w-full bg-gray-900 text-white py-2.5 rounded-lg font-serif tracking-wide text-sm hover:bg-gray-800 transition-colors"
                     onClick={handleApplyChanges}
-                >
-                    APPLY CHANGES
-                </button>
+            >
+                APPLY CHANGES
+            </button>
                 <div className="mt-2 text-xs text-gray-500 font-serif italic text-center">
                     Use the toolbar to customize your imagination
                 </div>
