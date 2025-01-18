@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Paperclip, Send } from 'lucide-react';
 import ToolBar from './ToolBar';
+import { Canvas } from '@react-three/fiber';
+import { Stats } from '@react-three/drei';
+import ModelViewer from './ModelViewer';
 
 interface ChatProps {
     project: any;
@@ -60,10 +63,14 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible }) => {
             {/* Messages Area */}
             <div 
                 ref={messageAreaRef}
-                className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar border-8 border-red-500"
+                className="relative flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar border-8 border-red-500"
             >
-               width: {dimensions.width} <br />
-               height: {dimensions.height}
+                <Stats parent={messageAreaRef} className="!absolute" />
+                <Canvas>
+                    <ModelViewer />
+                </Canvas>
+               {/* width: {dimensions.width} <br />
+               height: {dimensions.height} */}
             </div>
 
             {/* Floating Input Area */}
