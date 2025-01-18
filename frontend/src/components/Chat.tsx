@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Paperclip, Send, MessageSquare, ScrollText, Boxes } from 'lucide-react';
+import { Paperclip, Send, MessageSquare, ScrollText, Boxes, Download } from 'lucide-react';
 import ToolBar from './ToolBar';
 import { Canvas } from '@react-three/fiber';
 import dynamic from 'next/dynamic';
 import ModelViewer from './ModelViewer';
+import ExportModal from './ExportModal';
 
 const Stats = dynamic(() => import('@react-three/drei').then((mod) => mod.Stats), {
     ssr: false
@@ -28,6 +29,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
     const messageAreaRef = useRef<HTMLDivElement>(null);
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
     const [showChatLog, setShowChatLog] = useState(false);
+    const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
     const [chatLog, setChatLog] = useState<Message[]>([]);
     const chatLogRef = useRef<HTMLDivElement>(null);
@@ -76,6 +78,17 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
         }
     }, [chatLog, showChatLog]);
 
+    const handleAIResponse = async () => {
+        //generate ai response
+        const newMessage = {
+            is_user: false,
+            content: "AI response",
+            created_at: new Date().toISOString(),
+            image: []
+        }
+        setChatLog(prev => [...prev, newMessage]);
+    }
+
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
@@ -106,9 +119,34 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                 }
             };
             sendMessage();
+
+            handleAIResponse();
         }
     };
     
+    const handleExport = async (format: string) => {
+        try {
+            const response = await fetch(`http://localhost:8000/api/project/${project.id}/export`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ format }),
+            });
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${project.title}.${format}`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        } catch (error) {
+            console.error('Failed to export file:', error);
+            throw error;
+        }
+    };
 
     return (
         <div className={`absolute left-[15vw] right-0 h-screen bg-[#F6F5F0] flex flex-col ${toolbarVisible ? 'right-[15vw]' : 'right-0'}`}>
@@ -184,24 +222,25 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
             )}
 
 
-            {/* Floating ChatLog Toggle */}
-            <button 
-                onClick={() => setShowChatLog(!showChatLog)}
-                className="absolute bottom-6 left-[5vw] w-[5.5vw] h-[calc(5.5vh+2.6rem)] bg-white backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200 text-gray-500 hover:text-gray-700 transition-colors group flex items-center justify-center"
-                title={showChatLog ? "Hide conversation log" : "Show conversation log"}
-            >   
-                {!showChatLog ? <ScrollText 
-                    size={40} 
-                    className="group-hover:scale-110 transition-transform" 
-                /> : <Boxes 
-                    size={40} 
-                    className="group-hover:scale-110 transition-transform" 
-                />}
-            </button>
+            {/* Floating Input and Toggle Row */}
+            <div className="absolute bottom-6 left-[5vw] right-[5vw] flex items-center gap-4">
+                {/* Toggle Button */}
+                <button 
+                    onClick={() => setShowChatLog(!showChatLog)}
+                    className="h-[calc(5.5vh+2.6rem)] aspect-square bg-white backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200 text-gray-500 hover:text-gray-700 transition-colors group flex items-center justify-center flex-shrink-0"
+                    title={showChatLog ? "Hide conversation log" : "Show conversation log"}
+                >   
+                    {!showChatLog ? <ScrollText 
+                        size={40} 
+                        className="group-hover:scale-110 transition-transform" 
+                    /> : <Boxes 
+                        size={40} 
+                        className="group-hover:scale-110 transition-transform" 
+                    />}
+                </button>
 
-            {/* Floating Input Area */}
-            <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 w-[50vw] max-w-4xl">
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-4">
+                {/* Input Area */}
+                <div className="flex-1 bg-white rounded-2xl shadow-lg border border-gray-200 p-4">
                     <div className="flex items-end gap-2">
                         <button className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-700 transition-colors">
                             <Paperclip size={20} />
@@ -228,7 +267,25 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                         </button>
                     </div>
                 </div>
+
+                {/* Export Button */}
+                <button 
+                    onClick={() => setIsExportModalOpen(true)}
+                    className="h-[calc(5.5vh+2.6rem)] aspect-square bg-white backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200 text-gray-500 hover:text-gray-700 transition-colors group flex items-center justify-center flex-shrink-0"
+                    title="Export file"
+                >
+                    <Download 
+                        size={40} 
+                        className="group-hover:scale-110 transition-transform"
+                    />
+                </button>
             </div>
+
+            <ExportModal 
+                isOpen={isExportModalOpen}
+                onClose={() => setIsExportModalOpen(false)}
+                onExport={handleExport}
+            />
         </div>
     );
 };

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Menu, X, Settings, Home, User, MessageSquare, Search } from 'lucide-react';
 import { useUser } from '../contexts/UserContext';
 import { useRouter } from 'next/router';
@@ -23,6 +23,19 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
         chat.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         chat.messages.some((message: any) => message.content.toLowerCase().includes(searchQuery.toLowerCase()))
     );
+
+    useEffect(() => {
+        const fetchProjects = async () => {
+            try {
+                const response = await fetch('http://localhost:8000/api/project/all');
+                const data = await response.json();
+                setProject(data.projects || []);
+            } catch (error) {
+                console.error('Failed to fetch projects:', error);
+            }
+        };
+        fetchProjects();
+    }, []);
 
     const renderContent = () => {
         switch (currentSection) {

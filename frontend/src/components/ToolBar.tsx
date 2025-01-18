@@ -13,9 +13,21 @@ interface SliderOption {
     max: number;
 }
 
+interface DisplacementOption {
+    name: string;
+    x: number;
+    y: number;
+    z: number;
+}
+
 interface ColorOption {
     name: string;
     value: string;
+}
+
+interface OtherOption {
+    name: string;
+    value: number;
 }
 
 const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
@@ -30,6 +42,8 @@ const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
         }
     ]);
 
+    const [scaleFactor, setScaleFactor] = useState<number>(1);
+
     const [sliders, setSliders] = useState<SliderOption[]>([
         {
             name: 'Chair Leg',
@@ -42,6 +56,15 @@ const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
             value: 200,
             min: 0,
             max: 400
+        }
+    ]);
+
+    const [displacements, setDisplacements] = useState<DisplacementOption[]>([
+        {
+            name: 'Chair Leg',
+            x: 0,
+            y: 0,
+            z: 0
         }
     ]);
 
@@ -81,7 +104,7 @@ const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
             </div>
 
             {/* Tools Section */}
-            <div className="p-4 space-y-4 overflow-y-auto ">
+            <div className="p-4 space-y-4 overflow-y-auto overflow-x-hidden">
                 {/* Colors Section */}
                 <div className="space-y-2">
                     <h3 className="font-serif text-xs font-bold text-gray-900 uppercase tracking-wider">
@@ -133,6 +156,82 @@ const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
                                 />
                             </div>
                         ))}
+                    </div>
+                </div>
+
+                {/* Displacements Section */}
+                <div className="space-y-2">
+                    <h3 className="font-serif text-xs font-bold text-gray-900 uppercase tracking-wider">
+                        Displacements
+                    </h3>
+                </div>
+                <div className="space-y-3">
+                    {displacements.map((displacement, index) => (
+                        <div key={displacement.name} className="space-y-1">
+                            <div className="flex justify-between items-center">
+                                <span className="text-sm font-serif">{displacement.name}</span>
+                            </div>
+                            <div className="grid grid-cols-3 gap-2 mt-2">
+                                <div className="space-y-1">
+                                    <label className="text-xs font-serif text-gray-500">X</label>
+                                    <input
+                                        type="number"
+                                        value={displacement.x}
+                                        onChange={(e) => {
+                                            const newDisplacements = [...displacements];
+                                            newDisplacements[index].x = Number(e.target.value);
+                                            setDisplacements(newDisplacements);
+                                        }}
+                                        className="w-full px-2 py-1 text-sm bg-white border border-gray-200 rounded-lg text-gray-900 font-mono focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-serif text-gray-500">Y</label>
+                                    <input
+                                        type="number"
+                                        value={displacement.y}
+                                        onChange={(e) => {
+                                            const newDisplacements = [...displacements];
+                                            newDisplacements[index].y = Number(e.target.value);
+                                            setDisplacements(newDisplacements);
+                                        }}
+                                        className="w-full px-2 py-1 text-sm bg-white border border-gray-200 rounded-lg text-gray-900 font-mono focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-serif text-gray-500">Z</label>
+                                    <input
+                                        type="number"
+                                        value={displacement.z}
+                                        onChange={(e) => {
+                                            const newDisplacements = [...displacements];
+                                            newDisplacements[index].z = Number(e.target.value);
+                                            setDisplacements(newDisplacements);
+                                        }}
+                                        className="w-full px-2 py-1 text-sm bg-white border border-gray-200 rounded-lg text-gray-900 font-mono focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                {/* Other Section */}
+                <div className="space-y-2">
+                    <h3 className="font-serif text-xs font-bold text-gray-900 uppercase tracking-wider">
+                        Other
+                    </h3>
+                    <div className="space-y-1">
+                        <div className="flex justify-between items-center">
+                            <span className="text-sm font-serif">Scale Factor</span>
+                            <input
+                                type="number"
+                                className="w-24 px-2 py-1 text-sm bg-white border border-gray-200 rounded-lg text-gray-900 font-mono focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
+                                value={scaleFactor}
+                                onChange={(e) => {
+                                    setScaleFactor(Number(e.target.value));
+                                }}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>

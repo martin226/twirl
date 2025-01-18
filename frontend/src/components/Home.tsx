@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Newspaper, Feather, Coffee, BookOpen, ArrowRight, Clock, MessageSquare } from 'lucide-react';
+import { Newspaper, Feather, Coffee, BookOpen, ArrowRight, Clock, MessageSquare, Trash } from 'lucide-react';
 import { useProject } from '../contexts/ProjectContext';
 import { useRouter } from 'next/router';
+import ImportArchiveModal from './ImportArchiveModal';
 
 interface HomeProps {
     setIsModalOpen: (isOpen: boolean) => void;
@@ -10,17 +11,39 @@ interface HomeProps {
 const Home: React.FC<HomeProps> = ({ setIsModalOpen }) => {
     const { project, setProject } = useProject();
     const router = useRouter();
+    const [contextMenu, setContextMenu] = useState<{ x: number; y: number; projectId: string } | null>(null);
+    const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+
+    // Handle context menu
+    const handleContextMenu = (e: React.MouseEvent, projectId: string) => {
+        e.preventDefault();
+        setContextMenu({ x: e.clientX, y: e.clientY, projectId });
+    };
+
+    // Handle delete project
+    const handleDeleteProject = async (projectId: string) => {
+        try {
+            const response = await fetch(`http://localhost:8000/api/messages/${projectId}`, {
+                method: 'DELETE',
+            });
+            if (response.ok) {
+                setProject(project.filter((p: any) => p.id !== projectId));
+            }
+        } catch (error) {
+            console.error('Failed to delete project:', error);
+        }
+        setContextMenu(null);
+    };
+
+    // Close context menu when clicking outside
+    useEffect(() => {
+        const handleClick = () => setContextMenu(null);
+        document.addEventListener('click', handleClick);
+        return () => document.removeEventListener('click', handleClick);
+    }, []);
 
     useEffect(() => {
-        const fetchProjects = async () => {
-            try {
-                const response = await fetch('http://localhost:8000/api/project/all');
-                const data = await response.json();
-                setProject(data.projects || []);
-            } catch (error) {
-                console.error('Failed to fetch projects:', error);
-            }
-        };
+    
 
         const newProject = async () => {
             try {
@@ -34,8 +57,24 @@ const Home: React.FC<HomeProps> = ({ setIsModalOpen }) => {
             }
         };
         
-        fetchProjects();
     }, []);
+
+    const handleImportSTL = async (stlCode: string) => {
+        try {
+            const response = await fetch('http://localhost:8000/api/project/import', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ stl_code: stlCode }),
+            });
+            const data = await response.json();
+            router.push(`/chat/${data.id}`);
+        } catch (error) {
+            console.error('Failed to import STL:', error);
+            throw error;
+        }
+    };
 
     return (
         <div className="flex-1 h-screen overflow-y-auto bg-[#F6F5F0] custom-scrollbar">
@@ -94,7 +133,10 @@ const Home: React.FC<HomeProps> = ({ setIsModalOpen }) => {
                                     <div className="h-px flex-1 bg-gray-200"></div>
                                 </div>
 
-                                <button className="w-full px-6 py-3 bg-white border-2 border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-serif">
+                                <button 
+                                    onClick={() => setIsImportModalOpen(true)} 
+                                    className="w-full px-6 py-3 bg-white border-2 border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-serif"
+                                >
                                     Import Archive
                                 </button>
                             </div>
@@ -112,23 +154,22 @@ const Home: React.FC<HomeProps> = ({ setIsModalOpen }) => {
                         {project.map((chat: any) => (
                             <article 
                                 key={chat.id}
-                                className="bg-white p-6 rounded-lg border border-gray-100 shadow-md hover:shadow-lg transition-all duration-200"
+                                onClick={() => router.push(`/chat/${chat.id}`)}
+                                onContextMenu={(e) => handleContextMenu(e, chat.id)}
+                                className="bg-white p-6 rounded-lg border border-gray-100 shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer group"
                             >
                                 <div className="flex items-start justify-between mb-4">
                                     <div className="flex-1">
-                                        <h3 className="font-serif text-lg font-bold text-gray-900 mb-2 line-clamp-1">
+                                        <h3 className="font-serif text-lg font-bold text-gray-900 mb-2 line-clamp-1 group-hover:text-gray-600 transition-colors">
                                             {chat.title}
                                         </h3>
                                         <p className="text-sm text-gray-500 font-serif italic line-clamp-2">
                                             {chat.messages.length > 0 ? chat.messages[0].content : "No messages yet"}
                                         </p>
                                     </div>
-                                    <button 
-                                        onClick={() => router.push(`/chat/${chat.id}`)}
-                                        className="ml-4 p-2 hover:bg-gray-100 rounded-full transition-colors"
-                                    >
-                                        <ArrowRight size={20} className="text-gray-400 hover:text-gray-600" />
-                                    </button>
+                                    <div className="ml-4 p-2 text-gray-400 group-hover:text-gray-600 transition-colors">
+                                        <ArrowRight size={20} />
+                                    </div>
                                 </div>
                                 
                                 <div className="flex items-center justify-between text-xs text-gray-400 font-serif">
@@ -168,7 +209,32 @@ const Home: React.FC<HomeProps> = ({ setIsModalOpen }) => {
                         <div className="font-serif italic text-sm">All Rights Reserved</div>
                     </div>
                 </div>
+
+                {/* Context Menu */}
+                {contextMenu && (
+                    <div 
+                        className="fixed z-50 bg-white rounded-lg shadow-lg py-1 w-48 border border-gray-200"
+                        style={{ top: contextMenu.y, left: contextMenu.x }}
+                    >
+                        <button 
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteProject(contextMenu.projectId);
+                            }}
+                            className="w-full px-4 py-2 text-left text-red-600 hover:bg-red-50 flex items-center gap-2"
+                        >
+                            <Trash size={16} />
+                            Delete Project
+                        </button>
+                    </div>
+                )}
             </div>
+
+            <ImportArchiveModal 
+                isOpen={isImportModalOpen}
+                onClose={() => setIsImportModalOpen(false)}
+                onImport={handleImportSTL}
+            />
         </div>
     );
 };
