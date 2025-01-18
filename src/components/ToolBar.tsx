@@ -45,6 +45,10 @@ const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
         }
     ]);
 
+    const handleApplyChanges = () => {
+        console.log('apply changes');
+    };
+
     const handleSliderChange = (index: number, newValue: number) => {
         const updatedSliders = [...sliders];
         updatedSliders[index].value = newValue;
@@ -77,7 +81,7 @@ const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
             </div>
 
             {/* Tools Section */}
-            <div className="p-4 space-y-4">
+            <div className="p-4 space-y-4 overflow-y-auto ">
                 {/* Colors Section */}
                 <div className="space-y-2">
                     <h3 className="font-serif text-xs font-bold text-gray-900 uppercase tracking-wider">
@@ -133,10 +137,18 @@ const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
                 </div>
             </div>
 
+            {/* submit toggles button */}
+            <button 
+                className="ml-[5%] w-[90%] mt-auto mb-4 bg-gray-900 text-white py-3 font-serif tracking-wide text-sm border-t border-gray-200"
+                onClick={() => { handleApplyChanges() }}
+            >
+                APPLY CHANGES
+            </button>
+
             {/* Info Section */}
-            <div className="mt-auto p-4 bg-white border-t border-gray-200">
+            <div className="p-4 bg-white border-t border-gray-200">
                 <div className="text-xs text-gray-500 font-serif italic">
-                    Tip: Use Markdown syntax for quick formatting
+                    Use the toolbar to customize your imagination
                 </div>
             </div>
         </div>

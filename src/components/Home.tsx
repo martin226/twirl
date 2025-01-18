@@ -21,7 +21,7 @@ const Home: React.FC<HomeProps> = ({ setIsModalOpen }) => {
                         <Feather className="mx-4 text-gray-400" size={24} />
                         <div className="h-px w-32 bg-gray-300 self-center"></div>
                     </div>
-                    <h1 className="font-serif text-4xl font-bold text-gray-900 mb-2">The Daily Chronicle</h1>
+                    <h1 className="font-serif text-4xl font-bold text-gray-900 mb-2">MANAGE YOUR IMAGINATIONS</h1>
                     <div className="text-sm text-gray-500 font-serif italic">Est. 2024</div>
                     <div className="flex justify-center items-center gap-3 mt-4 text-gray-400">
                         <Coffee size={16} />
