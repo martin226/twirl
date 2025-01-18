@@ -8,6 +8,7 @@ import { useUser } from '@/src/contexts/UserContext';
 import Signup from '@/src/components/Signup';
 import Login from '@/src/components/Login';
 import Home from '@/src/components/Home';
+import ToolBar from '@/src/components/ToolBar';
 
 
 const ChatPage: React.FC = () => {
@@ -64,7 +65,7 @@ const ChatPage: React.FC = () => {
     
     return (
         <div className="flex flex-column h-screen bg-gray-900">
-            <div className="w-64 h-screen bg-gray-900">
+            <div className="">
                 <Sidebar 
                     isHome={false}
                     isMenuMode={isMenuMode}
@@ -73,12 +74,16 @@ const ChatPage: React.FC = () => {
                     setCurrentSection={setCurrentSection}
                 />
             </div>
-            <div className="h-screen bg-gray-900 overflow-hidden ">
+            <div className="">
                 <Chat 
                     project={project}
                     user={user}
                 />
             </div>
+            <div className="">
+                <ToolBar />
+            </div>
+
         </div>
     );
 };

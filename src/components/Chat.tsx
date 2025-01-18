@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Paperclip, Send } from 'lucide-react';
+import ToolBar from './ToolBar';
 
 interface ChatProps {
     project: any;
@@ -26,7 +27,7 @@ const Chat: React.FC<ChatProps> = ({ project, user }) => {
     };
 
     return (
-        <div className="absolute left-64 right-0 h-screen bg-[#F6F5F0] flex flex-col">
+        <div className="absolute left-[15vw] right-[15vw] h-screen bg-[#F6F5F0] flex flex-col ">
             {/* Chat Header */}
             <div className="p-4 border-b border-gray-200 bg-white/50 backdrop-blur-sm">
                 <h2 className="text-xl font-serif font-bold text-gray-900">
@@ -35,7 +36,7 @@ const Chat: React.FC<ChatProps> = ({ project, user }) => {
             </div>
 
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar border-8 border-red-500">
                
             </div>
 

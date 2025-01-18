@@ -63,7 +63,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
     };
 
     return (
-        <div className="absolute left-0 top-0 w-64 h-full bg-[#F6F5F0] border-r border-gray-200 shadow-lg z-50 sidebar flex flex-col">
+        <div className="absolute left-0 top-0 w-[15vw] h-full bg-[#F6F5F0] border-r border-gray-200 shadow-lg z-50 sidebar flex flex-col">
             {/* Header with Search */}
             <div className="p-5 border-b border-gray-200">
                 <div className="flex items-center justify-between mb-4">
