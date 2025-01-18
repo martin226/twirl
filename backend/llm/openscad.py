@@ -1,15 +1,18 @@
 import anthropic
 import base64
 import httpx
+from dotenv import load_dotenv
 
-description = "Generate a model of a pine tree."
-image_url = "https://media.sketchfab.com/models/c1d140fc15bd40928989d0ca79365e13/thumbnails/465f602c45454d8f813cc54198930c24/76d9c131a5314d98bf271617a3a43378.jpeg"
+load_dotenv()
+
+description = "Generate a model of a bundle of green grapes. The grapes should be arranged in a cluster, with some grapes overlapping others. The cluster should be visually appealing and realistic, with varying sizes and positions of the grapes. The grapes should be round and smooth, with a glossy texture. The cluster should be positioned on a flat surface, such as a table, to provide context. The scene should be well-lit to highlight the grapes' color and texture."
+image_url = "https://gofresh.com.kw/wp-content/uploads/2023/10/grapgree-1-600x600.jpg"
 image_media_type = "image/jpeg"
 image_data = base64.standard_b64encode(httpx.get(image_url).content).decode("utf-8")
 
 client = anthropic.Anthropic(
     # defaults to os.environ.get("ANTHROPIC_API_KEY")
-    api_key="",
+    # api_key="",
 )
 
 # Replace placeholders like {{description}} with real values,
@@ -52,4 +55,4 @@ message = client.messages.create(
         }
     ]
 )
-print(message.content)
+print(message.content[0].text)

@@ -1,6 +1,8 @@
 import { OrbitControls, Grid, GizmoHelper, GizmoViewport, Sky } from '@react-three/drei';
-import { useFrame } from '@react-three/fiber';
-import { useRef, useState } from 'react';
+import { useFrame, useLoader } from '@react-three/fiber';
+import { useEffect, useRef, useState } from 'react';
+import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js';
+import { usePdrStore } from '../contexts/store';
 
 function MySky() {
     const [sunPosition, setSunPosition] = useState([100, 20, 100]);
@@ -20,9 +22,53 @@ function MySky() {
     );
 }
 
+function STLModel({ url }: any) {
+    if (!url) {
+        return null;
+    }
+    const geometry = useLoader(STLLoader, url);
+
+    return (
+        <mesh geometry={Array.isArray(geometry) ? geometry[0] : geometry}>
+            <meshStandardMaterial color="orange" />
+        </mesh>
+    );
+}
+
 export default function ModelViewer() {
     const [hovered, setHover] = useState(false)
     const [active, setActive] = useState(false)
+    const [url, setUrl] = useState<string | null>(null);
+    const { worker } = usePdrStore();
+
+    const onMessage = (e: any) => {
+        const { outputFile, output } = e.data;
+
+        console.log("Received output", output);
+        setUrl(URL.createObjectURL(new Blob([output], { type: "application/octet-stream" })));
+
+        // Create a link to download the generated STL file
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(new Blob([output], { type: "application/octet-stream" }));
+        link.download = outputFile;
+        document.body.append(link);
+        link.click();
+        link.remove();
+        
+    }
+
+    useEffect(() => {
+        if (!worker) {
+            return;
+        }
+
+        worker.addEventListener('message', onMessage);
+
+        return () => {
+            worker.removeEventListener('message', onMessage)
+        }
+    }, [worker]);
+
     return (
         <>
             <OrbitControls makeDefault />
@@ -46,12 +92,7 @@ export default function ModelViewer() {
             >
                 <GizmoViewport axisColors={['red', 'green', 'blue']} labelColor="black" />
             </GizmoHelper>
-            {/* begin ground */}
-            {/* <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1, 0]} receiveShadow>
-                <planeGeometry args={[100, 100]} />
-                <meshBasicMaterial color="lightblue" />
-            </mesh> */}
-            {/* end ground */}
+            <STLModel url={url} />
             <mesh
                 scale={active ? 1.5 : 1}
                 onClick={(event) => setActive(!active)}
