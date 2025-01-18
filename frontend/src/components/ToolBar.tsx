@@ -23,24 +23,24 @@ const ParameterGroup: React.FC<{
     onUpdate: (path: number[], newValue: number) => void 
 }> = ({ parameter, level, path, onUpdate }) => {
     const [isOpen, setIsOpen] = useState(true);
-    const paddingLeft = `${level * 1}rem`;
+    const paddingLeft = `${level * 0.75}rem`;
 
     if (parameter.group) {
         return (
             <div className="space-y-2">
                 <button
                     onClick={() => setIsOpen(!isOpen)}
-                    className="w-full flex items-center justify-between p-2 hover:bg-gray-100 rounded text-left"
+                    className="w-full flex items-center justify-between p-2 hover:bg-gray-50 rounded text-left transition-colors"
                     style={{ paddingLeft }}
                 >
-                    <span className="text-sm font-serif">{parameter.name}</span>
+                    <span className="text-sm font-serif font-medium text-gray-900">{parameter.name}</span>
                     <ChevronDown 
                         size={16} 
-                        className={`transform transition-transform ${isOpen ? '' : '-rotate-90'}`}
+                        className={`transform transition-transform ${isOpen ? '' : '-rotate-90'} text-gray-500`}
                     />
                 </button>
                 {isOpen && parameter.parameters && (
-                    <div className="space-y-2">
+                    <div className="space-y-2 py-1">
                         {parameter.parameters.map((param, index) => (
                             <ParameterGroup 
                                 key={`${param.name}-${index}`} 
@@ -60,10 +60,10 @@ const ParameterGroup: React.FC<{
     switch (parameter.type) {
         case 'slider':
             return (
-                <div className="space-y-1" style={{ paddingLeft }}>
+                <div className="space-y-1 px-2" style={{ paddingLeft }}>
                     <div className="flex justify-between items-center">
-                        <span className="text-sm font-serif">{parameter.name}</span>
-                        <span className="text-sm font-serif text-gray-500">{parameter.value}</span>
+                        <span className="text-sm font-serif text-gray-700">{parameter.name}</span>
+                        <span className="text-sm font-mono text-gray-500">{parameter.value}</span>
                     </div>
                     <input
                         type="range"
@@ -71,20 +71,20 @@ const ParameterGroup: React.FC<{
                         max={parameter.max_value}
                         value={parameter.value}
                         onChange={(e) => onUpdate(path, Number(e.target.value))}
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-gray-900"
+                        className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-gray-900"
                     />
                 </div>
             );
         case 'none':
             return (
-                <div className="space-y-1" style={{ paddingLeft }}>
+                <div className="px-2" style={{ paddingLeft }}>
                     <div className="flex justify-between items-center">
-                        <span className="text-sm font-serif">{parameter.name}</span>
+                        <span className="text-sm font-serif text-gray-700">{parameter.name}</span>
                         <input
                             type="number"
                             value={parameter.value}
                             onChange={(e) => onUpdate(path, Number(e.target.value))}
-                            className="w-24 px-2 py-1 text-sm bg-white border border-gray-200 rounded-lg text-gray-900 font-mono focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
+                            className="w-20 px-2 py-1 text-sm bg-white border border-gray-200 rounded-lg text-gray-900 font-mono focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
                         />
                     </div>
                 </div>
@@ -399,48 +399,47 @@ const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
     };
 
     return isVisible ? (
-        <div className="absolute right-0 top-0 w-[15vw] h-full bg-[#F6F5F0] border-l border-gray-200 shadow-lg z-50 flex flex-col">
+        <div className="absolute right-0 top-0 w-[300px] max-w-[90vw] h-full bg-[#F6F5F0] border-l border-gray-200 shadow-lg z-50 flex flex-col">
             {/* Header */}
-            <div className="p-5 border-b-2 border-gray-900 flex items-center justify-between">
-                <div>
-                    <div className="text-xs font-serif tracking-[0.2em] text-gray-500 mb-1">TOOLS</div>
-                    <h2 className="text-2xl font-serif font-bold text-gray-900">
-                        TOOLBAR
-                    </h2>
+            <div className="sticky top-0 p-4 border-b-2 border-gray-900 bg-[#F6F5F0] z-10">
+                <div className="flex items-center justify-between mb-2">
+                    <div className="text-xs font-serif tracking-[0.2em] text-gray-500">TOOLS</div>
+                    <button 
+                        onClick={() => setIsVisible(false)}
+                        className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-700 transition-colors"
+                        title="Minimize toolbar"
+                    >
+                        <ChevronRight size={18} />
+                    </button>
                 </div>
-                <button 
-                    onClick={() => setIsVisible(false)}
-                    className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-700 transition-colors"
-                    title="Minimize toolbar"
-                >
-                    <ChevronRight size={20} />
-                </button>
+                <h2 className="text-xl font-serif font-bold text-gray-900">
+                    TOOLBAR
+                </h2>
             </div>
 
             {/* Parameters Section */}
-            <div className="flex-1 p-4 space-y-4 overflow-y-auto overflow-x-hidden">
+            <div className="flex-1 px-3 py-2 space-y-3 overflow-y-auto overflow-x-hidden custom-scrollbar">
                 {parameters.map((parameter, index) => (
-                    <ParameterGroup 
-                        key={`${parameter.name}-${index}`} 
-                        parameter={parameter} 
-                        level={0}
-                        path={[index]}
-                        onUpdate={updateParameter}
-                    />
+                    <div key={`${parameter.name}-${index}`} className="bg-white rounded-lg shadow-sm p-2">
+                        <ParameterGroup 
+                            parameter={parameter} 
+                            level={0}
+                            path={[index]}
+                            onUpdate={updateParameter}
+                        />
+                    </div>
                 ))}
             </div>
 
             {/* Apply Changes Button */}
-            <button 
-                className="ml-[5%] w-[90%] mt-auto mb-4 bg-gray-900 text-white py-3 font-serif tracking-wide text-sm border-t border-gray-200"
-                onClick={handleApplyChanges}
-            >
-                APPLY CHANGES
-            </button>
-
-            {/* Info Section */}
-            <div className="p-4 bg-white border-t border-gray-200">
-                <div className="text-xs text-gray-500 font-serif italic">
+            <div className="sticky bottom-0 p-4 bg-[#F6F5F0] border-t border-gray-200 z-10">
+                <button 
+                    className="w-full bg-gray-900 text-white py-2.5 rounded-lg font-serif tracking-wide text-sm hover:bg-gray-800 transition-colors"
+                    onClick={handleApplyChanges}
+                >
+                    APPLY CHANGES
+                </button>
+                <div className="mt-2 text-xs text-gray-500 font-serif italic text-center">
                     Use the toolbar to customize your imagination
                 </div>
             </div>
@@ -448,11 +447,11 @@ const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
     ) : (
         <button 
             onClick={() => setIsVisible(true)}
-            className="absolute right-0 top-4 p-2 bg-[#F6F5F0] border-l border-t border-b border-gray-200 rounded-l-lg shadow-lg text-gray-500 hover:text-gray-700 transition-colors z-50 flex items-center gap-2"
+            className="fixed right-0 top-4 p-2 bg-[#F6F5F0] border-l border-t border-b border-gray-200 rounded-l-lg shadow-lg text-gray-500 hover:text-gray-700 transition-colors z-50 flex items-center gap-2"
             title="Show toolbar"
         >
-            <ChevronLeft size={20} />
-            <span className="font-serif pr-1">Toolbar</span>
+            <ChevronLeft size={18} />
+            <span className="font-serif pr-1 text-sm">Toolbar</span>
         </button>
     );
 };
