@@ -1,0 +1,93 @@
+app/                  # This is a PACKAGE (has __init__.py)
+├── __init__.py
+├── views.py         # This is a MODULE
+├── urls.py          # This is a MODULE
+├── utils/           # This is a SUB-PACKAGE
+│   └── utils.py     # This is a MODULE
+└── models/          # This is a SUB-PACKAGE
+    └── models.py    # This is a MODULE
+
+package:
+    # A directory with __init__.py
+    # 'app' is a package:
+    from app.views import ExecutePipelineView  # Using package.module
+    from .views import ExecutePipelineView     # Relative import in package
+
+    package import:
+    # In Django settings.py
+    INSTALLED_APPS = [
+        'app',  # Import whole package
+    ]
+
+module:
+    # A single Python file
+    # views.py is a module:
+
+    # importing submodule(module in a folder)
+    from .utils.utils import process_pipeline
+
+
+
+signals:
+    #signals are used to notify other parts of the system when an event occurs
+    #e.g. when a model is saved, a signal is sent to notify other parts of the system
+    #signals are defined in the models.py file
+    #signals are registered in the apps.py file
+
+    #post_save: sent after a model is saved
+    #pre_save: sent before a model is saved
+    #post_delete: sent after a model is deleted
+    #pre_delete: sent before a model is deleted
+
+    Method 1:
+    #to connect a signal to a function, use the @receiver decorator
+    #e.g. @receiver(post_save, sender=MyModel) -- when a user is created, do something
+    def user_created(sender, instance, created, **kwargs):
+        if created:  # Only when a new user is created
+            print(f"New user created: {instance.username}")
+
+    Method 2:
+    post_save.connect(your_function, sender=Model) -- .connect() is used to connect a signal to a function
+
+    #to disconnect a signal from a function, use the .disconnect() method
+    post_save.disconnect(your_function, sender=Model)
+
+
+
+    @receiver(post_save, sender=Model)
+    def my_handler(sender, instance, created, **kwargs):
+        # sender: The model class that sent the signal
+        # instance: The actual instance being saved, access its attributes using <instance>.<attribute>, editing the attribute directly will change the value in the instance being saved
+        # created: Boolean - True if new record, False if update
+        # **kwargs: Additional arguments
+        pass
+
+    product = Product(name="Laptop", price=999, stock=10)
+    product.save()
+
+    #this will trigger the post_save signal, which will call the my_handler function
+    #the my_handler function will print the name and price of the product
+
+    real world example:
+    @receiver(pre_save, sender=Product)
+    def check_stock_level(sender, instance, **kwargs):
+        if instance.stock < 5:  # Low stock
+            # Send alert to manager
+            send_email(
+                to='manager@company.com',
+                subject=f'Low Stock Alert: {instance.name}',
+                message=f'Only {instance.stock} units remaining'
+            )
+
+    @receiver(post_save, sender=Product)
+    def track_price_changes(sender, instance, **kwargs):
+        try:
+            old_instance = Product.objects.get(id=instance.id)
+            if old_instance.price != instance.price:
+                PriceHistory.objects.create(
+                    product=instance,
+                    old_price=old_instance.price,
+                    new_price=instance.price
+                )
+        except Product.DoesNotExist:
+            pass  # New product, no price history

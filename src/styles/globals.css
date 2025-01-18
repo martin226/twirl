@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+}
+
+.text-wrap {
+  word-wrap: break-word;
+}
+
+.parent-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  border-radius: 1em;
+  max-height: 100%; /* Restrict height to parent's height */
+  overflow-y: auto; /* Adds a scrollbar when content overflows vertically */
+  flex-wrap: wrap;
+}
+
+.unscrollable {
+  overflow: hidden; /* Disables both horizontal and vertical scrolling */
+}
+
+/* hide scroll bar */
+.hide-scrollbar {
+  scrollbar-width: none;  /* Hide scrollbar in Firefox */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;  /* Hide scrollbar in webkit browsers (Chrome, Safari, etc.) */
+}
+
