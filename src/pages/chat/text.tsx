@@ -63,18 +63,22 @@ const ChatPage: React.FC = () => {
     }
     
     return (
-        <div className="w-full h-screen bg-gray-900 Whiteboard flex">
-            <Sidebar 
-                isHome={false}
-                isMenuMode={isMenuMode}
-                setIsMenuMode={setIsMenuMode}
-                currentSection={currentSection}
-                setCurrentSection={setCurrentSection}
-            />
-            <Chat 
-                project={project}
-                user={user}
-            />
+        <div className="flex flex-column h-screen bg-gray-900">
+            <div className="w-64 h-screen bg-gray-900">
+                <Sidebar 
+                    isHome={false}
+                    isMenuMode={isMenuMode}
+                    setIsMenuMode={setIsMenuMode}
+                    currentSection={currentSection}
+                    setCurrentSection={setCurrentSection}
+                />
+            </div>
+            <div className="h-screen bg-gray-900 overflow-hidden ">
+                <Chat 
+                    project={project}
+                    user={user}
+                />
+            </div>
         </div>
     );
 };

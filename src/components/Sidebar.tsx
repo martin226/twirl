@@ -63,7 +63,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
     };
 
     return (
-        <div className="fixed left-0 top-0 w-64 h-full bg-[#F6F5F0] border-r border-gray-200 shadow-lg z-50 sidebar flex flex-col">
+        <div className="absolute left-0 top-0 w-64 h-full bg-[#F6F5F0] border-r border-gray-200 shadow-lg z-50 sidebar flex flex-col">
             {/* Header with Search */}
             <div className="p-5 border-b border-gray-200">
                 <div className="flex items-center justify-between mb-4">
@@ -120,9 +120,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
                             </div>
                         </div>
 
+                        {/* Latest Conversations */}
                         <div className="flex-1 overflow-hidden">
-                            <div className="h-full px-3 py-4 overflow-y-auto custom-scrollbar">
-                                <div className="sticky top-0 bg-[#F6F5F0] pb-2 mb-2">
+                            <div className="h-full flex flex-col">
+                                <div className="px-3 pt-4 pb-2 bg-[#F6F5F0] border-b border-gray-200">
                                     <div className="flex items-center justify-between">
                                         <h3 className="font-serif text-xs font-bold text-gray-900 uppercase tracking-wider">
                                             Latest Conversations
@@ -130,24 +131,27 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
                                         <span className="text-xs text-gray-500 font-medium">{filteredChats.length}</span>
                                     </div>
                                 </div>
-                                <div className="space-y-2">
-                                    {filteredChats.map((chat: any) => (
-                                        <button
-                                            key={chat.id}
-                                            onClick={() => router.push(`/chat/${chat.id}`)}
-                                            className="w-full p-2.5 text-left hover:bg-gray-100 rounded-lg flex flex-col gap-1 transition-all group relative border border-transparent hover:border-gray-200"
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-1 h-1 rounded-full bg-gray-400"></div>
-                                                <span className="font-serif font-medium text-sm text-gray-900 truncate flex-1">
-                                                    {chat.name}
+
+                                <div className="flex-1 custom-scrollbar px-3 py-2 overflow-y-auto">
+                                    <div className="space-y-2 overflow-hidden">
+                                        {filteredChats.map((chat: any) => (
+                                            <button
+                                                key={chat.id}
+                                                onClick={() => router.push(`/chat/${chat.id}`)}
+                                                className="w-full p-2.5 text-left hover:bg-gray-100 rounded-lg flex flex-col gap-1 transition-all group relative border border-transparent hover:border-gray-200"
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-1 h-1 rounded-full bg-gray-400"></div>
+                                                    <span className="font-serif font-medium text-sm text-gray-900 truncate flex-1">
+                                                        {chat.name}
+                                                    </span>
+                                                </div>
+                                                <span className="text-xs text-gray-500 truncate pl-4 font-serif italic">
+                                                    {chat.lastMessage}
                                                 </span>
-                                            </div>
-                                            <span className="text-xs text-gray-500 truncate pl-4 font-serif italic">
-                                                {chat.lastMessage}
-                                            </span>
-                                        </button>
-                                    ))}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         </div>

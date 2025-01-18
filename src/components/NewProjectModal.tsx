@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, Feather, Users, Globe } from 'lucide-react';
 
 interface Collaborator {
     email: string;
@@ -30,7 +30,7 @@ const NewProjectModal: React.FC<NewProjectModalProps> = ({ isOpen, onClose, onCr
             await onCreateProject(projectName, collaborators, isPublic);
             onClose();
         } catch (err) {
-            setError('Failed to create project');
+            setError('Failed to create chronicle');
         } finally {
             setIsLoading(false);
         }
@@ -48,49 +48,50 @@ const NewProjectModal: React.FC<NewProjectModalProps> = ({ isOpen, onClose, onCr
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-            <div className="bg-gray-900 rounded-xl shadow-xl w-full max-w-md p-6 border border-gray-700">
-                <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-xl font-semibold text-gray-100">Create New Chat</h2>
-                    <button 
-                        onClick={onClose}
-                        className="text-gray-400 hover:text-gray-300 transition-colors"
-                    >
-                        <X size={20} />
-                    </button>
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-[#F6F5F0] rounded-lg shadow-xl w-full max-w-md p-8 border border-gray-200">
+                {/* Header */}
+                <div className="text-center mb-6">
+                    <div className="flex justify-center mb-4">
+                        <div className="h-px w-16 bg-gray-300 self-center"></div>
+                        <Feather className="mx-4 text-gray-400" size={24} />
+                        <div className="h-px w-16 bg-gray-300 self-center"></div>
+                    </div>
+                    <h2 className="font-serif text-2xl font-bold text-gray-900">Begin New Chronicle</h2>
+                    <p className="text-sm text-gray-500 font-serif italic mt-1">Document your thoughts and conversations</p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-1">
-                            Chat Name
+                        <label className="block text-sm font-serif font-medium text-gray-700 mb-2">
+                            Chronicle Title
                         </label>
                         <input
                             type="text"
                             value={projectName}
                             onChange={(e) => setProjectName(e.target.value)}
-                            className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:border-indigo-500"
-                            placeholder="Enter chat name"
+                            className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-900 font-serif focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
+                            placeholder="Enter a title for your chronicle"
                             required
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-1">
-                            Add Collaborators
+                        <label className="block text-sm font-serif font-medium text-gray-700 mb-2">
+                            Invite Contributors
                         </label>
                         <div className="flex gap-2">
                             <input
                                 type="email"
                                 value={collaboratorEmail}
                                 onChange={(e) => setCollaboratorEmail(e.target.value)}
-                                className="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:border-indigo-500"
-                                placeholder="Enter email"
+                                className="flex-1 px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-900 font-serif focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
+                                placeholder="Enter email address"
                             />
                             <button
                                 type="button"
                                 onClick={addCollaborator}
-                                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                                className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 font-serif transition-colors"
                             >
                                 Add
                             </button>
@@ -102,13 +103,13 @@ const NewProjectModal: React.FC<NewProjectModalProps> = ({ isOpen, onClose, onCr
                             {collaborators.map(collaborator => (
                                 <span
                                     key={collaborator.email}
-                                    className="inline-flex items-center gap-1 px-3 py-1 bg-gray-800 rounded-full text-sm text-gray-300"
+                                    className="inline-flex items-center gap-1 px-3 py-1 bg-white border border-gray-200 rounded-full text-sm text-gray-700 font-serif"
                                 >
                                     {collaborator.email}
                                     <button
                                         type="button"
                                         onClick={() => removeCollaborator(collaborator.email)}
-                                        className="text-gray-400 hover:text-gray-300"
+                                        className="text-gray-400 hover:text-gray-600"
                                     >
                                         ×
                                     </button>
@@ -117,37 +118,37 @@ const NewProjectModal: React.FC<NewProjectModalProps> = ({ isOpen, onClose, onCr
                         </div>
                     )}
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 py-2">
                         <input
                             type="checkbox"
                             id="isPublic"
                             checked={isPublic}
                             onChange={(e) => setIsPublic(e.target.checked)}
-                            className="w-4 h-4 rounded border-gray-700 bg-gray-800 text-indigo-600 focus:ring-indigo-500"
+                            className="w-4 h-4 rounded border-gray-300 text-gray-900 focus:ring-gray-400"
                         />
-                        <label htmlFor="isPublic" className="text-sm text-gray-300">
-                            Make this chat public
+                        <label htmlFor="isPublic" className="text-sm text-gray-700 font-serif">
+                            Make this chronicle public
                         </label>
                     </div>
 
                     {error && (
-                        <p className="text-red-400 text-sm">{error}</p>
+                        <p className="text-red-600 text-sm font-serif italic text-center">{error}</p>
                     )}
 
-                    <div className="flex justify-end gap-3 mt-6">
+                    <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-gray-200">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-4 py-2 bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700"
+                            className="px-6 py-2 bg-white border-2 border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 font-serif transition-colors"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="px-4 py-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-6 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 font-serif transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            {isLoading ? 'Creating...' : 'Create Chat'}
+                            {isLoading ? 'Creating...' : 'Begin Chronicle'}
                         </button>
                     </div>
                 </form>

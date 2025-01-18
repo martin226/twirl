@@ -73,7 +73,7 @@ const Main: React.FC = () => {
     };
     
     return (
-        <div className="w-full h-screen bg-gray-100 Whiteboard">
+        <div className="w-full h-screen bg-[#F6F5F0]">
             <Sidebar 
                 isHome={true}
                 isMenuMode={isMenuMode}
@@ -91,9 +91,7 @@ const Main: React.FC = () => {
                 onClose={() => setIsModalOpen(false)}
                 onCreateProject={handleCreateProject}
             />
-
-
-    </div>
+        </div>
     );
 };
 
