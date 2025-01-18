@@ -1,9 +1,11 @@
+from typing import Optional
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from db import Database, MessageCreate
-from llm.steps import run_pipeline, new_prompt
+# from llm.steps import run_pipeline, new_prompt
+from llm.core import openscad, followup, GenerationRequest, FollowupRequest
 
 app = FastAPI()
 
@@ -51,18 +53,43 @@ async def get_project(project_id: int):
 
 class InitialMessage(BaseModel):
     description: str
-    image_url: str
-    image_media_type: str
+    image_url: Optional[str] = None
+    image_data: Optional[str] = None
+    image_media_type: Optional[str] = None
 
 @app.post("/api/initial_message/{project_id}")
-async def get_initial_message(project_id: int, msg: InitialMessage):
+async def post_initial_message(project_id: int, msg: InitialMessage):
     db = await Database.new()
     project = await db.get_project(project_id)
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
     
     # result = await run_pipeline(msg.description, msg.image_url, msg.image_media_type)
-    result = await new_prompt(msg.description, msg.image_url, msg.image_media_type)
+    # result = await new_prompt(msg.description, msg.image_url, msg.image_media_type)
+    result = await openscad(GenerationRequest(description=msg.description, image_url=msg.image_url, image_data=msg.image_data, image_media_type=msg.image_media_type))
+
+    print("Result:", result)
+
+    return result
+
+class FollowupRequest(BaseModel):
+    original_prompt: str
+    openscad_output: str
+    instructions: str
+    image_url: Optional[str] = None
+    image_data: Optional[str] = None
+    image_media_type: Optional[str] = None
+
+@app.post("/api/followup_message/{project_id}")
+async def post_followup_message(project_id: int, msg: FollowupRequest):
+    db = await Database.new()
+    project = await db.get_project(project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    
+    # result = await run_pipeline(msg.description, msg.image_url, msg.image_media_type)
+    # result = await new_prompt(msg.description, msg.image_url, msg.image_media_type)
+    result = await followup(msg)
 
     print("Result:", result)
 

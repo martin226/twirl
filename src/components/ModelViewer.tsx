@@ -3,6 +3,7 @@ import { useFrame, useLoader } from '@react-three/fiber';
 import { useEffect, useRef, useState } from 'react';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js';
 import { usePdrStore } from '../contexts/store';
+import { Color } from 'three';
 
 function MySky() {
     const [sunPosition, setSunPosition] = useState([100, 20, 100]);
@@ -22,15 +23,53 @@ function MySky() {
     );
 }
 
+function GradientMaterial() {
+    const materialRef = useRef();
+  
+    // Custom shader for gradient
+    const gradientShader = {
+      uniforms: {
+        uColor1: { value: new Color(0x00ff00) }, // Start color
+        uColor2: { value: new Color(0x0000ff) }, // End color
+      },
+      vertexShader: `
+        varying vec3 vPosition;
+        void main() {
+          vPosition = position;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        varying vec3 vPosition;
+        uniform vec3 uColor1;
+        uniform vec3 uColor2;
+        void main() {
+          float mixFactor = (vPosition.y + 1.0) / 2.0;
+          gl_FragColor = vec4(mix(uColor1, uColor2, mixFactor), 1.0);
+        }
+      `,
+    };
+  
+    return (
+      <shaderMaterial
+        ref={materialRef}
+        attach="material"
+        args={[gradientShader]}
+      />
+    );
+  }
+
 function STLModel({ url }: any) {
     if (!url) {
         return null;
     }
     const geometry = useLoader(STLLoader, url);
 
+    console.log("Geometry", geometry);
+
     return (
         <mesh geometry={Array.isArray(geometry) ? geometry[0] : geometry}>
-            <meshStandardMaterial color="orange" />
+            <GradientMaterial />
         </mesh>
     );
 }
@@ -46,15 +85,6 @@ export default function ModelViewer() {
 
         console.log("Received output", output);
         setUrl(URL.createObjectURL(new Blob([output], { type: "application/octet-stream" })));
-
-        // Create a link to download the generated STL file
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(new Blob([output], { type: "application/octet-stream" }));
-        link.download = outputFile;
-        document.body.append(link);
-        link.click();
-        link.remove();
-        
     }
 
     useEffect(() => {

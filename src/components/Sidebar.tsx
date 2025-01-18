@@ -16,7 +16,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
     const { user } = useUser();
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState('');   
-    const { project, setProject } = useProject();   
+    const { project, setProject } = useProject();
 
     // Filter chats based on search query
     const filteredChats = project.filter((chat: any) => 
