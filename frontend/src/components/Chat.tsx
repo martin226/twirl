@@ -2,8 +2,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Paperclip, Send, MessageSquare, ScrollText, Boxes } from 'lucide-react';
 import ToolBar from './ToolBar';
 import { Canvas } from '@react-three/fiber';
-import { Stats } from '@react-three/drei';
+import dynamic from 'next/dynamic';
 import ModelViewer from './ModelViewer';
+
+const Stats = dynamic(() => import('@react-three/drei').then((mod) => mod.Stats), {
+    ssr: false
+});
 
 interface ChatProps {
     project: any;
