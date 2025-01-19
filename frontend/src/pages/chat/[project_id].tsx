@@ -72,9 +72,7 @@ const ChatPage: React.FC = () => {
     
     return (
         <>
-            {isLoading && (
-                <LoadingPage />
-            )}
+            
         <div className="flex flex-column h-screen bg-gray-900">
             <div className="">
                 <Sidebar 
@@ -92,6 +90,7 @@ const ChatPage: React.FC = () => {
                     user={user}
                     toolbarVisible={isVisible}
                     setToolbarVisible={setIsVisible}
+                    setIsLoading={setIsLoading}
                 />
             </div>
             <div className="">
@@ -99,6 +98,7 @@ const ChatPage: React.FC = () => {
                     project_id={project_id as string|| ''}
                     isVisible={isVisible}
                     setIsVisible={setIsVisible}
+                    setIsLoading={setIsLoading}
                 />
             </div>
         </div>

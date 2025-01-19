@@ -18,6 +18,8 @@ interface ChatProps {
     user: any;
     toolbarVisible: boolean;
     setToolbarVisible: (visible: boolean) => void;
+    setIsLoading: (loading: boolean) => void;
+    isLoading: boolean;
 }
 
 interface Message {
@@ -27,7 +29,7 @@ interface Message {
     image_url?: string;
     created_at: string;
 }
-const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVisible }) => {
+const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVisible, setIsLoading, isLoading }) => {
     const [message, setMessage] = useState('');
     const { isMouseHovering, setIsMouseHovering } = useIsMouseHovering();
     const [attachedImages, setAttachedImages] = useState<File[]>([]);
@@ -38,7 +40,6 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
     const [showChatLog, setShowChatLog] = useState(false);
     const [isExportModalOpen, setIsExportModalOpen] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
 
     const [chatLog, setChatLog] = useState<Message[]>([]);
     const chatLogRef = useRef<HTMLDivElement>(null);
