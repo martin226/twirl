@@ -111,7 +111,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
                     <div>
                         <div className={`text-xs font-['Cinzel'] tracking-[0.2em] transition-colors duration-500
                             ${isMouseHovering ? 'text-[#415791]' : 'text-gray-500'}`}>
-                            EDITION I
+                            Twirl
                         </div>
                         <span className={`text-2xl font-sans font-bold transition-colors duration-500
                             ${isMouseHovering ? 'text-[#2d3d6d]' : 'text-gray-900'}`}>
@@ -154,21 +154,21 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
                                     className="w-full p-2.5 text-left hover:bg-gray-100 rounded-lg flex items-center gap-3 text-gray-700 transition-colors group font-medium"
                                 >
                                     <Home size={18} className="text-gray-500" /> 
-                                    <span className="text-sm">Front Page</span>
+                                    <span className="text-sm font-sans">Front Page</span>
                                 </button>
                                 <button 
                                     onClick={() => { setCurrentSection('settings'); setIsMenuMode(false); }}
                                     className="w-full p-2.5 text-left hover:bg-gray-100 rounded-lg flex items-center gap-3 text-gray-700 transition-colors group font-medium"
                                 >
                                     <Settings size={18} className="text-gray-500" /> 
-                                    <span className="text-sm">Settings</span>
+                                    <span className="text-sm font-sans">Settings</span>
                                 </button>
                                 <button 
                                     onClick={() => { setCurrentSection('account'); setIsMenuMode(false); }}
                                     className="w-full p-2.5 text-left hover:bg-gray-100 rounded-lg flex items-center gap-3 text-gray-700 transition-colors group font-medium"
                                 >
                                     <User size={18} className="text-gray-500" /> 
-                                    <span className="text-sm">Account</span>
+                                    <span className="text-sm font-sans">Account</span>
                                 </button>
                             </div>
                         </div>
