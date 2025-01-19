@@ -28,6 +28,7 @@ class MessageResponse(BaseModel):
     is_user: bool
     content: str
     project_id: int
+    image_url: Optional[str] = None
     created_at: datetime
 
     class Config:

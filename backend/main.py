@@ -1,7 +1,7 @@
 import base64
 import uuid
 from typing import Optional
-from fastapi import FastAPI, HTTPException, Request, UploadFile
+from fastapi import FastAPI, HTTPException, Request, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -9,8 +9,6 @@ from img import upload_image
 from db import Database, MessageCreate
 # from llm.steps import run_pipeline, new_prompt
 from llm.core import openscad, followup, GenerationRequest, FollowupRequest
-from fastapi import Form
-from pydantic import BaseModel
 
 app = FastAPI()
 
@@ -78,7 +76,7 @@ async def post_initial_message(
     # Convert file content to Base64
     base64_content = base64.b64encode(file_content).decode("utf-8") if file_content else None
     
-    parameters, openscad_code = await openscad(GenerationRequest(
+    summary, parameters, openscad_code = await openscad(GenerationRequest(
         description=description,
         image_url=image_url,
         image_data=base64_content,
@@ -86,9 +84,8 @@ async def post_initial_message(
     ))
 
     # add message to database
-    # TODO: add image_url to message
     await db.add_message(MessageCreate(is_user=True, content=description, project_id=project_id, image_url=file_url))
-    message = await db.add_message(MessageCreate(is_user=False, content=f"Parameters:\n{parameters}\n\nOpenscade code:\n{openscad_code}", project_id=project_id))
+    message = await db.add_message(MessageCreate(is_user=False, content=summary, project_id=project_id))
     await db.create_artifact(openscad_code, parameters, message["id"])
 
     print("Result:", parameters, openscad_code)
@@ -105,15 +102,7 @@ async def post_followup_message(
     image_url: Optional[str] = Form(None),
     image_data: Optional[UploadFile] = Form(None),
     image_media_type: Optional[str] = Form(None),
-    # image2_url: Optional[str] = Form(None),
-    # image2_data: Optional[UploadFile] = Form(None),
-    # image2_media_type: Optional[str] = Form(None)
 ):
-    # form_data = await request.form()
-    # print("Form data:", form_data)
-    # print("Original prompt:", original_prompt)
-    # print("Openscad output:", openscad_output)
-
     db = await Database.new()
     project = await db.get_project(project_id)
     if not project:
@@ -138,11 +127,11 @@ async def post_followup_message(
         image_data=base64_content,
         image_media_type=image_media_type
     )
-    new_code, parameters = await followup(request)
+    explanation, new_code, parameters = await followup(request)
 
     # add message to database
     await db.add_message(MessageCreate(is_user=True, content=original_prompt, project_id=project_id, image_url=file_url))
-    message = await db.add_message(MessageCreate(is_user=False, content=f"Parameters:\n{parameters}\n\nOpenscade code:\n{new_code}", project_id=project_id))
+    message = await db.add_message(MessageCreate(is_user=False, content=explanation, project_id=project_id))
     await db.create_artifact(new_code, parameters, message["id"])
 
     print("Result:", new_code, parameters)

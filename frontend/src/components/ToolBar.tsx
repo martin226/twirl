@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { ChevronRight, ChevronLeft, ChevronDown } from 'lucide-react';
-import { Parameter, usePdrStore, useStateStore } from '../contexts/store';
+import { ChevronRight, ChevronLeft, ChevronDown, Settings, Code } from 'lucide-react';
+import { useIsMouseHovering } from '../contexts/IsMouseHovering';
+import { Parameter } from '../contexts/store';
+import { useStateStore } from '../contexts/store';
+import { usePdrStore } from '../contexts/store';
 
 interface ToolBarProps {
     isVisible: boolean;
@@ -15,19 +18,25 @@ const ParameterGroup: React.FC<{
 }> = ({ parameter, level, path, onUpdate }) => {
     const [isOpen, setIsOpen] = useState(true);
     const paddingLeft = `${level * 0.75}rem`;
+    const { isMouseHovering } = useIsMouseHovering();
+    const [isCodeMode, setIsCodeMode] = useState(false);
 
     if (parameter.group) {
         return (
             <div className="space-y-2">
                 <button
                     onClick={() => setIsOpen(!isOpen)}
-                    className="w-full flex items-center justify-between p-2 hover:bg-gray-50 rounded text-left transition-colors"
+                    className={`w-full flex items-center justify-between p-2 rounded transition-colors duration-500
+                        ${isMouseHovering ? 
+                            'bg-[#d4e1ff] hover:bg-[#c9d3ff] text-[#2d3d6d]' : 
+                            'hover:bg-gray-50 text-gray-900'}`}
                     style={{ paddingLeft }}
                 >
-                    <span className="text-sm font-serif font-medium text-gray-900">{parameter.name}</span>
+                    <span className="text-sm font-sans font-bold">{parameter.name}</span>
                     <ChevronDown 
                         size={16} 
-                        className={`transform transition-transform ${isOpen ? '' : '-rotate-90'} text-gray-500`}
+                        className={`transform transition-transform ${isOpen ? '' : '-rotate-90'} 
+                            ${isMouseHovering ? 'text-[#415791]' : 'text-gray-500'}`}
                     />
                 </button>
                 {isOpen && parameter.parameters && (
@@ -51,10 +60,16 @@ const ParameterGroup: React.FC<{
     switch (parameter.type) {
         case 'slider':
             return (
-                <div className="space-y-1 px-2" style={{ paddingLeft }}>
+                <div className="space-y-1.5 px-3" style={{ paddingLeft: `calc(${paddingLeft} + 0.75rem)` }}>
                     <div className="flex justify-between items-center">
-                        <span className="text-sm font-serif text-gray-700">{parameter.name}</span>
-                        <span className="text-sm font-mono text-gray-500">{parameter.value}</span>
+                        <span className={`text-sm font-['Cinzel'] transition-colors duration-500
+                            ${isMouseHovering ? 'text-[#2d3d6d] font-medium' : 'text-gray-700'}`}>
+                            {parameter.name}
+                        </span>
+                        <span className={`text-sm font-mono transition-colors duration-500
+                            ${isMouseHovering ? 'text-[#574191] font-bold' : 'text-gray-500'}`}>
+                            {parameter.value}
+                        </span>
                     </div>
                     <input
                         type="range"
@@ -62,20 +77,30 @@ const ParameterGroup: React.FC<{
                         max={parameter.max_value}
                         value={parameter.value}
                         onChange={(e) => onUpdate(path, Number(e.target.value))}
-                        className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-gray-900"
+                        className={`w-full h-2 rounded-lg appearance-none cursor-pointer
+                            ${isMouseHovering ? 
+                                'bg-[#d4e1ff] accent-[#415791]' : 
+                                'bg-gray-200 accent-gray-900'}`}
                     />
                 </div>
             );
         case 'none':
             return (
-                <div className="px-2" style={{ paddingLeft }}>
+                <div className="px-3" style={{ paddingLeft: `calc(${paddingLeft} + 0.75rem)` }}>
                     <div className="flex justify-between items-center">
-                        <span className="text-sm font-serif text-gray-700">{parameter.name}</span>
+                        <span className={`text-sm font-['Cinzel'] transition-colors duration-500
+                            ${isMouseHovering ? 'text-[#2d3d6d] font-medium' : 'text-gray-700'}`}>
+                            {parameter.name}
+                        </span>
                         <input
                             type="number"
                             value={parameter.value}
                             onChange={(e) => onUpdate(path, Number(e.target.value))}
-                            className="w-20 px-2 py-1 text-sm bg-white border border-gray-200 rounded-lg text-gray-900 font-mono focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
+                            className={`w-20 px-2 py-1 text-sm rounded-lg font-mono focus:outline-none focus:ring-2
+                                transition-colors duration-500
+                                ${isMouseHovering ? 
+                                    'bg-[#d4e1ff] border-[#a5b8e3] text-[#2d3d6d] focus:ring-[#415791]' : 
+                                    'bg-white border-gray-200 text-gray-900 focus:ring-gray-400'}`}
                         />
                     </div>
                 </div>
@@ -88,6 +113,8 @@ const ParameterGroup: React.FC<{
 const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
   const { openscad, setOpenscad, parameters, setParameters } = useStateStore();
   const { worker } = usePdrStore();
+  const { isMouseHovering } = useIsMouseHovering();
+  const [isCodeMode, setIsCodeMode] = useState(false);
     // const [openscad, setOpenscad] = useState<string>("");
     // const [parameters, setParameters] = useState<Parameter[]>([]);
 
@@ -154,26 +181,60 @@ const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
     }, [openscad]);
     
     return isVisible ? (
-        <div className="absolute right-0 top-0 w-[300px] max-w-[90vw] h-full bg-[#F6F5F0] border-l border-gray-200 shadow-lg z-50 flex flex-col">
+        <div className={`absolute right-0 top-0 w-[300px] max-w-[90vw] h-full border-l shadow-lg z-50 flex flex-col
+            transition-all duration-500
+            ${isMouseHovering ? 
+                'bg-gradient-to-b from-[#e4edff] via-[#d5e4ff] to-[#e4edff] border-[#a5b8e3]/30 text-[#415791]' : 
+                'bg-[#F6F5F0] border-gray-200'
+            }`}>
             {/* Header */}
-            <div className="sticky top-0 p-4 border-b-2 border-gray-900 bg-[#F6F5F0] z-10">
+            <div className={`sticky top-0 p-4 border-b-2 z-10 transition-colors duration-500
+                ${isMouseHovering ? 
+                    'border-[#2d3d6d] bg-[#e4edff]' : 
+                    'border-gray-900 bg-[#F6F5F0]'
+                }`}>
                 <div className="flex items-center justify-between mb-2">
-                    <div className="text-xs font-serif tracking-[0.2em] text-gray-500">TOOLS</div>
-                <button 
-                    onClick={() => setIsVisible(false)}
-                    className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-700 transition-colors"
-                    title="Minimize toolbar"
-                >
-                        <ChevronRight size={18} />
-                </button>
-                </div>
-                <h2 className="text-xl font-serif font-bold text-gray-900">
-                    TOOLBAR
-                </h2>
-                                </div>
+                    {/* Code/Parameter toggle button */}
+                    <button 
+                        onClick={() => setIsCodeMode(!isCodeMode)}
+                        className={`px-3 py-2 rounded-lg transition-all duration-500 flex items-center gap-2 font-sans text-sm
+                            ${isMouseHovering ? 
+                                'bg-[#415791] text-[#e4edff] hover:bg-[#2d3d6d] shadow-md' : 
+                                'bg-gray-900 text-white hover:bg-gray-800'}`}
+                        title={isCodeMode ? "Switch to parameters" : "Switch to code"}
+                    >
+                        {isCodeMode ? (
+                            <>
+                                <Settings size={16} />
+                                <span>Parameters</span>
+                            </>
+                        ) : (
+                            <>
+                                <Code size={16} />
+                                <span>Code</span>
+                            </>
+                        )}
+                    </button>
 
+                    {/* Minimize button */}
+                    <button 
+                        onClick={() => setIsVisible(false)}
+                        className={`px-3 py-2 rounded-lg transition-all duration-500 flex items-center gap-2 font-sans text-sm ml-2
+                            ${isMouseHovering ? 
+                                'bg-[#415791] text-[#e4edff] hover:bg-[#2d3d6d] shadow-md' : 
+                                'bg-gray-900 text-white hover:bg-gray-800'}`}
+                        title="Minimize toolbar"
+                    >
+                        <ChevronRight size={16} />
+                        <span>Hide</span>
+                    </button>
+                </div>
+                <h2 className={`text-xl font-sans font-bold transition-colors duration-500
+                    ${isMouseHovering ? 'text-[#3d2d6d]' : 'text-gray-900'}`}>
+                    {isCodeMode ? 'Code Editor' : 'Parameter Editor'}
+                </h2>
             {/* Parameters Section */}
-            <div className="flex-1 px-3 py-2 space-y-3 overflow-y-auto overflow-x-hidden custom-scrollbar">
+            {/* <div className="flex-1 px-3 py-2 space-y-3 overflow-y-auto overflow-x-hidden custom-scrollbar">
                 {parameters && parameters.map((parameter, index) => (
                     <div key={`${parameter.name}-${index}`} className="bg-white rounded-lg shadow-sm p-2">
                         <ParameterGroup 
@@ -183,18 +244,56 @@ const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
                             onUpdate={updateParameter}
                         />
                         </div>
+                    ))}*/}
+            </div> 
+
+            {/* Parameters Section */}
+            {isCodeMode ? (
+                <div className="flex-1 px-3 py-2">
+                    <textarea
+                        className={`w-full h-full p-4 font-mono text-sm rounded-lg focus:outline-none focus:ring-2 transition-colors duration-500
+                            ${isMouseHovering ? 
+                                'bg-[#1a3a5e]/10 text-[#2d3d6d] focus:ring-[#415791]' : 
+                                'bg-gray-50 text-gray-900 focus:ring-gray-400'}`}
+                        value={openscad}
+                        readOnly
+                    />
+                </div>
+            ) : (
+                <div className="flex-1 px-3 py-2 space-y-3 overflow-y-auto overflow-x-hidden custom-scrollbar">
+                    {parameters.map((parameter, index) => (
+                        <div key={`${parameter.name}-${index}`} className={`transition-colors duration-500
+                            ${isMouseHovering ? 
+                                'bg-[#e9f0ff] hover:bg-[#e4edff] border border-[#a5b8e3]/50' : 
+                                'bg-white hover:bg-gray-50'} 
+                            rounded-lg shadow-sm p-3 pl-4`}>
+                            <ParameterGroup 
+                                parameter={parameter} 
+                                level={0}
+                                path={[index]}
+                                onUpdate={updateParameter}
+                            />
+                        </div>
                     ))}
-            </div>
+                </div>
+            )}
 
             {/* Apply Changes Button */}
-            <div className="sticky bottom-0 p-4 bg-[#F6F5F0] border-t border-gray-200 z-10">
-            <button 
-                    className="w-full bg-gray-900 text-white py-2.5 rounded-lg font-serif tracking-wide text-sm hover:bg-gray-800 transition-colors"
+            <div className={`sticky bottom-0 p-4 border-t transition-colors duration-500
+                ${isMouseHovering ? 
+                    'bg-[#e4edff] border-[#a5b8e3]/30' : 
+                    'bg-[#F6F5F0] border-gray-200'} z-10`}>
+                <button 
+                    className={`w-full py-2.5 rounded-lg font-sans tracking-wide text-sm transition-colors duration-500
+                        ${isMouseHovering ? 
+                            'bg-[#415791] hover:bg-[#2d3d6d] text-[#e4edff]' : 
+                            'bg-gray-900 hover:bg-gray-800 text-white'}`}
                     onClick={handleApplyChanges}
-            >
-                APPLY CHANGES
-            </button>
-                <div className="mt-2 text-xs text-gray-500 font-serif italic text-center">
+                >
+                    APPLY CHANGES
+                </button>
+                <div className={`mt-2 text-xs font-sans italic text-center transition-colors duration-500
+                    ${isMouseHovering ? 'text-[#415791]' : 'text-gray-500'}`}>
                     Use the toolbar to customize your imagination
                 </div>
             </div>
@@ -202,11 +301,14 @@ const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
     ) : (
         <button 
             onClick={() => setIsVisible(true)}
-            className="fixed right-0 top-4 p-2 bg-[#F6F5F0] border-l border-t border-b border-gray-200 rounded-l-lg shadow-lg text-gray-500 hover:text-gray-700 transition-colors z-50 flex items-center gap-2"
+            className={`fixed right-0 top-4 p-2 rounded-l-lg shadow-lg transition-all duration-500 flex items-center gap-2 z-50
+                ${isMouseHovering ? 
+                    'bg-[#e4edff] border border-[#a5b8e3]/30 text-[#415791] hover:text-[#2d3d6d] hover:bg-[#d5e4ff]' : 
+                    'bg-[#F6F5F0] border-l border-t border-b border-gray-200 text-gray-500 hover:text-gray-700'}`}
             title="Show toolbar"
         >
             <ChevronLeft size={18} />
-            <span className="font-serif pr-1 text-sm">Toolbar</span>
+            <span className="font-sans pr-1 text-sm">Toolbar</span>
         </button>
     );
 };

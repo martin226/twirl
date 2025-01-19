@@ -64,10 +64,11 @@ async def openscad(gen_request: GenerationRequest):
         ],
     )
     print("Step 0 message:", message.content[0].text)
+    summary = message.content[0].text.split("</model_planning>")[0]
     parameters = message.content[0].text.split("<parameters>")[1].split("</parameters>")[0]
     # since the XML returned by the LLM is sometimes invalid, we are just going to find the text in between the <openscad_output> tags
     openscad_code = message.content[0].text.split("<openscad_output>")[1].split("</openscad_output>")[0]
-    return [parameters, openscad_code]
+    return [summary, parameters, openscad_code]
 
 class FollowupRequest(BaseModel):
     original_prompt: str
@@ -117,7 +118,8 @@ async def followup(followup_request: FollowupRequest):
         ],
     )
     print("Step 1 message:", message.content[0].text)
+    explanation = message.content[0].text.split("<explanation>")[1].split("</explanation>")[0]
     new_openscad = message.content[0].text.split("</modified_script>")[0]
     parameters = message.content[0].text.split("<parameters>")[1].split("</parameters>")[0]
-    return [new_openscad, parameters]
+    return [explanation, new_openscad, parameters]
 

@@ -34,12 +34,10 @@ const ChatPage: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        console.log("project_id", project_id);
         if (project_id) {
             const fetchProject = async () => {
                 const response = await fetch(`http://localhost:8000/api/project/${project_id}`);
                 const data = await response.json();
-                console.log("data", data);
                 setCurrentProject(data);
             }
             fetchProject();

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Newspaper, Feather, Coffee, BookOpen, ArrowRight, Clock, MessageSquare, Trash } from 'lucide-react';
+import { Moon, Feather, Cloud, BookOpen, ArrowRight, Clock, MessageSquare, Trash, Star, Sparkle } from 'lucide-react';
 import { useProject } from '../contexts/ProjectContext';
 import { useRouter } from 'next/router';
 import ImportArchiveModal from './ImportArchiveModal';
@@ -83,17 +83,17 @@ const Home: React.FC<HomeProps> = ({ setIsModalOpen }) => {
                 <div className="max-w-4xl mx-auto mb-12 text-center">
                     <div className="flex justify-center mb-4">
                         <div className="h-px w-32 bg-gray-300 self-center"></div>
-                        <Feather className="mx-4 text-gray-400" size={24} />
+                        <Sparkle className="mx-4 text-gray-400" size={24} />
                         <div className="h-px w-32 bg-gray-300 self-center"></div>
                     </div>
-                    <h1 className="font-serif text-5xl font-bold text-gray-900 mb-2">MANAGE YOUR IMAGINATIONS</h1>
-                    <div className="text-sm text-gray-500 font-serif italic">Inspire, Imagine, Invent</div>
+                    <h1 className="font-sans text-5xl font-bold text-gray-900 mb-2">Twirl</h1>
+                    <div className="text-sm text-gray-500 font-sans italic">Manage your imaginations and create new ones</div>
                     <div className="flex justify-center items-center gap-3 mt-4 text-gray-400">
-                        <Coffee size={16} />
+                        <Cloud size={16} />
                         <div className="h-1 w-1 rounded-full bg-gray-300"></div>
-                        <BookOpen size={16} />
+                        <Star size={16} />
                         <div className="h-1 w-1 rounded-full bg-gray-300"></div>
-                        <Newspaper size={16} />
+                        <Moon size={16} />
                     </div>
                 </div>
 
@@ -101,11 +101,11 @@ const Home: React.FC<HomeProps> = ({ setIsModalOpen }) => {
                     {/* Stats Card */}
                     <div className="bg-white rounded-lg shadow-md p-8 border border-gray-100 hover:shadow-lg transition-all duration-200">
                         <div className="flex flex-col items-center text-center">
-                            <h3 className="font-serif text-lg text-gray-900 mb-3">Volume Statistics</h3>
-                            <p className="text-6xl font-serif font-bold text-gray-900 leading-none mb-3">
+                            <h3 className="font-sans text-lg text-gray-900 mb-3">Number of Projects</h3>
+                            <p className="text-6xl font-sans font-bold text-gray-900 leading-none mb-3">
                                 {project?.length || 0}
                             </p>
-                            <div className="text-sm text-gray-500 font-serif italic mb-4">Active Conversations</div>
+                            <div className="text-sm text-gray-500 font-sans italic mb-4">Active Models</div>
                             <div className="flex justify-center items-center gap-2">
                                 <div className="h-px w-12 bg-gray-200"></div>
                                 <div className="w-2 h-2 rounded-full bg-gray-300"></div>
@@ -117,27 +117,27 @@ const Home: React.FC<HomeProps> = ({ setIsModalOpen }) => {
                     {/* Actions Card */}
                     <div className="bg-white rounded-lg shadow-md p-8 border border-gray-100">
                         <div className="flex flex-col items-center text-center">
-                            <h3 className="font-serif text-lg text-gray-900 mb-6">Editorial Actions</h3>
+                            <h3 className="font-sans text-lg text-gray-900 mb-6">Quick Actions</h3>
                             <div className="space-y-4 w-full max-w-xs">
                                 <button 
                                     onClick={() => setIsModalOpen(true)}
-                                    className="w-full px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-serif group relative overflow-hidden"
+                                    className="w-full px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-sans group relative overflow-hidden"
                                 >
                                     <div className="absolute inset-0 bg-white/10 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-300"></div>
-                                    <span className="relative">Begin New Conversation</span>
+                                    <span className="relative">Begin New Imagination</span>
                                 </button>
                                 
                                 <div className="flex items-center gap-3 my-4">
                                     <div className="h-px flex-1 bg-gray-200"></div>
-                                    <span className="font-serif text-sm text-gray-400">or</span>
+                                    <span className="font-sans text-sm text-gray-400">or</span>
                                     <div className="h-px flex-1 bg-gray-200"></div>
                                 </div>
 
                                 <button 
                                     onClick={() => setIsImportModalOpen(true)} 
-                                    className="w-full px-6 py-3 bg-white border-2 border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-serif"
+                                    className="w-full px-6 py-3 bg-white border-2 border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-sans"
                                 >
-                                    Import Archive
+                                    Import Model
                                 </button>
                             </div>
                         </div>
@@ -147,7 +147,7 @@ const Home: React.FC<HomeProps> = ({ setIsModalOpen }) => {
                 {/* Project Cards */}
                 <div className="max-w-4xl mx-auto mt-12">
                     <div className="border-b-2 border-gray-900 mb-6">
-                        <h2 className="font-serif text-2xl font-bold text-gray-900 pb-2">LATEST MODELS</h2>
+                        <h2 className="font-sans text-2xl font-bold text-gray-900 pb-2">LATEST MODELS</h2>
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -160,10 +160,10 @@ const Home: React.FC<HomeProps> = ({ setIsModalOpen }) => {
                             >
                                 <div className="flex items-start justify-between mb-4">
                                     <div className="flex-1">
-                                        <h3 className="font-serif text-lg font-bold text-gray-900 mb-2 line-clamp-1 group-hover:text-gray-600 transition-colors">
+                                        <h3 className="font-sans text-lg font-bold text-gray-900 mb-2 line-clamp-1 group-hover:text-gray-600 transition-colors">
                                             {chat.title}
                                         </h3>
-                                        <p className="text-sm text-gray-500 font-serif italic line-clamp-2">
+                                        <p className="text-sm text-gray-500 font-sans italic line-clamp-2">
                                             {chat.messages.length > 0 ? chat.messages[0].content : "No messages yet"}
                                         </p>
                                     </div>
@@ -172,7 +172,7 @@ const Home: React.FC<HomeProps> = ({ setIsModalOpen }) => {
                                     </div>
                                 </div>
                                 
-                                <div className="flex items-center justify-between text-xs text-gray-400 font-serif">
+                                <div className="flex items-center justify-between text-xs text-gray-400 font-sans">
                                     <div className="flex items-center gap-2">
                                         <Clock size={12} />
                                         <span>
@@ -194,8 +194,8 @@ const Home: React.FC<HomeProps> = ({ setIsModalOpen }) => {
 
                     {project.length === 0 && (
                         <div className="text-center py-12">
-                            <div className="font-serif text-gray-400 italic">
-                                No conversations yet. Begin your first chronicle above.
+                            <div className="font-sans text-gray-400 italic">
+                                No imaginations yet. Begin your first imagination above.
                             </div>
                         </div>
                     )}
@@ -204,9 +204,9 @@ const Home: React.FC<HomeProps> = ({ setIsModalOpen }) => {
                 {/* Decorative Footer */}
                 <div className="max-w-4xl mx-auto mt-12 pt-8 border-t border-gray-200">
                     <div className="flex justify-center items-center gap-4 text-gray-400">
-                        <div className="font-serif italic text-sm">Quality Conversations Since 1939</div>
+                        <div className="font-sans italic text-sm">Twirl. Text-to-World, IRL.</div>
                         <div className="h-1 w-1 rounded-full bg-gray-300"></div>
-                        <div className="font-serif italic text-sm">All Rights Reserved</div>
+                        <div className="font-sans italic text-sm">All Rights Reserved</div>
                     </div>
                 </div>
 

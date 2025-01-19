@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { TransformControls } from '@react-three/drei';
 import { useThree } from '@react-three/fiber';
 
-const TransformControlsWrapper = ({ children }) => {
+const TransformControlsWrapper = ({ children }: { children: React.ReactNode }) => {
 //   const [isHovered, setIsHovered] = useState(false);
   const [mode, setMode] = useState('translate');
   const [showControls, setShowControls] = useState(false);
@@ -13,7 +13,7 @@ const TransformControlsWrapper = ({ children }) => {
   useEffect(() => {
     const controls = controlsRef.current;
     if (controls) {
-      const callback = (event) => {
+      const callback = (event: any) => {
         if (event.type === 'dblclick') {
           setMode((prevMode) => {
             switch (prevMode) {
@@ -36,14 +36,14 @@ const TransformControlsWrapper = ({ children }) => {
   return (
     <>
       <group 
-        ref={targetRef}
+        ref={targetRef as any}
       >
         {children}
       </group>
       {/* {showControls && ( */}
         <TransformControls
-          ref={controlsRef}
-          mode={mode}
+          ref={controlsRef as any}
+          mode={mode as any }
           object={targetRef.current}
         //   onPointerOver={handlePointerOver}
         //   onPointerOut={handlePointerOut}

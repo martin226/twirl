@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import Chat from '../components/Chat';
+// import Chat from '../components/Chat';
 import Sidebar from '../components/Sidebar';
 import Home from '../components/Home';
 import Login from '../components/Login';
