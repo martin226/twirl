@@ -10,7 +10,7 @@ import Login from '@/src/components/Login';
 import Home from '@/src/components/Home';
 import ToolBar from '@/src/components/ToolBar';
 import LoadingPage from '@/src/components/LoadingPage';
-
+import { useIsMouseHovering } from '@/src/contexts/IsMouseHovering';
 
 const ChatPage: React.FC = () => {
     const router = useRouter();
@@ -24,6 +24,7 @@ const ChatPage: React.FC = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [currentProject, setCurrentProject] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const { isMouseHovering, setIsMouseHovering } = useIsMouseHovering();
     
     useEffect(() => {
         if (localStorage.getItem('user')) {
@@ -69,6 +70,14 @@ const ChatPage: React.FC = () => {
             />
         );
     }
+
+    useEffect(() => {   
+        if (isLoading) {
+            setIsMouseHovering(true);
+        } else {
+            setIsMouseHovering(false);
+        }
+    }, [isLoading]);
     
     return (
         <>

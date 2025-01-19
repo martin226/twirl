@@ -35,6 +35,7 @@ const Home: React.FC<HomeProps> = ({ setIsModalOpen }) => {
         setContextMenu(null);
     };
 
+
     // Close context menu when clicking outside
     useEffect(() => {
         const handleClick = () => setContextMenu(null);

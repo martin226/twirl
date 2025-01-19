@@ -152,7 +152,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
             setAttachedImages([]); // Clear attached images
 
             setIsLoading(true);
-            setIsMouseHovering(true);
+            // setIsMouseHovering(true);
 
             const formData = new FormData();
             formData.append('description', message);
@@ -478,7 +478,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                             handleKeyDown(event);
                         }
                     }}
-                    onMouseEnter={() => setIsMouseHovering(true)}
+                    // onMouseEnter={() => setIsMouseHovering(true)}
                     className={`h-[10vh] w-[240px] relative overflow-hidden rounded-2xl text-white flex items-center justify-center flex-shrink-0 transition-all duration-500 origin-left
                         ${isMouseHovering ? 
                             'bg-gradient-to-r from-[#2d3d6d] via-[#415791] to-[#2d3d6d] shadow-xl shadow-blue-500/20 scale-110 border border-blue-300/30' : 
@@ -492,7 +492,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                     {/* Button content */}
                     <div className="flex flex-col items-center gap-1">
                         <span className="font-sans tracking-[0.2em] text-sm font-medium">
-                            NEW PERSPECTIVE
+                            PECTIVE
                         </span>
                         <div className="flex items-center gap-1 opacity-60">
                             <div className="w-1 h-[1px] bg-current" />
