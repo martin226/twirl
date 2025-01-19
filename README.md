@@ -9,5 +9,5 @@ Technologies used:
 ![image](https://github.com/user-attachments/assets/ac63649c-f9ce-4efc-a95b-ddebeb0c9d46)
 
 
-Who are we?
+Created by: 
 Martin, Marcus, William, and Jeff
