@@ -232,7 +232,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                     </div>
                     <h1 className={`text-5xl font-sans font-black tracking-tight mb-2 transition-colors duration-500
                         ${isMouseHovering ? 'text-[#2d3d6d]' : 'text-gray-900'}`}>
-                        {!showChatLog ? project?.title?.toUpperCase() || 'LOADING...' : 'ACTIVITIES'}
+                        {project?.title?.toUpperCase() || 'LOADING...'}
                     </h1>
                     <div className="flex items-center justify-center gap-3">
                         <div className={`h-px w-20 transition-colors duration-500
@@ -248,63 +248,81 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
             </div>
 
             {/* Messages Area */}
-            {!showChatLog && <div 
-                ref={messageAreaRef}
-                className="relative flex-1 overflow-y-auto space-y-4 custom-scrollbar"
-            >
-                <Stats parent={messageAreaRef} className="!absolute" />
-                <Canvas>
-                    <ModelViewer />
-                </Canvas>
-               {/* width: {dimensions.width} <br />
-               height: {dimensions.height} */}
-            </div>  
-            }
+            <div className="relative flex-1">
+                {/* Canvas Area */}
+                <div 
+                    ref={messageAreaRef}
+                    className={`absolute inset-0 overflow-y-auto space-y-4 custom-scrollbar transition-opacity duration-500
+                        ${showChatLog ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+                >
+                    <Stats parent={messageAreaRef} className="!absolute" />
+                    <Canvas>
+                        <ModelViewer />
+                    </Canvas>
+                </div>
 
-            {/* Floating Toggle ChatLog */}
-            {showChatLog && (
-                <div ref={chatLogRef} className="flex-1 p-6 overflow-y-auto ml-[5vw] mr-[5vw] mb-[15vh]"
+                {/* Messages Area */}
+                <div 
+                    ref={chatLogRef} 
+                    className={`absolute inset-0 p-6 overflow-y-auto ml-[5vw] mr-[5vw] mb-[15vh] transition-opacity duration-500
+                        ${showChatLog ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
                     style={{ scrollbarWidth: 'none' }} 
                 >
-                    <div className="flex flex-col gap-8">
-                        {chatLog.map((message, index) => (
-                            <div key={index} className="border-l-4 pl-6 py-2 space-y-3 hover:bg-white transition-colors">
-                                <div className="flex items-center gap-3">
-                                    <span className="font-sans font-bold text-gray-900">
-                                        {message?.is_user ? 'User Entry' : 'System Response'}
-                                    </span>
-                                    <span className="text-sm font-sans italic text-gray-500">
-                                        {new Date(message?.created_at).toLocaleTimeString('en-US', { 
-                                            hour: 'numeric', 
-                                            minute: '2-digit',
-                                            hour12: true 
-                                        })}
-                                    </span>
-                                </div>
-                                <div className="font-sans text-gray-700 leading-relaxed">
-                                    {message.content}
-                                </div>
-                                {message?.image && message?.image?.length > 0 && (
-                                    <div className="grid grid-cols-3 gap-4 mt-4">
-                                        {message?.image?.map((image, imgIndex) => (
-                                            <div key={imgIndex} className="aspect-square overflow-hidden border border-gray-200">
-                                                <img 
-                                                    src={URL.createObjectURL(image)} 
-                                                    alt="log attachment" 
-                                                    className="w-full h-full object-cover hover:scale-105 transition-transform" 
-                                                />
-                                            </div>
-                                        ))}
+                    {chatLog.length > 0 ? (
+                        <div className="flex flex-col gap-8">
+                            {chatLog.map((message, index) => (
+                                <div key={index} className="border-l-4 pl-6 py-2 space-y-3 hover:bg-white transition-colors">
+                                    <div className="flex items-center gap-3">
+                                        <span className="font-sans font-bold text-gray-900">
+                                            {message?.is_user ? 'User Entry' : 'System Response'}
+                                        </span>
+                                        <span className="text-sm font-sans italic text-gray-500">
+                                            {new Date(message?.created_at).toLocaleTimeString('en-US', { 
+                                                hour: 'numeric', 
+                                                minute: '2-digit',
+                                                hour12: true 
+                                            })}
+                                        </span>
                                     </div>
-                                )}
+                                    <div className="font-sans text-gray-700 leading-relaxed">
+                                        {message.content}
+                                    </div>
+                                    {message?.image && message?.image?.length > 0 && (
+                                        <div className="grid grid-cols-3 gap-4 mt-4">
+                                            {message?.image?.map((image, imgIndex) => (
+                                                <div key={imgIndex} className="aspect-square overflow-hidden border border-gray-200">
+                                                    <img 
+                                                        src={URL.createObjectURL(image)} 
+                                                        alt="log attachment" 
+                                                        className="w-full h-full object-cover hover:scale-105 transition-transform" 
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="h-full flex flex-col items-center justify-center text-center">
+                            <div className={`p-8 rounded-2xl backdrop-blur-sm border transition-colors duration-500
+                                ${isMouseHovering ? 
+                                    'bg-[#e0e8ff]/50 border-[#a5b8e3]/30 text-[#2d3d6d]' : 
+                                    'bg-white/50 border-gray-200 text-gray-600'}`}>
+                                <p className="text-lg font-sans">
+                                    Go ahead and type in your prompt to generate your first 3D model!
+                                </p>
+                                <p className={`text-sm font-sans mt-2 transition-colors duration-500
+                                    ${isMouseHovering ? 'text-[#415791]' : 'text-gray-500'}`}>
+                                    Your conversation history will appear here
+                                </p>
                             </div>
-                        ))}
-                    </div>
+                        </div>
+                    )}
                 </div>
-            )}
+            </div>
 
-
-            {/* Floating Input and Toggle Row */}
+            {/* Floating Toggle ChatLog */}
             <div className="absolute bottom-6 left-[5vw] right-[5vw] flex items-end gap-4 pr-8">
                 {/* Toggle Button */}
                 <button 
