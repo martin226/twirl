@@ -38,7 +38,7 @@ const ParameterGroup: React.FC<{
                             'hover:bg-gray-50 text-gray-900'}`}
                     style={{ paddingLeft }}
                 >
-                    <span className="text-sm font-serif font-bold">{parameter.name}</span>
+                    <span className="text-sm font-sans font-bold">{parameter.name}</span>
                     <ChevronDown 
                         size={16} 
                         className={`transform transition-transform ${isOpen ? '' : '-rotate-90'} 
@@ -465,7 +465,7 @@ const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
                     {/* Code/Parameter toggle button */}
                     <button 
                         onClick={() => setIsCodeMode(!isCodeMode)}
-                        className={`px-3 py-2 rounded-lg transition-all duration-500 flex items-center gap-2 font-serif text-sm
+                        className={`px-3 py-2 rounded-lg transition-all duration-500 flex items-center gap-2 font-sans text-sm
                             ${isMouseHovering ? 
                                 'bg-[#415791] text-[#e4edff] hover:bg-[#2d3d6d] shadow-md' : 
                                 'bg-gray-900 text-white hover:bg-gray-800'}`}
@@ -487,7 +487,7 @@ const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
                     {/* Minimize button */}
                     <button 
                         onClick={() => setIsVisible(false)}
-                        className={`px-3 py-2 rounded-lg transition-all duration-500 flex items-center gap-2 font-serif text-sm ml-2
+                        className={`px-3 py-2 rounded-lg transition-all duration-500 flex items-center gap-2 font-sans text-sm ml-2
                             ${isMouseHovering ? 
                                 'bg-[#415791] text-[#e4edff] hover:bg-[#2d3d6d] shadow-md' : 
                                 'bg-gray-900 text-white hover:bg-gray-800'}`}
@@ -497,7 +497,7 @@ const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
                         <span>Hide</span>
                     </button>
                 </div>
-                <h2 className={`text-xl font-serif font-bold transition-colors duration-500
+                <h2 className={`text-xl font-sans font-bold transition-colors duration-500
                     ${isMouseHovering ? 'text-[#3d2d6d]' : 'text-gray-900'}`}>
                     {isCodeMode ? 'Code Editor' : 'Parameter Editor'}
                 </h2>
@@ -540,7 +540,7 @@ const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
                     'bg-[#e4edff] border-[#a5b8e3]/30' : 
                     'bg-[#F6F5F0] border-gray-200'} z-10`}>
                 <button 
-                    className={`w-full py-2.5 rounded-lg font-serif tracking-wide text-sm transition-colors duration-500
+                    className={`w-full py-2.5 rounded-lg font-sans tracking-wide text-sm transition-colors duration-500
                         ${isMouseHovering ? 
                             'bg-[#415791] hover:bg-[#2d3d6d] text-[#e4edff]' : 
                             'bg-gray-900 hover:bg-gray-800 text-white'}`}
@@ -548,7 +548,7 @@ const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
                 >
                     APPLY CHANGES
                 </button>
-                <div className={`mt-2 text-xs font-serif italic text-center transition-colors duration-500
+                <div className={`mt-2 text-xs font-sans italic text-center transition-colors duration-500
                     ${isMouseHovering ? 'text-[#415791]' : 'text-gray-500'}`}>
                     Use the toolbar to customize your imagination
                 </div>
@@ -557,11 +557,14 @@ const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
     ) : (
         <button 
             onClick={() => setIsVisible(true)}
-            className="fixed right-0 top-4 p-2 bg-[#F6F5F0] border-l border-t border-b border-gray-200 rounded-l-lg shadow-lg text-gray-500 hover:text-gray-700 transition-colors z-50 flex items-center gap-2"
+            className={`fixed right-0 top-4 p-2 rounded-l-lg shadow-lg transition-all duration-500 flex items-center gap-2 z-50
+                ${isMouseHovering ? 
+                    'bg-[#e4edff] border border-[#a5b8e3]/30 text-[#415791] hover:text-[#2d3d6d] hover:bg-[#d5e4ff]' : 
+                    'bg-[#F6F5F0] border-l border-t border-b border-gray-200 text-gray-500 hover:text-gray-700'}`}
             title="Show toolbar"
         >
             <ChevronLeft size={18} />
-            <span className="font-serif pr-1 text-sm">Toolbar</span>
+            <span className="font-sans pr-1 text-sm">Toolbar</span>
         </button>
     );
 };

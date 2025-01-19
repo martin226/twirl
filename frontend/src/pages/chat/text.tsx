@@ -21,7 +21,7 @@ const ChatPage: React.FC = () => {
     const [isSignup, setIsSignup] = useState(false);
     const [isMenuMode, setIsMenuMode] = useState(true);
     const [currentSection, setCurrentSection] = useState<'home' |'settings' | 'account'>('home');
-    const [isVisible, setIsVisible] = useState(true);
+    const [isVisible, setIsVisible] = useState(false);
     const [currentProject, setCurrentProject] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     
@@ -43,6 +43,12 @@ const ChatPage: React.FC = () => {
             fetchProject();
         }
     }, [project_id]);
+
+    // this will run when the code successfully fetch the project
+    const successRetrieve = () => {
+        setIsVisible(true);
+        setIsLoading(false);
+    }
 
     const handleLogin = async (user: object) => {
         setIsAuthenticated(true);

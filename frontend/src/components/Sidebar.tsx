@@ -55,15 +55,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
                             <div className="w-20 h-20 bg-gray-100 rounded-full mx-auto mb-3 flex items-center justify-center">
                                 <User size={40} className="text-gray-500" />
                             </div>
-                            <h3 className="font-medium text-gray-900 font-serif">{user?.email || 'Not logged in'}</h3>
+                            <h3 className="font-medium text-gray-900 font-sans">{user?.email || 'Not logged in'}</h3>
                         </div>
                         <div className="space-y-2 pt-4">
-                            <button className="w-full p-2 text-left hover:bg-gray-100 rounded text-gray-700 font-serif">
+                            <button className="w-full p-2 text-left hover:bg-gray-100 rounded text-gray-700 font-sans">
                                 Profile Settings
                             </button>
                             <button 
                                 onClick={handleSignOut}
-                                className="w-full p-2 text-left text-red-600 hover:bg-gray-100 rounded font-serif"
+                                className="w-full p-2 text-left text-red-600 hover:bg-gray-100 rounded font-sans"
                             >
                                 Sign Out
                             </button>
@@ -73,11 +73,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
             case 'settings':
                 return (
                     <div className="space-y-4 p-4">
-                        <h3 className="font-medium text-gray-900 font-serif">Settings</h3>
+                        <h3 className="font-medium text-gray-900 font-sans">Settings</h3>
                         <div className="space-y-2">
                             <div className="flex items-center justify-between text-gray-700">
-                                <span className="font-serif">Dark Mode</span>
-                                <button className="p-2 bg-gray-100 rounded font-serif">Off</button>
+                                <span className="font-sans">Dark Mode</span>
+                                <button className="p-2 bg-gray-100 rounded font-sans">Off</button>
                             </div>
                         </div>
                     </div>
@@ -85,11 +85,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
             default:
                 return (
                     <div className="space-y-4 p-4">
-                        <h3 className="font-medium text-gray-900 font-serif">Settings</h3>
+                        <h3 className="font-medium text-gray-900 font-sans">Settings</h3>
                         <div className="space-y-2">
                             <div className="flex items-center justify-between text-gray-700">
-                                <span className="font-serif">Dark Mode</span>
-                                <button className="p-2 bg-gray-100 rounded font-serif">On</button>
+                                <span className="font-sans">Dark Mode</span>
+                                <button className="p-2 bg-gray-100 rounded font-sans">On</button>
                             </div>
                         </div>
                     </div>
@@ -113,7 +113,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
                             ${isMouseHovering ? 'text-[#415791]' : 'text-gray-500'}`}>
                             EDITION I
                         </div>
-                        <span className={`text-2xl font-serif font-bold transition-colors duration-500
+                        <span className={`text-2xl font-sans font-bold transition-colors duration-500
                             ${isMouseHovering ? 'text-[#2d3d6d]' : 'text-gray-900'}`}>
                             OPTIONS
                         </span>
@@ -135,7 +135,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
                         placeholder="Search archives..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className={`w-full text-sm rounded-lg pl-9 pr-4 py-2 font-serif transition-colors duration-500
+                        className={`w-full text-sm rounded-lg pl-9 pr-4 py-2 font-sans transition-colors duration-500
                             ${isMouseHovering ? 
                                 'bg-[#87ceeb]/50 border-[#4682b4]/30 text-[#2d3d6d] placeholder-[#4682b4] focus:ring-[#4682b4]' : 
                                 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:ring-gray-400'}`}
@@ -181,7 +181,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
                                         'bg-[#e4edff] border-[#a5b8e3]/30' : 
                                         'bg-[#F6F5F0] border-gray-200'}`}>
                                     <div className="flex items-center justify-between">
-                                        <h3 className={`font-serif text-xs font-bold uppercase tracking-wider transition-colors duration-500
+                                        <h3 className={`font-sans text-xs font-bold uppercase tracking-wider transition-colors duration-500
                                             ${isMouseHovering ? 'text-[#2d3d6d]' : 'text-gray-900'}`}>
                                             Latest Conversations
                                         </h3>
@@ -206,12 +206,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
                                                 <div className="flex items-center gap-3">
                                                     <div className={`w-1 h-1 rounded-full transition-colors duration-500
                                                         ${isMouseHovering ? 'bg-blue-400' : 'bg-gray-400'}`}></div>
-                                                    <span className={`font-serif font-medium text-sm truncate flex-1 transition-colors duration-500
+                                                    <span className={`font-sans font-medium text-sm truncate flex-1 transition-colors duration-500
                                                         ${isMouseHovering ? 'text-blue-100' : 'text-gray-900'}`}>
                                                         {chat.title}
                                                     </span>
                                                 </div>
-                                                <span className={`text-xs truncate pl-4 font-serif italic transition-colors duration-500
+                                                <span className={`text-xs truncate pl-4 font-sans italic transition-colors duration-500
                                                     ${isMouseHovering ? 'text-blue-300' : 'text-gray-500'}`}>
                                                     {chat.messages.length > 0 ? chat.messages[0].content : "No messages yet"}
                                                 </span>
@@ -233,18 +233,18 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
                     'bg-[#e4edff] border-[#a5b8e3]/30' : 
                     'bg-white border-gray-200'}`}>
                 <div className="flex items-center gap-3 px-2">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-serif transition-colors duration-500
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-sans transition-colors duration-500
                         ${isMouseHovering ? 
                             'bg-[#415791] text-[#e8e0ff]' : 
                             'bg-gray-900 text-white'}`}>
                         {user?.email?.[0]?.toUpperCase() || 'U'}
                     </div>
                     <div className="flex-1 min-w-0">
-                        <div className={`text-sm font-serif font-medium truncate transition-colors duration-500
+                        <div className={`text-sm font-sans font-medium truncate transition-colors duration-500
                             ${isMouseHovering ? 'text-[#2d3d6d]' : 'text-gray-900'}`}>
                             {user?.email || 'Not logged in'}
                         </div>
-                        <div className={`text-xs font-serif transition-colors duration-500
+                        <div className={`text-xs font-sans transition-colors duration-500
                             ${isMouseHovering ? 'text-[#415791]' : 'text-gray-500'}`}>
                             Editor
                         </div>

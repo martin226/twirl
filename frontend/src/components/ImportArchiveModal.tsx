@@ -39,8 +39,8 @@ const ImportArchiveModal: React.FC<ImportArchiveModalProps> = ({ isOpen, onClose
                         <Feather className="mx-4 text-gray-400" size={24} />
                         <div className="h-px w-16 bg-gray-300 self-center"></div>
                     </div>
-                    <h2 className="font-serif text-2xl font-bold text-gray-900">Import STL Code</h2>
-                    <p className="text-sm text-gray-500 font-serif italic mt-1">Paste your STL code below</p>
+                    <h2 className="font-sans text-2xl font-bold text-gray-900">Import STL Code</h2>
+                    <p className="text-sm text-gray-500 font-sans italic mt-1">Paste your STL code below</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -55,21 +55,21 @@ const ImportArchiveModal: React.FC<ImportArchiveModalProps> = ({ isOpen, onClose
                     </div>
 
                     {error && (
-                        <p className="text-red-600 text-sm font-serif italic text-center">{error}</p>
+                        <p className="text-red-600 text-sm font-sans italic text-center">{error}</p>
                     )}
 
                     <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-gray-200">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-6 py-2 bg-white border-2 border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 font-serif transition-colors"
+                            className="px-6 py-2 bg-white border-2 border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 font-sans transition-colors"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={isLoading || !stlCode.trim()}
-                            className="px-6 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 font-serif transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                            className="px-6 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 font-sans transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                         >
                             <Upload size={16} />
                             {isLoading ? 'Importing...' : 'Import STL'}

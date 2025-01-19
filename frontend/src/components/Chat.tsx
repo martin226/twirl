@@ -7,6 +7,7 @@ import ModelViewer from './ModelViewer';
 import ExportModal from './ExportModal';
 import { usePdrStore } from '../contexts/store';
 import { useIsMouseHovering } from '../contexts/IsMouseHovering';
+import LoadingPage from './LoadingPage';
 
 const Stats = dynamic(() => import('@react-three/drei').then((mod) => mod.Stats), {
     ssr: false
@@ -36,6 +37,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
     const [showChatLog, setShowChatLog] = useState(false);
     const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const [chatLog, setChatLog] = useState<Message[]>([]);
     const chatLogRef = useRef<HTMLDivElement>(null);
@@ -144,6 +146,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
             setChatLog(prev => [...prev, newMessage]);
             setMessage(''); // Clear input
             setAttachedImages([]); // Clear attached images
+            setIsLoading(true);
 
             const formData = new FormData();
             formData.append('description', message);
@@ -214,8 +217,10 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
     };
 
     return (
-        <div className={`absolute left-[15vw] right-0 h-screen flex flex-col transition-all duration-500
-            ${isMouseHovering ? 
+        <>
+            {isLoading && <LoadingPage />}
+            <div className={`absolute left-[15vw] right-0 h-screen flex flex-col transition-all duration-500
+                ${isMouseHovering ? 
                 'bg-gradient-to-b from-[#e4edff] via-[#d5e4ff] to-[#e4edff] text-[#2d3d6d]' : 
                 'bg-[#F6F5F0]'} ${toolbarVisible ? 'right-[15vw]' : 'right-0'}`}>
             {/* Chat Header */}
@@ -224,18 +229,18 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                     'border-b-2 border-[#2d3d6d] bg-[#e4edff] shadow-lg' : 
                     'border-b-2 border-gray-900 bg-[#F6F5F0]'}`}>
                 <div className="text-center">
-                    <div className={`text-sm font-serif tracking-[0.3em] transition-colors duration-500
+                    <div className={`text-sm font-sans tracking-[0.3em] transition-colors duration-500
                         ${isMouseHovering ? 'text-[#415791]' : 'text-gray-500'}`}>
                         MAKE IT HAPPEN
                     </div>
-                    <h1 className={`text-5xl font-serif font-black tracking-tight mb-2 transition-colors duration-500
+                    <h1 className={`text-5xl font-sans font-black tracking-tight mb-2 transition-colors duration-500
                         ${isMouseHovering ? 'text-[#2d3d6d]' : 'text-gray-900'}`}>
                         {!showChatLog ? project?.title?.toUpperCase() || 'LOADING...' : 'ACTIVITIES'}
                     </h1>
                     <div className="flex items-center justify-center gap-3">
                         <div className={`h-px w-20 transition-colors duration-500
                             ${isMouseHovering ? 'bg-blue-700' : 'bg-gray-400'}`}></div>
-                        <div className={`text-xs font-serif italic transition-colors duration-500
+                        <div className={`text-xs font-sans italic transition-colors duration-500
                             ${isMouseHovering ? 'text-blue-300' : 'text-gray-500'}`}>
                             Est. 2025
                         </div>
@@ -268,10 +273,10 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                         {chatLog.map((message, index) => (
                             <div key={index} className="border-l-4 pl-6 py-2 space-y-3 hover:bg-white transition-colors">
                                 <div className="flex items-center gap-3">
-                                    <span className="font-serif font-bold text-gray-900">
+                                    <span className="font-sans font-bold text-gray-900">
                                         {message?.is_user ? 'User Entry' : 'System Response'}
                                     </span>
-                                    <span className="text-sm font-serif italic text-gray-500">
+                                    <span className="text-sm font-sans italic text-gray-500">
                                         {new Date(message?.created_at).toLocaleTimeString('en-US', { 
                                             hour: 'numeric', 
                                             minute: '2-digit',
@@ -279,7 +284,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                                         })}
                                     </span>
                                 </div>
-                                <div className="font-serif text-gray-700 leading-relaxed">
+                                <div className="font-sans text-gray-700 leading-relaxed">
                                     {message.content}
                                 </div>
                                 {message?.image && message?.image?.length > 0 && (
@@ -303,11 +308,11 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
 
 
             {/* Floating Input and Toggle Row */}
-            <div className="absolute bottom-6 left-[5vw] right-[5vw] flex items-center gap-4 pr-8">
+            <div className="absolute bottom-6 left-[5vw] right-[5vw] flex items-end gap-4 pr-8">
                 {/* Toggle Button */}
                 <button 
                     onClick={() => setShowChatLog(!showChatLog)}
-                    className={`h-[calc(5.5vh+2.6rem)] aspect-square backdrop-blur-sm rounded-2xl shadow-lg border transition-all duration-500
+                    className={`h-[10vh] aspect-square backdrop-blur-sm rounded-2xl shadow-lg border transition-all duration-500
                         ${isMouseHovering ? 
                             'bg-[#e0e8ff] border-[#a5b8e3]/30 text-[#415791] hover:text-[#2d3d6d]' : 
                             'bg-white border-gray-200 text-gray-500 hover:text-gray-700'} 
@@ -328,7 +333,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                 </button>
 
                 {/* Input Area */}
-                <div className={`flex-1 rounded-2xl shadow-lg border p-4 transform-gpu transition-all duration-500
+                <div className={`min-h-[10vh] flex-1 rounded-2xl shadow-lg border p-4 transform-gpu transition-all duration-500
                     ${isMouseHovering ? 
                         'bg-[#e0e8ff] border-[#a5b8e3]/30' : 
                         'bg-white border-gray-200'}`}>
@@ -389,7 +394,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                                     onChange={(e) => setMessage(e.target.value)}
                                     onKeyDown={handleKeyDown}
                                     placeholder="What's your perspective?"
-                                    className={`w-full p-3 font-serif resize-none overflow-hidden focus:outline-none min-h-[5.5vh] max-h-[20vh] bg-transparent transition-colors duration-500
+                                    className={`w-full p-3 font-sans resize-none overflow-hidden focus:outline-none min-h-[7vh] max-h-[30vh] bg-transparent transition-colors duration-500
                                         ${isMouseHovering ? 
                                             'text-[#2d3d6d] placeholder-[#415791]' : 
                                             'text-gray-900 placeholder-gray-400'}`}
@@ -420,16 +425,27 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                         }
                     }}
                     onMouseEnter={() => setIsMouseHovering(true)}
-                    className={`h-[calc(5.5vh+2.6rem)] w-[240px] ${isMouseHovering ? 
-                        'bg-gradient-to-r from-blue-900 via-blue-800 to-blue-900 border-blue-300/30 shadow-xl shadow-blue-500/20 scale-110' : 
-                        'bg-gray-900 border-gray-200 shadow-lg'} rounded-2xl text-white group flex items-center justify-center flex-shrink-0 transition-all duration-500 origin-left
-                        ${!message.trim() && attachedImages.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    className={`h-[10vh] w-[240px] relative overflow-hidden rounded-2xl text-white flex items-center justify-center flex-shrink-0 transition-all duration-500 origin-left
+                        ${isMouseHovering ? 
+                            'bg-gradient-to-r from-[#2d3d6d] via-[#415791] to-[#2d3d6d] shadow-xl shadow-blue-500/20 scale-110 border border-blue-300/30' : 
+                            'bg-gray-900 shadow-lg'}
+                        ${!message.trim() && attachedImages.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-2xl hover:shadow-blue-500/30'}`}
                     title="Make your dream come true"
                 >
-                    <span className={`font-['Cinzel'] tracking-[0.2em] text-sm transition-all duration-500 
-                        `}>
-                        ✧ NEW PERSPECTIVE ✧
-                    </span>
+                    {/* Animated background effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full animate-shimmer" />
+                    
+                    {/* Button content */}
+                    <div className="flex flex-col items-center gap-1">
+                        <span className="font-sans tracking-[0.2em] text-sm font-medium">
+                            NEW PERSPECTIVE
+                        </span>
+                        <div className="flex items-center gap-1 opacity-60">
+                            <div className="w-1 h-[1px] bg-current" />
+                            <span className="text-[10px] tracking-wider">CREATE THE MODEL</span>
+                            <div className="w-1 h-[1px] bg-current" />
+                        </div>
+                    </div>
                 </button>
             </div>
 
@@ -439,6 +455,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                 onExport={handleExport}
             />
         </div>
+        </>
     );
 };
 
