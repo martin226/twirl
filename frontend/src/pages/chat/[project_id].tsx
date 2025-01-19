@@ -91,6 +91,7 @@ const ChatPage: React.FC = () => {
                     toolbarVisible={isVisible}
                     setToolbarVisible={setIsVisible}
                     setIsLoading={setIsLoading}
+                    isLoading={isLoading}
                 />
             </div>
             <div className="">

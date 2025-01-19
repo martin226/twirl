@@ -63,7 +63,7 @@ const ParameterGroup: React.FC<{
     switch (parameter.type) {
         case 'slider':
             return (
-                <div className="space-y-1.5 px-3 overflow-auto" style={{ paddingLeft: `calc(${paddingLeft} + 0.75rem)` }}>
+                <div className="space-y-1.5 px-3" style={{ paddingLeft: `calc(${paddingLeft} + 0.75rem)` }}>
                     <div className="flex justify-between items-center">
                         <span className={`text-sm font-['Cinzel'] transition-colors duration-500
                             ${isMouseHovering ? 'text-[#2d3d6d] font-medium' : 'text-gray-700'}`}>
@@ -80,7 +80,7 @@ const ParameterGroup: React.FC<{
                         max={parameter.max_value}
                         value={parameter.value}
                         onChange={(e) => onUpdate(path, Number(e.target.value))}
-                        className={`w-full h-2 rounded-lg appearance-none cursor-pointer overflow-auto
+                        className={`w-full h-2 rounded-lg appearance-none cursor-pointer
                             ${isMouseHovering ? 
                                 'bg-[#d4e1ff] accent-[#415791]' : 
                                 'bg-gray-200 accent-gray-900'}`}
@@ -181,6 +181,9 @@ const ToolBar: React.FC<ToolBarProps> = ({ project_id, isVisible, setIsVisible, 
 
         worker?.postMessage({ scadCode: updatedCode, outputFile: 'output.stl' });
 
+        setTimeout(() => {
+            setIsLoading(false);
+        }, 5000); //jeff chnage this
         
         setOpenscad(updatedCode);
         console.log('Applied changes:', parameters);

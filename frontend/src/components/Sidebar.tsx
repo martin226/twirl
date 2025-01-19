@@ -195,7 +195,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
 
                                 <div className="flex-1 custom-scrollbar px-3 py-2 overflow-y-auto">
                                     <div className="space-y-2 overflow-hidden">
-                                        {filteredChats.map((chat: any) => (
+                                        {filteredChats.reverse().map((chat: any) => (
                                             <button
                                                 key={chat.id}
                                                 onClick={() => router.push(`/chat/${chat.id}`)}
@@ -206,9 +206,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
                                             >
                                                 <div className="flex items-center gap-3">
                                                     <div className={`w-1 h-1 rounded-full transition-colors duration-500
-                                                        ${isMouseHovering ? 'bg-blue-400' : 'bg-gray-400'}`}></div>
+                                                        ${isMouseHovering ? 'bg-blue-600' : 'bg-gray-400'}`}></div>
                                                     <span className={`font-sans font-medium text-sm truncate flex-1 transition-colors duration-500
-                                                        ${isMouseHovering ? 'text-blue-100' : 'text-gray-900'}`}>
+                                                        ${isMouseHovering ? 'text-blue-800' : 'text-gray-900'}`}>
                                                         {chat.title}
                                                     </span>
                                                 </div>

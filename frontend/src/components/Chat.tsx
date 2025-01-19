@@ -180,6 +180,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                         console.error('Failed to send message:', error);
                     } finally {
                         setIsLoading(false);
+                        setToolbarVisible(true);
                     }
                 } else {
                     const newFormData = new FormData();
@@ -206,6 +207,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                         console.error('Failed to send message:', error);
                     } finally {
                         setIsLoading(false);
+                        setToolbarVisible(true);
                     }
                 }
             };

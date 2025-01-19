@@ -151,7 +151,7 @@ const Home: React.FC<HomeProps> = ({ setIsModalOpen }) => {
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {project.map((chat: any) => (
+                        {[...project].reverse().map((chat: any) => (
                             <article 
                                 key={chat.id}
                                 onClick={() => router.push(`/chat/${chat.id}`)}
