@@ -64,8 +64,10 @@ async def openscad(gen_request: GenerationRequest):
         ],
     )
     print("Step 0 message:", message.content[0].text)
-    # since the XML returned by the LLM is sometimes invalid, we are just going to find the text in between the <threejs_output> tags
-    return message.content[0].text.split("<openscad_output>")[1].split("</openscad_output>")[0]
+    parameters = message.content[0].text.split("<parameters>")[1].split("</parameters>")[0]
+    # since the XML returned by the LLM is sometimes invalid, we are just going to find the text in between the <openscad_output> tags
+    openscad_code = message.content[0].text.split("<openscad_output>")[1].split("</openscad_output>")[0]
+    return [parameters, openscad_code]
 
 class FollowupRequest(BaseModel):
     original_prompt: str

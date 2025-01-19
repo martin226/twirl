@@ -1,4 +1,5 @@
 import base64
+import json
 from typing import Optional
 from fastapi import FastAPI, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -74,16 +75,22 @@ async def post_initial_message(
     # Convert file content to Base64
     base64_content = base64.b64encode(file_content).decode("utf-8") if file_content else None
     
-    result = await openscad(GenerationRequest(
+    parameters, openscad_code = await openscad(GenerationRequest(
         description=description,
         image_url=image_url,
         image_data=base64_content,
         image_media_type=image_media_type
     ))
 
-    print("Result:", result)
+    # add message to database
+    # TODO: add image_url to message
+    await db.add_message(MessageCreate(is_user=True, content=description, project_id=project_id))
+    message = await db.add_message(MessageCreate(is_user=False, content=f"Parameters:\n{parameters}\n\nOpenscade code:\n{openscad_code}", project_id=project_id))
+    await db.create_artifact(openscad_code, message["id"])
 
-    return result
+    print("Result:", parameters, openscad_code)
+
+    return {"parameters": parameters, "openscad_code": openscad_code}
 
 @app.post("/api/followup_message/{project_id}")
 async def post_followup_message(
