@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from pydantic import BaseModel
 from datetime import datetime
 import asyncio
-from typing import List
+from typing import List, Optional
 
 load_dotenv()
 
@@ -17,9 +17,11 @@ class MessageCreate(BaseModel):
     is_user: bool
     content: str
     project_id: int
+    image_url: Optional[str] = None
 
 class ArtifactCreate(BaseModel):
     openscad_code: str
+    parameters: str # jsonb
 
 class MessageResponse(BaseModel):
     id: int
@@ -53,8 +55,8 @@ class Database:
         self.client = await create_supabase()
         return self
     
-    async def create_artifact(self, openscad_code: str, message_id: int):
-        response = await self.client.table("artifacts").insert({"openscad_code": openscad_code, "message_id": message_id}).execute()
+    async def create_artifact(self, openscad_code: str, parameters: str, message_id: int):
+        response = await self.client.table("artifacts").insert({"openscad_code": openscad_code, "parameters": parameters,"message_id": message_id}).execute()
         return response.data
     
     async def get_artifact(self, artifact_id: int):
@@ -65,12 +67,12 @@ class Database:
         artifact = await self.client.table("artifacts").select("*").eq("message_id", message_id).execute()
         return artifact.data[0] if artifact.data else None
     
-    async def update_artifact(self, artifact_id: int, openscad_code: str):
-        response = await self.client.table("artifacts").update({"openscad_code": openscad_code}).eq("id", artifact_id).execute()
+    async def update_artifact(self, artifact_id: int, openscad_code: str, parameters: str):
+        response = await self.client.table("artifacts").update({"openscad_code": openscad_code, "parameters": parameters}).eq("id", artifact_id).execute()
         return response.data[0] if response.data else None
     
-    async def update_artifact_by_message(self, message_id: int, openscad_code: str):
-        response = await self.client.table("artifacts").update({"openscad_code": openscad_code}).eq("message_id", message_id).execute()
+    async def update_artifact_by_message(self, message_id: int, openscad_code: str, parameters: str):
+        response = await self.client.table("artifacts").update({"openscad_code": openscad_code, "parameters": parameters}).eq("message_id", message_id).execute()
         return response.data[0] if response.data else None
 
     async def create_project(self, title: str):

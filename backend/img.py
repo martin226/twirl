@@ -1,21 +1,25 @@
 import os
 from azure.storage.blob.aio import BlobServiceClient
-from supabase._async.client import AsyncClient as Client
+from dotenv import load_dotenv
+
+load_dotenv()
 
 AZURE_CONNECTION_STRING = os.environ.get("AZURE_STORAGE_CONNECTION_STRING")
 CONTAINER_NAME = "images"
 
-async def upload_image_to_azure(supabase: Client, image_path: str, supabase_table: str):
+async def upload_image(image_data: bytes, filename: str) -> str:
     blob_service_client = BlobServiceClient.from_connection_string(AZURE_CONNECTION_STRING)
-    container_client = blob_service_client.get_container_client(CONTAINER_NAME)
+    blob_client = blob_service_client.get_blob_client(container=CONTAINER_NAME, blob=filename)
+    await blob_client.upload_blob(image_data, overwrite=True)
+    return blob_client.url
 
-    filename = os.path.basename(image_path)
-    blob_client = container_client.get_blob_client(filename)
+if __name__ == "__main__":
+    import asyncio
 
-    async with blob_client.upload_blob(open(image_path, "rb"), overwrite=True) as upload:
-        pass
+    async def main():
+        with open("random.jpeg", "rb") as f:
+            image_data = f.read()
+        url = await upload_image(image_data, "random.jpeg")
+        print(url)
 
-    blob_url = f"https://{blob_service_client.account_name}.blob.core.windows.net/{CONTAINER_NAME}/{filename}"
-
-    response = await supabase.table(supabase_table).insert({"image_url": blob_url}).execute()
-    return response
+    asyncio.run(main())

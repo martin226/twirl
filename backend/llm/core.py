@@ -118,6 +118,6 @@ async def followup(followup_request: FollowupRequest):
     )
     print("Step 1 message:", message.content[0].text)
     new_openscad = message.content[0].text.split("</modified_script>")[0]
-    parameters = message.split("<parameters>")[1].split("</parameters>")[0]
+    parameters = message.content[0].text.split("<parameters>")[1].split("</parameters>")[0]
     return [new_openscad, parameters]
 

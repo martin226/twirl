@@ -1,10 +1,11 @@
 import base64
-import json
+import uuid
 from typing import Optional
 from fastapi import FastAPI, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+from img import upload_image
 from db import Database, MessageCreate
 # from llm.steps import run_pipeline, new_prompt
 from llm.core import openscad, followup, GenerationRequest, FollowupRequest
@@ -71,6 +72,8 @@ async def post_initial_message(
         raise HTTPException(status_code=404, detail="Project not found")
     
     file_content = await image_data.read() if image_data else None
+
+    file_url = await upload_image(file_content, f"{uuid.uuid4()}.{image_data.filename.split('.')[-1]}") if file_content else image_url if image_url else None
         
     # Convert file content to Base64
     base64_content = base64.b64encode(file_content).decode("utf-8") if file_content else None
@@ -84,9 +87,9 @@ async def post_initial_message(
 
     # add message to database
     # TODO: add image_url to message
-    await db.add_message(MessageCreate(is_user=True, content=description, project_id=project_id))
+    await db.add_message(MessageCreate(is_user=True, content=description, project_id=project_id, image_url=file_url))
     message = await db.add_message(MessageCreate(is_user=False, content=f"Parameters:\n{parameters}\n\nOpenscade code:\n{openscad_code}", project_id=project_id))
-    await db.create_artifact(openscad_code, message["id"])
+    await db.create_artifact(openscad_code, parameters, message["id"])
 
     print("Result:", parameters, openscad_code)
 
@@ -96,8 +99,8 @@ async def post_initial_message(
 async def post_followup_message(
     request: Request,
     project_id: int,
-    original_prompt: str = Form(...),
-    openscad_output: str = Form(...),
+    # original_prompt: str = Form(...),
+    # openscad_output: str = Form(...),
     instructions: str = Form(...),
     image_url: Optional[str] = Form(None),
     image_data: Optional[UploadFile] = Form(None),
@@ -106,20 +109,30 @@ async def post_followup_message(
     # image2_data: Optional[UploadFile] = Form(None),
     # image2_media_type: Optional[str] = Form(None)
 ):
-    form_data = await request.form()
-    print("Form data:", form_data)
+    # form_data = await request.form()
+    # print("Form data:", form_data)
+    # print("Original prompt:", original_prompt)
+    # print("Openscad output:", openscad_output)
+
     db = await Database.new()
     project = await db.get_project(project_id)
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
     
+    print("Project messages", project.messages)
+    
+    original_prompt = project.messages[0].content
+    openscad_output = await db.get_artifact_by_message(project.messages[-1].id)
+    
     file_content = await image_data.read() if image_data else None
+
+    file_url = await upload_image(file_content, f"{uuid.uuid4()}.{image_data.filename.split('.')[-1]}") if file_content else image_url if image_url else None
         
     base64_content = base64.b64encode(file_content).decode("utf-8") if file_content else None
     
     request = FollowupRequest(
         original_prompt=original_prompt,
-        openscad_output=openscad_output,
+        openscad_output=openscad_output["openscad_code"],
         instructions=instructions,
         image_url=image_url,
         image_data=base64_content,
@@ -128,9 +141,9 @@ async def post_followup_message(
     new_code, parameters = await followup(request)
 
     # add message to database
-    await db.add_message(MessageCreate(is_user=True, content=original_prompt, project_id=project_id))
+    await db.add_message(MessageCreate(is_user=True, content=original_prompt, project_id=project_id, image_url=file_url))
     message = await db.add_message(MessageCreate(is_user=False, content=f"Parameters:\n{parameters}\n\nOpenscade code:\n{new_code}", project_id=project_id))
-    await db.create_artifact(new_code, message["id"])
+    await db.create_artifact(new_code, parameters, message["id"])
 
     print("Result:", new_code, parameters)
 
@@ -145,11 +158,11 @@ async def get_artifact(message_id: int):
     return artifact
 
 @app.patch("/api/artifact/{artifact_id}")
-async def update_artifact(artifact_id: int, openscad_code: str):
+async def update_artifact(artifact_id: int, openscad_code: str, parameters: str):
     db = await Database.new()
-    return await db.update_artifact_by_message(artifact_id, openscad_code)
+    return await db.update_artifact_by_message(artifact_id, parameters, openscad_code)
 
 @app.post("/api/artifact/{message_id}")
-async def create_artifact(message_id: int, openscad_code: str):
+async def create_artifact(message_id: int, openscad_code: str, parameters: str):
     db = await Database.new()
-    return await db.create_artifact(openscad_code, message_id)
+    return await db.create_artifact(openscad_code, parameters, message_id)
