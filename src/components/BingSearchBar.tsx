@@ -16,7 +16,13 @@ const BingSearchBar: React.FC<{ query: string }> = ({ query }) => {
     };
 
     React.useEffect(() => {
-        fetchImages();
+        const handler = setTimeout(() => {
+            fetchImages();
+        }, 1000); // Debounce for 1 second
+
+        return () => {
+            clearTimeout(handler);
+        };
     }, [query]); // Fetch images whenever the query changes
 
     return (
