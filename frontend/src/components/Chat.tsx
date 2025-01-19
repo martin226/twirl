@@ -63,6 +63,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
     // Measure message area dimensions
     useEffect(() => {
         if (!worker) setWorker(new Worker('/worker.js', { type: 'module' }));
+
         const updateDimensions = () => {
             if (messageAreaRef.current) {
                 const { offsetWidth, offsetHeight } = messageAreaRef.current;
@@ -152,7 +153,8 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
             }
             // Send to backend
             const sendMessage = async () => {
-                if (project.messages.length == 0) {
+                // console.log("messages", project.messages);
+                if (chatLog.length == 0) {
                     try {
                         const response = await fetch(`http://localhost:8000/api/initial_message/${project.id}`, {
                             method: 'POST',
@@ -172,8 +174,8 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                     const newFormData = new FormData();
                     newFormData.append('instructions', message);
                     console.log("All messages", project.messages);
-                    newFormData.append('original_prompt', project.messages[0].content);
-                    newFormData.append('openscad_output', openscad);
+                    // newFormData.append('original_prompt', chatLog[0].content);
+                    // newFormData.append('openscad_output', openscad);
                     if (attachedImages.length > 0) {
                         newFormData.append('image_media_type', attachedImages[0]?.type || "");
                         newFormData.append("image_data", attachedImages[0]);
@@ -185,6 +187,10 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                         });
                         const data = await response.json();
                         console.log('Message received:', data);
+                        const outputFile = 'mewhen.stl';
+                        setParameters(JSON.parse(data.parameters));
+                        setOpenscad(data.openscad_code);
+                        if (worker) worker.postMessage({ scadCode: data.openscad_code, outputFile });
                     } catch (error) {
                         console.error('Failed to send message:', error);
                     }

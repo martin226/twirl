@@ -4,6 +4,7 @@ import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js';
 import { usePdrStore } from '../contexts/store';
 import { BufferGeometry, Color, Float32BufferAttribute } from 'three';
+import TransformControlsWrapper from './TransformWraper';
 
 function MySky() {
     const [sunPosition, setSunPosition] = useState([100, 20, 100]);
@@ -133,112 +134,14 @@ export default function ModelViewer() {
             >
                 <GizmoViewport axisColors={['red', 'green', 'blue']} labelColor="black" />
             </GizmoHelper>
-            <TransformControls>
+            {/* <TransformControls> */}
+            <TransformControlsWrapper>
                 <STLModel url={url} />
-            </TransformControls>
+            </TransformControlsWrapper>
+            {/* </TransformControls> */}
             {/* <STLModelWithControls stlPath={url} /> */}
             {/* <Suspense fallback={null}> */}
             {/* </Suspense> */}
-            <mesh
-                position={[5, 0, 5]}
-                scale={active ? 1.5 : 1}
-                onClick={() => {
-                    worker?.postMessage({ scadCode: `
-// Christmas Tree with Decorations
-// All dimensions in millimeters
-
-// Main Parameters
-tree_height = 300;
-base_width = 200;
-num_layers = 5;
-trunk_height = 30;
-trunk_width = 40;
-ornament_size = 10;
-num_ornaments = 15;
-star_size = 30;
-quality = 50;
-
-// Set minimum angle for smooth curves
-$fn = quality;
-
-// Colors
-trunk_color = [0.45, 0.25, 0.15];
-tree_color = [0.2, 0.8, 0.3];
-star_color = [1, 0.8, 0];
-ornament_colors = [[1, 0, 0], [0, 0, 1], [1, 1, 0], [1, 0.5, 0], [1, 0, 1]];
-
-// Module for tree trunk
-module trunk() {
-  color(trunk_color)
-    cylinder(h=trunk_height, r=trunk_width/2, $fn=8);
-}
-
-// Module for a single tree layer
-module tree_layer(size, height, layer_height) {
-  color(tree_color)
-    hull() {
-      translate([0, 0, height])
-        cylinder(r=0.1, h=0.1);
-      translate([0, 0, height-layer_height])
-        cylinder(r=size/2, h=0.1);
-    }
-}
-
-// Module for ornament
-module ornament(x, y, z) {
-  color_index = rands(0, len(ornament_colors)-0.01, 1)[0];
-  color(ornament_colors[floor(color_index)])
-    translate([x, y, z])
-      sphere(r=ornament_size/2);
-}
-
-// Module for star topper
-module star() {
-  color(star_color)
-    hull() {
-      translate([0, 0, tree_height-star_size/2])
-        sphere(r=star_size/6);
-      translate([0, 0, tree_height])
-        cylinder(r=0.1, h=0.1);
-    }
-}
-
-// Main tree assembly
-module christmas_tree() {
-  // Trunk
-  trunk();
-  
-  // Tree layers
-  layer_height = (tree_height - trunk_height) / num_layers;
-  for(i = [0:num_layers-1]) {
-    current_height = trunk_height + (i+1) * layer_height;
-    current_width = base_width * (1 - i/num_layers);
-    tree_layer(current_width, current_height, layer_height);
-  }
-  
-  // Ornaments
-  for(i = [0:num_ornaments-1]) {
-    angle = rands(0, 360, 1)[0];
-    height = rands(trunk_height + layer_height, tree_height - star_size, 1)[0];
-    radius = rands(0, base_width/3, 1)[0];
-    ornament(radius * cos(angle), radius * sin(angle), height);
-  }
-  
-  // Star
-  star();
-}
-
-// Generate the tree
-christmas_tree();
-                    `, outputFile: "tree.stl" });
-                }}
-            >
-                {/* onClick={(event) => setActive(!active)}
-                onPointerOver={(event) => setHover(true)}
-                onPointerOut={(event) => setHover(false)}> */}
-                <boxGeometry args={[1, 1, 1]} />
-                <meshStandardMaterial color={hovered ? 'hotpink' : 'orange'} />
-            </mesh>
         </>
     );
 }
