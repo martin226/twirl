@@ -4,8 +4,10 @@ import { useIsMouseHovering } from '../contexts/IsMouseHovering';
 import { Parameter } from '../contexts/store';
 import { useStateStore } from '../contexts/store';
 import { usePdrStore } from '../contexts/store';
+import { useProject } from '../contexts/ProjectContext';
 
 interface ToolBarProps {
+    project_id: string;
     isVisible: boolean;
     setIsVisible: (isVisible: boolean) => void;
 }
@@ -110,13 +112,42 @@ const ParameterGroup: React.FC<{
     }
 };
 
-const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
+const ToolBar: React.FC<ToolBarProps> = ({ project_id, isVisible, setIsVisible }) => {
   const { openscad, setOpenscad, parameters, setParameters } = useStateStore();
   const { worker } = usePdrStore();
   const { isMouseHovering } = useIsMouseHovering();
   const [isCodeMode, setIsCodeMode] = useState(false);
+  const { project, setProject } = useProject();
     // const [openscad, setOpenscad] = useState<string>("");
     // const [parameters, setParameters] = useState<Parameter[]>([]);
+
+    useEffect(() => {
+        if (project_id) handleUpdateParameter(project_id);
+    }, [project_id]);
+
+    function handleUpdateParameter(project_id: string) {
+        fetch(`http://localhost:8000/api/project/${project_id}/scad_parameters`)
+            .then(response => response.json())
+            .then(data => {
+                console.log("GOT SCAD PARAMETERS", data);
+                if (!data.openscad_code) {
+                    worker?.postMessage({ scadCode: '', outputFile: 'output.stl' });
+                    setOpenscad('');
+                }
+                if (!data.parameters) {
+                    setParameters([]);
+                }
+                if (!data.openscad_code || !data.parameters) {
+                    return;
+                }
+                console.log("Posting message");
+                worker?.postMessage({ scadCode: data.openscad_code, outputFile: 'output.stl' });
+                setOpenscad(data.openscad_code);
+                console.log("Openscad code", data.openscad_code);
+                console.log("Setting parameters");
+                setParameters(JSON.parse(data.parameters));
+            })
+    }
 
     const handleApplyChanges = () => {
         // Create a flat map of all parameters for easy lookup

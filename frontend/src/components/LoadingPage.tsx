@@ -2,7 +2,7 @@ import React from 'react';
 
 const LoadingPage = () => {
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+        <div className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none">
             <div className="relative bg-[#1a3a5e]/95 p-12 rounded-xl shadow-2xl backdrop-blur-sm">
                 <div className="relative w-[160px] h-[160px] flex items-center justify-center">
                     {/* Rotating ring */}

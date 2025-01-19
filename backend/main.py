@@ -56,6 +56,23 @@ async def get_project(project_id: int):
         raise HTTPException(status_code=404, detail="Project not found")
     return project
 
+@app.get("/api/project/{project_id}/scad_parameters")
+async def get_scad_parameters(project_id: int):
+    db = await Database.new()
+    project = await db.get_project(project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    # fetch the latest message with an artifact
+    # some messages may not have artifacts
+    artifact = None
+    for message in reversed(project.messages):
+        artifact = await db.get_artifact_by_message(message.id)
+        if artifact:
+            break
+    if artifact is None:
+        return {"parameters": None, "openscad_code": None}
+    return {"parameters": artifact["parameters"], "openscad_code": artifact["openscad_code"]}
+
 @app.post("/api/initial_message/{project_id}")
 async def post_initial_message(
     project_id: int,

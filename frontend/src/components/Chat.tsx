@@ -150,6 +150,9 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
             setMessage(''); // Clear input
             setAttachedImages([]); // Clear attached images
 
+            setIsLoading(true);
+            setIsMouseHovering(true);
+
             const formData = new FormData();
             formData.append('description', message);
             if (attachedImages.length > 0) {
@@ -174,6 +177,8 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                         if (worker) worker.postMessage({ scadCode: data.openscad_code, outputFile });
                     } catch (error) {
                         console.error('Failed to send message:', error);
+                    } finally {
+                        setIsLoading(false);
                     }
                 } else {
                     const newFormData = new FormData();
@@ -198,6 +203,8 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                         if (worker) worker.postMessage({ scadCode: data.openscad_code, outputFile });
                     } catch (error) {
                         console.error('Failed to send message:', error);
+                    } finally {
+                        setIsLoading(false);
                     }
                 }
             };
@@ -232,10 +239,14 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
     };
 
     return (
+        <>
+        {/* {isLoading && (
+            <LoadingPage />
+        )} */}
         <div className={`absolute left-[15vw] right-0 h-screen flex flex-col transition-all duration-500
             ${isMouseHovering ? 
                 'bg-gradient-to-b from-[#e4edff] via-[#d5e4ff] to-[#e4edff] text-[#2d3d6d]' : 
-                'bg-[#F6F5F0]'} ${toolbarVisible ? 'right-[15vw]' : 'right-0'}`}>
+                'bg-[#F6F5F0]'} ${toolbarVisible ? 'right-[17vw]' : 'right-0'}`}>
             {/* Chat Header */}
             <div className={`p-6 transition-colors duration-500 
                 ${isMouseHovering ? 
@@ -265,6 +276,10 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
 
             {/* Messages Area */}
             <div className="relative flex-1">
+                {isLoading && (
+                    <LoadingPage />
+                )}
+
                 {/* Canvas Area */}
                 <div 
                     ref={messageAreaRef}
@@ -300,7 +315,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                                             })}
                                         </span>
                                     </div>
-                                    <div className="font-sans text-gray-700 leading-relaxed">
+                                    <div className="font-sans text-gray-700 leading-relaxed whitespace-pre-line">
                                         {message.content}
                                     </div>
                                     {message?.image_url && (
@@ -491,6 +506,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                 onExport={handleExport}
             />
         </div>
+        </>
     );
 };
 

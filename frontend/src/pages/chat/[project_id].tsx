@@ -34,7 +34,6 @@ const ChatPage: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        console.log("project_id", project_id);
         if (project_id) {
             const fetchProject = async () => {
                 const response = await fetch(`http://localhost:8000/api/project/${project_id}`);
@@ -96,7 +95,8 @@ const ChatPage: React.FC = () => {
                 />
             </div>
             <div className="">
-                <ToolBar 
+                <ToolBar
+                    project_id={project_id as string|| ''}
                     isVisible={isVisible}
                     setIsVisible={setIsVisible}
                 />
