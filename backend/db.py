@@ -72,7 +72,7 @@ class Database:
         response = await self.client.table("artifacts").update({"openscad_code": openscad_code, "parameters": parameters}).eq("id", artifact_id).execute()
         return response.data[0] if response.data else None
     
-    async def update_artifact_by_message(self, message_id: int, openscad_code: str, parameters: str):
+    async def update_artifact_by_message(self, message_id: int, openscad_code: str, parameters: dict):
         response = await self.client.table("artifacts").update({"openscad_code": openscad_code, "parameters": parameters}).eq("message_id", message_id).execute()
         return response.data[0] if response.data else None
 

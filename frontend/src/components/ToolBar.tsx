@@ -115,7 +115,7 @@ const ParameterGroup: React.FC<{
 
 const ToolBar: React.FC<ToolBarProps> = ({ project_id, isVisible, setIsVisible, setIsLoading }) => {
   const { openscad, setOpenscad, parameters, setParameters } = useStateStore();
-  const { worker } = usePdrStore();
+  const { worker, setWorker } = usePdrStore();
   const { isMouseHovering } = useIsMouseHovering();
   const [isCodeMode, setIsCodeMode] = useState(false);
   const { project, setProject } = useProject();
@@ -132,7 +132,13 @@ const ToolBar: React.FC<ToolBarProps> = ({ project_id, isVisible, setIsVisible, 
             .then(data => {
                 console.log("GOT SCAD PARAMETERS", data);
                 if (!data.openscad_code) {
-                    worker?.postMessage({ scadCode: '', outputFile: 'output.stl' });
+                    if (worker) {
+                        worker.postMessage({ scadCode: data.openscad_code, outputFile: 'output.stl' });
+                    } else {
+                        const newWorker = new Worker('/worker.js', { type: 'module' });
+                        setWorker(newWorker);
+                        newWorker.postMessage({ scadCode: data.openscad_code, outputFile: 'output.stl' });
+                    }
                     setOpenscad('');
                 }
                 if (!data.parameters) {
@@ -142,7 +148,13 @@ const ToolBar: React.FC<ToolBarProps> = ({ project_id, isVisible, setIsVisible, 
                     return;
                 }
                 console.log("Posting message");
-                worker?.postMessage({ scadCode: data.openscad_code, outputFile: 'output.stl' });
+                if (worker) {
+                    worker.postMessage({ scadCode: data.openscad_code, outputFile: 'output.stl' });
+                } else {
+                    const newWorker = new Worker('/worker.js', { type: 'module' });
+                    setWorker(newWorker);
+                    newWorker.postMessage({ scadCode: data.openscad_code, outputFile: 'output.stl' });
+                }
                 setOpenscad(data.openscad_code);
                 console.log("Openscad code", data.openscad_code);
                 console.log("Setting parameters");
@@ -179,11 +191,30 @@ const ToolBar: React.FC<ToolBarProps> = ({ project_id, isVisible, setIsVisible, 
             console.log("Updated code", updatedCode);
         });
 
-        worker?.postMessage({ scadCode: updatedCode, outputFile: 'output.stl' });
+        // worker?.postMessage({ scadCode: updatedCode, outputFile: 'output.stl' });
+        if (worker) {
+            worker.postMessage({ scadCode: updatedCode, outputFile: 'output.stl' });
+        } else {
+            const newWorker = new Worker('/worker.js', { type: 'module' });
+            setWorker(newWorker);
+            newWorker.postMessage({ scadCode: updatedCode, outputFile: 'output.stl' });
+        }
+
+        // send the updated parameters and openscad code to the backend
+        fetch(`http://localhost:8000/api/project/${project_id}/scad_parameters`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                openscad_code: updatedCode,
+                parameters: parameters,
+            }),
+        });
 
         setTimeout(() => {
             setIsLoading(false);
-        }, 5000); //jeff chnage this
+        }, 1000); //jeff chnage this
         
         setOpenscad(updatedCode);
         console.log('Applied changes:', parameters);

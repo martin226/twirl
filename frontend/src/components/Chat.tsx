@@ -175,7 +175,13 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                         const outputFile = 'ok.stl';
                         setParameters(JSON.parse(data.parameters));
                         setOpenscad(data.openscad_code);
-                        if (worker) worker.postMessage({ scadCode: data.openscad_code, outputFile });
+                        if (worker) {
+                            worker.postMessage({ scadCode: data.openscad_code, outputFile });
+                        } else {
+                            const newWorker = new Worker('/worker.js', { type: 'module' });
+                            setWorker(newWorker);
+                            newWorker.postMessage({ scadCode: data.openscad_code, outputFile });
+                        }
                     } catch (error) {
                         console.error('Failed to send message:', error);
                     } finally {
@@ -202,7 +208,13 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                         const outputFile = 'mewhen.stl';
                         setParameters(JSON.parse(data.parameters));
                         setOpenscad(data.openscad_code);
-                        if (worker) worker.postMessage({ scadCode: data.openscad_code, outputFile });
+                        if (worker) {
+                            worker.postMessage({ scadCode: data.openscad_code, outputFile });
+                        } else {
+                            const newWorker = new Worker('/worker.js', { type: 'module' });
+                            setWorker(newWorker);
+                            newWorker.postMessage({ scadCode: data.openscad_code, outputFile });
+                        }
                     } catch (error) {
                         console.error('Failed to send message:', error);
                     } finally {

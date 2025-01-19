@@ -73,6 +73,30 @@ async def get_scad_parameters(project_id: int):
         return {"parameters": None, "openscad_code": None}
     return {"parameters": artifact["parameters"], "openscad_code": artifact["openscad_code"]}
 
+class ScadParameters(BaseModel):
+    parameters: dict
+    openscad_code: str
+
+@app.patch("/api/project/{project_id}/scad_parameters")
+async def update_scad_parameters(project_id: int, params: ScadParameters):
+    db = await Database.new()
+    project = await db.get_project(project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    # fetch the latest message with an artifact
+    # some messages may not have artifacts
+    artifact = None
+    latest_message_id = None
+    for message in reversed(project.messages):
+        artifact = await db.get_artifact_by_message(message.id)
+        if artifact:
+            latest_message_id = message.id
+            break
+    if artifact is None:
+        raise HTTPException(status_code=404, detail="No artifact found in project")
+    return await db.update_artifact_by_message(latest_message_id, params.openscad_code, params.parameters)
+    
+
 @app.post("/api/initial_message/{project_id}")
 async def post_initial_message(
     project_id: int,
@@ -147,7 +171,7 @@ async def post_followup_message(
     explanation, new_code, parameters = await followup(request)
 
     # add message to database
-    await db.add_message(MessageCreate(is_user=True, content=original_prompt, project_id=project_id, image_url=file_url))
+    await db.add_message(MessageCreate(is_user=True, content=instructions, project_id=project_id, image_url=file_url))
     message = await db.add_message(MessageCreate(is_user=False, content=explanation, project_id=project_id))
     await db.create_artifact(new_code, parameters, message["id"])
 
