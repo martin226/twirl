@@ -492,7 +492,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                     {/* Button content */}
                     <div className="flex flex-col items-center gap-1">
                         <span className="font-sans tracking-[0.2em] text-sm font-medium">
-                            PECTIVE
+                            NEW PERSPECTIVE
                         </span>
                         <div className="flex items-center gap-1 opacity-60">
                             <div className="w-1 h-[1px] bg-current" />
