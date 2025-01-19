@@ -146,7 +146,6 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
             setChatLog(prev => [...prev, newMessage]);
             setMessage(''); // Clear input
             setAttachedImages([]); // Clear attached images
-            setIsLoading(true);
 
             const formData = new FormData();
             formData.append('description', message);
@@ -217,10 +216,8 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
     };
 
     return (
-        <>
-            {isLoading && <LoadingPage />}
-            <div className={`absolute left-[15vw] right-0 h-screen flex flex-col transition-all duration-500
-                ${isMouseHovering ? 
+        <div className={`absolute left-[15vw] right-0 h-screen flex flex-col transition-all duration-500
+            ${isMouseHovering ? 
                 'bg-gradient-to-b from-[#e4edff] via-[#d5e4ff] to-[#e4edff] text-[#2d3d6d]' : 
                 'bg-[#F6F5F0]'} ${toolbarVisible ? 'right-[15vw]' : 'right-0'}`}>
             {/* Chat Header */}
@@ -455,7 +452,6 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                 onExport={handleExport}
             />
         </div>
-        </>
     );
 };
 

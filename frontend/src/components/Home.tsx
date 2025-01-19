@@ -101,11 +101,11 @@ const Home: React.FC<HomeProps> = ({ setIsModalOpen }) => {
                     {/* Stats Card */}
                     <div className="bg-white rounded-lg shadow-md p-8 border border-gray-100 hover:shadow-lg transition-all duration-200">
                         <div className="flex flex-col items-center text-center">
-                            <h3 className="font-sans text-lg text-gray-900 mb-3">Twirl Statistics</h3>
+                            <h3 className="font-sans text-lg text-gray-900 mb-3">Number of Projects</h3>
                             <p className="text-6xl font-sans font-bold text-gray-900 leading-none mb-3">
                                 {project?.length || 0}
                             </p>
-                            <div className="text-sm text-gray-500 font-sans italic mb-4">Active Imaginations</div>
+                            <div className="text-sm text-gray-500 font-sans italic mb-4">Active Models</div>
                             <div className="flex justify-center items-center gap-2">
                                 <div className="h-px w-12 bg-gray-200"></div>
                                 <div className="w-2 h-2 rounded-full bg-gray-300"></div>
@@ -117,7 +117,7 @@ const Home: React.FC<HomeProps> = ({ setIsModalOpen }) => {
                     {/* Actions Card */}
                     <div className="bg-white rounded-lg shadow-md p-8 border border-gray-100">
                         <div className="flex flex-col items-center text-center">
-                            <h3 className="font-sans text-lg text-gray-900 mb-6">Twirl Actions</h3>
+                            <h3 className="font-sans text-lg text-gray-900 mb-6">Quick Actions</h3>
                             <div className="space-y-4 w-full max-w-xs">
                                 <button 
                                     onClick={() => setIsModalOpen(true)}
