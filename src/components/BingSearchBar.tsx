@@ -8,7 +8,25 @@ const BingSearchBar: React.FC<{ query: string }> = ({ query }) => {
     const fetchImages = async () => {
         try {
             const response = await axios.post("http://127.0.0.1:8000/search_images/", { user_query: query });
-            setImages(response.data.image_urls); // Ensure the backend response uses "image_urls" as the key
+            const validImageUrls: string[] = [];
+
+            await Promise.all(
+                response.data.image_urls.map(async (url: string) => {
+                    try {
+                        const img = new Image();
+                        img.src = url;
+                        await new Promise((resolve, reject) => {
+                            img.onload = resolve;
+                            img.onerror = reject;
+                        });
+                        validImageUrls.push(url);
+                    } catch {
+                        // Ignore invalid images
+                    }
+                })
+            );
+
+            setImages(validImageUrls);
             setError(null);
         } catch (error) {
             setError("Error fetching, please try again.");
