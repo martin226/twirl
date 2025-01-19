@@ -2,8 +2,8 @@ import os
 from azure.storage.blob.aio import BlobServiceClient
 from supabase._async.client import AsyncClient as Client
 
-AZURE_CONNECTION_STRING = "<your_azure_connection_string>"
-CONTAINER_NAME = "<your_container_name>"
+AZURE_CONNECTION_STRING = os.environ.get("AZURE_STORAGE_CONNECTION_STRING")
+CONTAINER_NAME = "images"
 
 async def upload_image_to_azure(supabase: Client, image_path: str, supabase_table: str):
     blob_service_client = BlobServiceClient.from_connection_string(AZURE_CONNECTION_STRING)
