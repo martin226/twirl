@@ -5,7 +5,6 @@ import { UserProvider } from "../contexts/UserContext";
 import { ProjectProvider } from "../contexts/ProjectContext";
 import { IsMouseHoveringProvider } from "../contexts/IsMouseHovering";
 
-
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <UserProvider>  
@@ -13,7 +12,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <IsMouseHoveringProvider>
           <Component {...pageProps} /> 
         </IsMouseHoveringProvider>
-        </ProjectProvider>
+      </ProjectProvider>
     </UserProvider>
   );
 }

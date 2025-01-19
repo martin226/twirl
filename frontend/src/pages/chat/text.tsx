@@ -9,6 +9,7 @@ import Signup from '@/src/components/Signup';
 import Login from '@/src/components/Login';
 import Home from '@/src/components/Home';
 import ToolBar from '@/src/components/ToolBar';
+import LoadingPage from '@/src/components/LoadingPage';
 
 
 const ChatPage: React.FC = () => {
@@ -22,7 +23,8 @@ const ChatPage: React.FC = () => {
     const [currentSection, setCurrentSection] = useState<'home' |'settings' | 'account'>('home');
     const [isVisible, setIsVisible] = useState(true);
     const [currentProject, setCurrentProject] = useState(null);
-
+    const [isLoading, setIsLoading] = useState(false);
+    
     useEffect(() => {
         if (localStorage.getItem('user')) {
             const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -62,6 +64,10 @@ const ChatPage: React.FC = () => {
     }
     
     return (
+        <>
+            {isLoading && (
+                <LoadingPage />
+            )}
         <div className="flex flex-column h-screen bg-gray-900">
             <div className="">
                 <Sidebar 
@@ -87,8 +93,8 @@ const ChatPage: React.FC = () => {
                     setIsVisible={setIsVisible}
                 />
             </div>
-
         </div>
+        </>
     );
 };
 

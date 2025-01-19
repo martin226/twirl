@@ -216,31 +216,31 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
     return (
         <div className={`absolute left-[15vw] right-0 h-screen flex flex-col transition-all duration-500
             ${isMouseHovering ? 
-                'bg-gradient-to-b from-[#ede4ff] via-[#e4d5ff] to-[#ede4ff] text-[#3d2d6d]' : 
+                'bg-gradient-to-b from-[#e4edff] via-[#d5e4ff] to-[#e4edff] text-[#2d3d6d]' : 
                 'bg-[#F6F5F0]'} ${toolbarVisible ? 'right-[15vw]' : 'right-0'}`}>
             {/* Chat Header */}
             <div className={`p-6 transition-colors duration-500 
                 ${isMouseHovering ? 
-                    'border-b-2 border-[#3d2d6d] bg-[#ede4ff] shadow-lg' : 
+                    'border-b-2 border-[#2d3d6d] bg-[#e4edff] shadow-lg' : 
                     'border-b-2 border-gray-900 bg-[#F6F5F0]'}`}>
                 <div className="text-center">
                     <div className={`text-sm font-serif tracking-[0.3em] transition-colors duration-500
-                        ${isMouseHovering ? 'text-[#574191]' : 'text-gray-500'}`}>
+                        ${isMouseHovering ? 'text-[#415791]' : 'text-gray-500'}`}>
                         MAKE IT HAPPEN
                     </div>
                     <h1 className={`text-5xl font-serif font-black tracking-tight mb-2 transition-colors duration-500
-                        ${isMouseHovering ? 'text-[#3d2d6d]' : 'text-gray-900'}`}>
+                        ${isMouseHovering ? 'text-[#2d3d6d]' : 'text-gray-900'}`}>
                         {!showChatLog ? project?.title?.toUpperCase() || 'LOADING...' : 'ACTIVITIES'}
                     </h1>
                     <div className="flex items-center justify-center gap-3">
                         <div className={`h-px w-20 transition-colors duration-500
-                            ${isMouseHovering ? 'bg-purple-700' : 'bg-gray-400'}`}></div>
+                            ${isMouseHovering ? 'bg-blue-700' : 'bg-gray-400'}`}></div>
                         <div className={`text-xs font-serif italic transition-colors duration-500
-                            ${isMouseHovering ? 'text-purple-300' : 'text-gray-500'}`}>
+                            ${isMouseHovering ? 'text-blue-300' : 'text-gray-500'}`}>
                             Est. 2025
                         </div>
                         <div className={`h-px w-20 transition-colors duration-500
-                            ${isMouseHovering ? 'bg-purple-700' : 'bg-gray-400'}`}></div>
+                            ${isMouseHovering ? 'bg-blue-700' : 'bg-gray-400'}`}></div>
                     </div>
                 </div>
             </div>
@@ -309,7 +309,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                     onClick={() => setShowChatLog(!showChatLog)}
                     className={`h-[calc(5.5vh+2.6rem)] aspect-square backdrop-blur-sm rounded-2xl shadow-lg border transition-all duration-500
                         ${isMouseHovering ? 
-                            'bg-[#e8e0ff] border-[#b8a5e3]/30 text-[#574191] hover:text-[#3d2d6d]' : 
+                            'bg-[#e0e8ff] border-[#a5b8e3]/30 text-[#415791] hover:text-[#2d3d6d]' : 
                             'bg-white border-gray-200 text-gray-500 hover:text-gray-700'} 
                         group flex items-center justify-center flex-shrink-0`}
                     title={showChatLog ? "Hide conversation log" : "Show conversation log"}
@@ -330,7 +330,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                 {/* Input Area */}
                 <div className={`flex-1 rounded-2xl shadow-lg border p-4 transform-gpu transition-all duration-500
                     ${isMouseHovering ? 
-                        'bg-[#e8e0ff] border-[#b8a5e3]/30' : 
+                        'bg-[#e0e8ff] border-[#a5b8e3]/30' : 
                         'bg-white border-gray-200'}`}>
                     <div className="flex flex-col gap-2">
                         {attachedImages.length > 0 && (
@@ -341,7 +341,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                                             src={URL.createObjectURL(image)} 
                                             alt="attachment preview" 
                                             className={`w-16 h-16 object-cover rounded-lg border transition-colors duration-500
-                                                ${isMouseHovering ? 'border-purple-700/30' : 'border-gray-200'}`}
+                                                ${isMouseHovering ? 'border-blue-700/30' : 'border-gray-200'}`}
                                         />
                                         <button
                                             onClick={() => setAttachedImages(prev => prev.filter((_, i) => i !== index))}
@@ -368,7 +368,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                                 onClick={() => fileInputRef.current?.click()}
                                 className={`p-2 rounded-lg transition-colors duration-500
                                     ${isMouseHovering ? 
-                                        'text-[#3d2d6d] hover:text-[#574191]' : 
+                                        'text-[#2d3d6d] hover:text-[#415791]' : 
                                         'hover:bg-gray-100 text-gray-500 hover:text-gray-700'}`}
                             >
                                 <ImageIcon size={20} />
@@ -377,7 +377,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                                 ref={dropZoneRef}
                                 className={`flex-1 rounded-xl border transition-colors duration-500
                                     ${isMouseHovering ? 
-                                        'bg-purple-800/20 border-purple-700/30' : 
+                                        'bg-blue-800/20 border-blue-700/30' : 
                                         'bg-white border-gray-200'}`}
                                 onDragOver={handleDragOver}
                                 onDragLeave={handleDragLeave}
@@ -391,7 +391,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                                     placeholder="What's your perspective?"
                                     className={`w-full p-3 font-serif resize-none overflow-hidden focus:outline-none min-h-[5.5vh] max-h-[20vh] bg-transparent transition-colors duration-500
                                         ${isMouseHovering ? 
-                                            'text-[#3d2d6d] placeholder-[#574191]' : 
+                                            'text-[#2d3d6d] placeholder-[#415791]' : 
                                             'text-gray-900 placeholder-gray-400'}`}
                                     style={{ lineHeight: '1.5' }}
                                     rows={1}
@@ -401,7 +401,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                                 onClick={() => setIsExportModalOpen(true)}
                                 className={`p-3 rounded-lg transition-colors duration-500
                                     ${isMouseHovering ? 
-                                        'bg-purple-700 hover:bg-purple-600 text-purple-100' : 
+                                        'bg-blue-700 hover:bg-blue-600 text-blue-100' : 
                                         'bg-gray-900 text-white'}`}
                             >
                                 <Download size={20} />
@@ -420,7 +420,9 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                         }
                     }}
                     onMouseEnter={() => setIsMouseHovering(true)}
-                    className={`h-[calc(5.5vh+2.6rem)] w-[240px] ${isMouseHovering ? 'bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900 border-purple-300/30 shadow-xl shadow-purple-500/20 scale-110' : 'bg-gray-900 border-gray-200 shadow-lg'} rounded-2xl text-white group flex items-center justify-center flex-shrink-0 transition-all duration-500 origin-left
+                    className={`h-[calc(5.5vh+2.6rem)] w-[240px] ${isMouseHovering ? 
+                        'bg-gradient-to-r from-blue-900 via-blue-800 to-blue-900 border-blue-300/30 shadow-xl shadow-blue-500/20 scale-110' : 
+                        'bg-gray-900 border-gray-200 shadow-lg'} rounded-2xl text-white group flex items-center justify-center flex-shrink-0 transition-all duration-500 origin-left
                         ${!message.trim() && attachedImages.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
                     title="Make your dream come true"
                 >
