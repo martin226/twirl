@@ -155,7 +155,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isHome, isMenuMode, setIsMenuMode, cu
                                     className="w-full p-2.5 text-left hover:bg-gray-100 rounded-lg flex items-center gap-3 text-gray-700 transition-colors group font-medium"
                                 >
                                     <Home size={18} className="text-gray-500" /> 
-                                    <span className="text-sm font-sans">Front Page</span>
+                                    <span className="text-sm font-sans">Home</span>
                                 </button>
                                 <button 
                                     onClick={() => { setCurrentSection('settings'); setIsMenuMode(false); }}
