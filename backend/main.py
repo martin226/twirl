@@ -12,7 +12,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -80,8 +80,8 @@ async def search_images(ope : Query):
 
         if image_data.value:
             print("\r\nImage Results: {} Images Found!".format(len(image_data.value)))
-            image_names = [img.name for img in image_data.value[:30]]
-            image_urls = [img.content_url for img in image_data.value[:30]]
+            image_names = [img.name for img in image_data.value[:6]]
+            image_urls = [img.content_url for img in image_data.value[:6]]
             return {"image_names": image_names, "image_urls": image_urls}
         else:
             print("Didn't find any images...")

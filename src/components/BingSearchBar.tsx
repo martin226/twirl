@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 
 const BingSearchBar: React.FC<{ a: string }> = ({ a }) => {
@@ -6,12 +6,44 @@ const BingSearchBar: React.FC<{ a: string }> = ({ a }) => {
     const [imageNames, setImageNames] = useState<string[]>([]);
     const [error, setError] = useState<string | null>(null);
 
+    // Debounce utility
+    function debounce<T extends (...args: any[]) => void>(func: T, timeout = 300): (...args: Parameters<T>) => void {
+        let timer: ReturnType<typeof setTimeout>;
+        return (...args: Parameters<T>) => {
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+                func(...args);
+            }, timeout);
+        };
+    }
+
+    // Fetch images logic
     const fetchImages = async () => {
         try {
             console.log("Fetching images with query:", a);
-            const response = await axios.post("http://localhost:8000/api/images", { user_query: a }, { headers: { "Content-Type": "application/json" } });
+            const response = await axios.post(
+                "http://localhost:8000/api/images",
+                { user_query: a },
+                { headers: { "Content-Type": "application/json" } }
+            );
             console.log("Response from backend:", response.data);
-            setImages(response.data.image_urls);
+            const validImageUrls: string[] = [];
+            await Promise.all(
+                response.data.image_urls.map(async (url: string) => {
+                    try {
+                        const img = new Image();
+                        img.src = url;
+                        await new Promise((resolve, reject) => {
+                            img.onload = resolve;
+                            img.onerror = reject;
+                        });
+                        validImageUrls.push(url);
+                    } catch {
+                        // Ignore invalid images
+                    }
+                })
+            );
+            setImages(validImageUrls);
             setImageNames(response.data.image_names);
             setError(null);
         } catch (error) {
@@ -19,43 +51,40 @@ const BingSearchBar: React.FC<{ a: string }> = ({ a }) => {
             setError("Error fetching, please try again");
         }
     };
-    var firstSixImageNames = imageNames.slice(0, 6);
-    var secondSixImageNames = imageNames.slice(6, 30);
-    var firstSixImages = images.slice(0, 6);
-    var secondSixImages = images.slice(6, 30);
 
-    const preProcessImages = (imgArray: string[], imgNames: string[]) => {
-        var x = 0;
-        for (var i = 0; i < 6; i++){
-            while (x < 30 && imgNames[i] != undefined && (imgNames[i].includes("query") || imgNames[i].includes("?") || imgNames[i].includes("uery"))){
-                imgArray[i] = secondSixImages[x]
-                imgNames[i] = secondSixImageNames[x]
-                x++;
-            }
-        }
-        return imgArray;
-    }
+    // Debounced fetchImages
+    const debouncedFetchImages = useCallback(debounce(fetchImages, 300), [a]);
 
     useEffect(() => {
-        fetchImages();
-    }, [a]); // Fetch images whenever the query changes
+        debouncedFetchImages();
+    }, [debouncedFetchImages]);
 
     return (
-        <div className="absolute bottom-[15%] left-1/4 bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
-            {error && <div className="text-center font-serif font-bold text-red-500">{error}</div>}
-            {!error && preProcessImages(firstSixImages, firstSixImageNames) != undefined && imageNames != undefined && images != undefined && images.length > 0 ? (
+        <div className="absolute bottom-[15%] left-1/4 bg-white p-8 rounded-xl shadow-lg w-full max-w-md h-[300px] overflow-y-auto">
+            {error && (
+                <div className="text-center font-serif font-bold text-red-500">
+                    {error}
+                </div>
+            )}
+            {!error && images.length > 0 ? (
                 <div>
-                    <h1 className="text-xl text-center font-serif font-bold text-gray-900 mb-2">Results</h1>
+                    <h1 className="text-xl text-center font-serif font-bold text-gray-900 mb-2">
+                        Results
+                    </h1>
                     <div className="grid grid-cols-3 gap-4">
-                        {preProcessImages(firstSixImages, firstSixImageNames).map((url, index) => (
-                            <div>
-                            <img
+                        {images.map((url, index) => (
+                            <div
                                 key={index}
-                                src={url}
-                                alt={`Image ${index + 1}`}
-                                className="w-full h-auto rounded-md"
-                            />
-                            <h4 className="text-center font-serif font-bold text-gray-900 mb-2">{imageNames[index]}</h4> </div>
+                                className="w-full h-full overflow-hidden rounded-md"
+                            >
+                                <button type="button">
+                                    <img
+                                        src={url}
+                                        alt={`Image ${index + 1}`}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </button>
+                            </div>
                         ))}
                     </div>
                 </div>
