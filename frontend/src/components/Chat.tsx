@@ -368,7 +368,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                                 onClick={() => fileInputRef.current?.click()}
                                 className={`p-2 rounded-lg transition-colors duration-500
                                     ${isMouseHovering ? 
-                                        'hover:bg-purple-800/50 text-purple-300 hover:text-purple-100' : 
+                                        'text-[#3d2d6d] hover:text-[#574191]' : 
                                         'hover:bg-gray-100 text-gray-500 hover:text-gray-700'}`}
                             >
                                 <ImageIcon size={20} />
@@ -388,7 +388,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                                     value={message}
                                     onChange={(e) => setMessage(e.target.value)}
                                     onKeyDown={handleKeyDown}
-                                    placeholder="Write your message... (drag and drop images here)"
+                                    placeholder="What's your perspective?"
                                     className={`w-full p-3 font-serif resize-none overflow-hidden focus:outline-none min-h-[5.5vh] max-h-[20vh] bg-transparent transition-colors duration-500
                                         ${isMouseHovering ? 
                                             'text-[#3d2d6d] placeholder-[#574191]' : 
@@ -420,12 +420,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                         }
                     }}
                     onMouseEnter={() => setIsMouseHovering(true)}
-                    onMouseLeave={() => setIsMouseHovering(false)}
-                    className={`h-[calc(5.5vh+2.6rem)] w-[240px] bg-gray-900 
-                        rounded-2xl shadow-lg border border-gray-200 text-white group flex items-center justify-center 
-                        flex-shrink-0 transition-all duration-500 hover:scale-110 origin-left
-                        hover:bg-gradient-to-r hover:from-indigo-900 hover:via-purple-900 hover:to-indigo-900
-                        hover:border-purple-300/30 hover:shadow-xl hover:shadow-purple-500/20
+                    className={`h-[calc(5.5vh+2.6rem)] w-[240px] ${isMouseHovering ? 'bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900 border-purple-300/30 shadow-xl shadow-purple-500/20 scale-110' : 'bg-gray-900 border-gray-200 shadow-lg'} rounded-2xl text-white group flex items-center justify-center flex-shrink-0 transition-all duration-500 origin-left
                         ${!message.trim() && attachedImages.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
                     title="Make your dream come true"
                 >
