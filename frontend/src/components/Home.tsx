@@ -204,7 +204,7 @@ const Home: React.FC<HomeProps> = ({ setIsModalOpen }) => {
                 {/* Decorative Footer */}
                 <div className="max-w-4xl mx-auto mt-12 pt-8 border-t border-gray-200">
                     <div className="flex justify-center items-center gap-4 text-gray-400">
-                        <div className="font-serif italic text-sm">Quality Conversations Since 1939</div>
+                        <div className="font-serif italic text-sm">Quality Conversations Since 2025</div>
                         <div className="h-1 w-1 rounded-full bg-gray-300"></div>
                         <div className="font-serif italic text-sm">All Rights Reserved</div>
                     </div>
