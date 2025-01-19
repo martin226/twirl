@@ -1,9 +1,10 @@
-import { OrbitControls, Grid, GizmoHelper, GizmoViewport, Sky } from '@react-three/drei';
+import { OrbitControls, Grid, GizmoHelper, GizmoViewport, Sky, TransformControls } from '@react-three/drei';
 import { useFrame, useLoader } from '@react-three/fiber';
-import { useEffect, useRef, useState } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js';
 import { usePdrStore } from '../contexts/store';
-import { Color } from 'three';
+import { BufferGeometry, Color, Float32BufferAttribute } from 'three';
+import TransformControlsWrapper from './TransformWraper';
 
 function MySky() {
     const [sunPosition, setSunPosition] = useState([100, 20, 100]);
@@ -25,29 +26,39 @@ function MySky() {
 
 function GradientMaterial() {
     const materialRef = useRef(null);
-  
+    const [time, setTime] = useState(0);
+
+    useFrame((_, dt) => {
+        setTime((time) => time + dt);
+        // if (materialRef.current) materialRef.current.uniforms.time.value = time;
+    });
+
     // Custom shader for gradient
     const gradientShader = {
-      uniforms: {
-        color1: { value: new Color(0xff0000) },
-        color2: { value: new Color(0x0000ff) }
-      },
-      vertexShader: `
-        varying float vY;
-        void main() {
-          vY = position.y;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-      `,
-      fragmentShader: `
-        uniform vec3 color1;
-        uniform vec3 color2;
-        varying float vY;
-        void main() {
-          vec3 color = mix(color1, color2, (vY + 0.5));
-          gl_FragColor = vec4(color, 1.0);
-        }
-      `
+        uniforms: {
+            color1: { value: new Color(0xff0000) }, // Start color
+            color2: { value: new Color(0x0000ff) }, // End color
+            time: { value: time } // Time uniform for animation
+        },
+        vertexShader: `
+            varying float vY;
+            void main() {
+            vY = position.y; // Pass the Y position to the fragment shader
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+        `,
+        fragmentShader: `
+            uniform vec3 color1;
+            uniform vec3 color2;
+            uniform float time;
+            varying float vY;
+            void main() {
+            // Use sine wave to make gradient colors dynamic
+            float offset = sin(time + vY * 3.14159) * 0.5 + 0.5;
+            vec3 color = mix(color1, color2, offset);
+            gl_FragColor = vec4(color, 1.0);
+            }
+        `
     };
   
     return (
@@ -123,15 +134,14 @@ export default function ModelViewer() {
             >
                 <GizmoViewport axisColors={['red', 'green', 'blue']} labelColor="black" />
             </GizmoHelper>
-            <STLModel url={url} />
-            {/* <mesh
-                scale={active ? 1.5 : 1}
-                onClick={(event) => setActive(!active)}
-                onPointerOver={(event) => setHover(true)}
-                onPointerOut={(event) => setHover(false)}>
-                <boxGeometry args={[1, 1, 1]} />
-                <meshStandardMaterial color={hovered ? 'hotpink' : 'orange'} />
-            </mesh> */}
+            {/* <TransformControls> */}
+            <TransformControlsWrapper>
+                <STLModel url={url} />
+            </TransformControlsWrapper>
+            {/* </TransformControls> */}
+            {/* <STLModelWithControls stlPath={url} /> */}
+            {/* <Suspense fallback={null}> */}
+            {/* </Suspense> */}
         </>
     );
 }
