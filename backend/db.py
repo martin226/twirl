@@ -72,7 +72,7 @@ class Database:
         response = await self.client.table("artifacts").update({"openscad_code": openscad_code, "parameters": parameters}).eq("id", artifact_id).execute()
         return response.data[0] if response.data else None
     
-    async def update_artifact_by_message(self, message_id: int, openscad_code: str, parameters: dict):
+    async def update_artifact_by_message(self, message_id: int, openscad_code: str, parameters: str):
         response = await self.client.table("artifacts").update({"openscad_code": openscad_code, "parameters": parameters}).eq("message_id", message_id).execute()
         return response.data[0] if response.data else None
 
@@ -84,7 +84,7 @@ class Database:
         projects = await self.client.table("project").select("*").execute()
         # messages to each project
         for project in projects.data:
-            messages = await self.client.table("messages").select("*").eq("project_id", project["id"]).execute()
+            messages = await self.client.table("messages").select("*").eq("project_id", project["id"]).order("created_at").execute()
             project["messages"] = messages.data
         return projects.data
 
@@ -94,7 +94,7 @@ class Database:
 
     async def get_project(self, project_id: int):
         project = await self.client.table("project").select("*").eq("id", project_id).execute()
-        messages = await self.client.table("messages").select("*").eq("project_id", project_id).execute()
+        messages = await self.client.table("messages").select("*").eq("project_id", project_id).order("created_at").execute()
         return ProjectResponse(id=project.data[0]["id"], title=project.data[0]["title"], created_at=project.data[0]["created_at"], messages=messages.data) if project.data else None
     
     async def delete_projects(self, ids: List[int]):

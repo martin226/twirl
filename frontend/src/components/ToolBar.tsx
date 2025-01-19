@@ -208,7 +208,7 @@ const ToolBar: React.FC<ToolBarProps> = ({ project_id, isVisible, setIsVisible, 
             },
             body: JSON.stringify({
                 openscad_code: updatedCode,
-                parameters: parameters,
+                parameters: JSON.stringify(parameters),
             }),
         });
 

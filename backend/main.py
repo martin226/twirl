@@ -74,7 +74,7 @@ async def get_scad_parameters(project_id: int):
     return {"parameters": artifact["parameters"], "openscad_code": artifact["openscad_code"]}
 
 class ScadParameters(BaseModel):
-    parameters: dict
+    parameters: str
     openscad_code: str
 
 @app.patch("/api/project/{project_id}/scad_parameters")
