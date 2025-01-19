@@ -10,6 +10,7 @@ interface ToolBarProps {
     project_id: string;
     isVisible: boolean;
     setIsVisible: (isVisible: boolean) => void;
+    setIsLoading: (isLoading: boolean) => void;
 }
 
 const ParameterGroup: React.FC<{ 
@@ -62,7 +63,7 @@ const ParameterGroup: React.FC<{
     switch (parameter.type) {
         case 'slider':
             return (
-                <div className="space-y-1.5 px-3" style={{ paddingLeft: `calc(${paddingLeft} + 0.75rem)` }}>
+                <div className="space-y-1.5 px-3 overflow-auto" style={{ paddingLeft: `calc(${paddingLeft} + 0.75rem)` }}>
                     <div className="flex justify-between items-center">
                         <span className={`text-sm font-['Cinzel'] transition-colors duration-500
                             ${isMouseHovering ? 'text-[#2d3d6d] font-medium' : 'text-gray-700'}`}>
@@ -79,7 +80,7 @@ const ParameterGroup: React.FC<{
                         max={parameter.max_value}
                         value={parameter.value}
                         onChange={(e) => onUpdate(path, Number(e.target.value))}
-                        className={`w-full h-2 rounded-lg appearance-none cursor-pointer
+                        className={`w-full h-2 rounded-lg appearance-none cursor-pointer overflow-auto
                             ${isMouseHovering ? 
                                 'bg-[#d4e1ff] accent-[#415791]' : 
                                 'bg-gray-200 accent-gray-900'}`}
@@ -112,7 +113,7 @@ const ParameterGroup: React.FC<{
     }
 };
 
-const ToolBar: React.FC<ToolBarProps> = ({ project_id, isVisible, setIsVisible }) => {
+const ToolBar: React.FC<ToolBarProps> = ({ project_id, isVisible, setIsVisible, setIsLoading }) => {
   const { openscad, setOpenscad, parameters, setParameters } = useStateStore();
   const { worker } = usePdrStore();
   const { isMouseHovering } = useIsMouseHovering();
@@ -151,6 +152,7 @@ const ToolBar: React.FC<ToolBarProps> = ({ project_id, isVisible, setIsVisible }
 
     const handleApplyChanges = () => {
         // Create a flat map of all parameters for easy lookup
+        setIsLoading(true);
         const parameterMap = new Map<string, number>();
         
         const flattenParameters = (params: Parameter[], prefix = '') => {
@@ -178,6 +180,7 @@ const ToolBar: React.FC<ToolBarProps> = ({ project_id, isVisible, setIsVisible }
         });
 
         worker?.postMessage({ scadCode: updatedCode, outputFile: 'output.stl' });
+
         
         setOpenscad(updatedCode);
         console.log('Applied changes:', parameters);
