@@ -5,7 +5,7 @@ import { Canvas } from '@react-three/fiber';
 import dynamic from 'next/dynamic';
 import ModelViewer from './ModelViewer';
 import ExportModal from './ExportModal';
-import { usePdrStore } from '../contexts/store';
+import { usePdrStore, useStateStore } from '../contexts/store';
 
 const Stats = dynamic(() => import('@react-three/drei').then((mod) => mod.Stats), {
     ssr: false
@@ -39,6 +39,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
     const chatLogRef = useRef<HTMLDivElement>(null);
 
     const { worker, setWorker } = usePdrStore();
+    const { openscad, setParameters, setOpenscad } = useStateStore();
 
     useEffect(() => {
         if (project?.messages) {
@@ -161,18 +162,26 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                         console.log('Message received:', data);
                         // setScadCode(data);
                         const outputFile = 'ok.stl';
-                        if (worker) worker.postMessage({ scadCode: data, outputFile });
+                        setParameters(JSON.parse(data.parameters));
+                        setOpenscad(data.openscad_code);
+                        if (worker) worker.postMessage({ scadCode: data.openscad_code, outputFile });
                     } catch (error) {
                         console.error('Failed to send message:', error);
                     }
                 } else {
+                    const newFormData = new FormData();
+                    newFormData.append('instructions', message);
+                    console.log("All messages", project.messages);
+                    newFormData.append('original_prompt', project.messages[0].content);
+                    newFormData.append('openscad_output', openscad);
+                    if (attachedImages.length > 0) {
+                        newFormData.append('image_media_type', attachedImages[0]?.type || "");
+                        newFormData.append("image_data", attachedImages[0]);
+                    }
                     try {
                         const response = await fetch(`http://localhost:8000/api/followup_message/${project.id}`, {
                             method: 'POST',
-                            headers: {
-                                'Content-Type': 'multipart/form-data',
-                            },
-                            body: formData,
+                            body: newFormData,
                         });
                         const data = await response.json();
                         console.log('Message received:', data);

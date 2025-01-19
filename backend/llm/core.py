@@ -91,20 +91,20 @@ async def followup(followup_request: FollowupRequest):
     image_media_type = followup_request.image_media_type
 
     user_content = [
-        prompts.followup_core["user"][0](original_prompt, openscad_output, instructions),
+        prompts.openscad_followup["user"][0](original_prompt, openscad_output, instructions),
     ]
 
     if image_data is not None:
         if image_media_type is None:
             print("How does image_media_type not exist when image_data does?")
         else:
-            user_content.append(prompts.followup_core["user"][1](image_data, image_media_type))
+            user_content.append(prompts.openscad_followup["user"][1](image_data, image_media_type))
     
     message = await client.messages.create(
         model="claude-3-5-sonnet-20241022",
         max_tokens=8192,
         temperature=0.5,
-        system=prompts.followup_core["system"],
+        system=prompts.openscad_followup["system"],
         messages=[
             {
                 "role": "user",
@@ -112,10 +112,12 @@ async def followup(followup_request: FollowupRequest):
             },
             {
                 "role": "assistant",
-                "content": prompts.followup_core["assistant"],
+                "content": prompts.openscad_followup["assistant"],
             },
         ],
     )
     print("Step 1 message:", message.content[0].text)
-    return message.content[0].text.split("<openscad_output>")[1].split("</openscad_output>")[0]
+    new_openscad = message.content[0].text.split("</modified_script>")[0]
+    parameters = message.split("<parameters>")[1].split("</parameters>")[0]
+    return [new_openscad, parameters]
 

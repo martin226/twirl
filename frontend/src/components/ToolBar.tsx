@@ -1,19 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { ChevronRight, ChevronLeft, ChevronDown } from 'lucide-react';
+import { Parameter, usePdrStore, useStateStore } from '../contexts/store';
 
 interface ToolBarProps {
     isVisible: boolean;
     setIsVisible: (isVisible: boolean) => void;
-}
-
-interface Parameter {
-    group: boolean;
-    name: string;
-    type?: string;
-    value?: number;
-    min_value?: number;
-    max_value?: number;
-    parameters?: Parameter[];
 }
 
 const ParameterGroup: React.FC<{ 
@@ -95,282 +86,10 @@ const ParameterGroup: React.FC<{
 };
 
 const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
-    const [receivedChanges] = useState<Parameter[]>([
-        {
-            "group": true,
-            "name": "Table Top",
-            "parameters": [
-                {
-                    "group": false,
-                    "name": "table_top_length",
-                    "type": "slider",
-                    "min_value": 800,
-                    "max_value": 2000,
-                    "value": 1200
-                },
-                {
-                    "group": false,
-                    "name": "table_top_width",
-                    "type": "slider",
-                    "min_value": 600,
-                    "max_value": 1200,
-                    "value": 800
-                },
-                {
-                    "group": false,
-                    "name": "table_top_thickness",
-                    "type": "slider",
-                    "min_value": 20,
-                    "max_value": 50,
-                    "value": 30
-                }
-            ]
-        },
-        {
-          "group": true,
-          "name": "Table Legs",
-          "parameters": [
-            {
-              "group": false,
-              "name": "leg_radius",
-              "type": "slider",
-              "min_value": 20,
-              "max_value": 50,
-              "value": 30
-            },
-            {
-              "group": false,
-              "name": "leg_height",
-              "type": "slider",
-              "min_value": 400,
-              "max_value": 800,
-              "value": 700
-            },
-            {
-              "group": true,
-              "name": "Leg 1",
-              "parameters": [
-                {
-                  "group": true,
-                  "name": "Translation",
-                  "parameters": [
-                    {
-                      "group": false,
-                      "name": "leg1_x",
-                      "type": "none",
-                      "value": 0
-                    },
-                    {
-                      "group": false,
-                      "name": "leg1_y",
-                      "type": "none",
-                      "value": 0
-                    },
-                    {
-                      "group": false,
-                      "name": "leg1_z",
-                      "type": "none",
-                      "value": 0
-                    }
-                  ]
-                },
-                {
-                  "group": true,
-                  "name": "Rotation",
-                  "parameters": [
-                    {
-                      "group": false,
-                      "name": "leg1_rot_x",
-                      "type": "none",
-                      "value": 0
-                    },
-                    {
-                      "group": false,
-                      "name": "leg1_rot_y",
-                      "type": "none",
-                      "value": 0
-                    },
-                    {
-                      "group": false,
-                      "name": "leg1_rot_z",
-                      "type": "none",
-                      "value": 0
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "group": true,
-              "name": "Leg 2",
-              "parameters": [
-                {
-                  "group": true,
-                  "name": "Translation",
-                  "parameters": [
-                    {
-                      "group": false,
-                      "name": "leg2_x",
-                      "type": "none",
-                      "value": 0
-                    },
-                    {
-                      "group": false,
-                      "name": "leg2_y",
-                      "type": "none",
-                      "value": 0
-                    },
-                    {
-                      "group": false,
-                      "name": "leg2_z",
-                      "type": "none",
-                      "value": 0
-                    }
-                  ]
-                },
-                {
-                  "group": true,
-                  "name": "Rotation",
-                  "parameters": [
-                    {
-                      "group": false,
-                      "name": "leg2_rot_x",
-                      "type": "none",
-                      "value": 0
-                    },
-                    {
-                      "group": false,
-                      "name": "leg2_rot_y",
-                      "type": "none",
-                      "value": 0
-                    },
-                    {
-                      "group": false,
-                      "name": "leg2_rot_z",
-                      "type": "none",
-                      "value": 0
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "group": true,
-              "name": "Leg 3",
-              "parameters": [
-                {
-                  "group": true,
-                  "name": "Translation",
-                  "parameters": [
-                    {
-                      "group": false,
-                      "name": "leg3_x",
-                      "type": "none",
-                      "value": 0
-                    },
-                    {
-                      "group": false,
-                      "name": "leg3_y",
-                      "type": "none",
-                      "value": 0
-                    },
-                    {
-                      "group": false,
-                      "name": "leg3_z",
-                      "type": "none",
-                      "value": 0
-                    }
-                  ]
-                },
-                {
-                  "group": true,
-                  "name": "Rotation",
-                  "parameters": [
-                    {
-                      "group": false,
-                      "name": "leg3_rot_x",
-                      "type": "none",
-                      "value": 0
-                    },
-                    {
-                      "group": false,
-                      "name": "leg3_rot_y",
-                      "type": "none",
-                      "value": 0
-                    },
-                    {
-                      "group": false,
-                      "name": "leg3_rot_z",
-                      "type": "none",
-                      "value": 0
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "group": true,
-              "name": "Leg 4",
-              "parameters": [
-                {
-                  "group": true,
-                  "name": "Translation",
-                  "parameters": [
-                    {
-                      "group": false,
-                      "name": "leg4_x",
-                      "type": "none",
-                      "value": 0
-                    },
-                    {
-                      "group": false,
-                      "name": "leg4_y",
-                      "type": "none",
-                      "value": 0
-                    },
-                    {
-                      "group": false,
-                      "name": "leg4_z",
-                      "type": "none",
-                      "value": 0
-                    }
-                  ]
-                },
-                {
-                  "group": true,
-                  "name": "Rotation",
-                  "parameters": [
-                    {
-                      "group": false,
-                      "name": "leg4_rot_x",
-                      "type": "none",
-                      "value": 0
-                    },
-                    {
-                      "group": false,
-                      "name": "leg4_rot_y",
-                      "type": "none",
-                      "value": 0
-                    },
-                    {
-                      "group": false,
-                      "name": "leg4_rot_z",
-                      "type": "none",
-                      "value": 0
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-    ]);
-    const [openscad, setOpenscad] = useState<string>("");
-    const [parameters, setParameters] = useState<Parameter[]>([]);
-
-    useEffect(() => {
-        setParameters(receivedChanges);
-    }, []);
+  const { openscad, setOpenscad, parameters, setParameters } = useStateStore();
+  const { worker } = usePdrStore();
+    // const [openscad, setOpenscad] = useState<string>("");
+    // const [parameters, setParameters] = useState<Parameter[]>([]);
 
     const handleApplyChanges = () => {
         // Create a flat map of all parameters for easy lookup
@@ -391,11 +110,16 @@ const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
         //test
         // Update OpenSCAD code with new parameter values
         let updatedCode = openscad;
+        console.log("Current openscad code", openscad);
         parameterMap.forEach((value, name) => {
             // Match variable declarations like: name = 123;
             const regex = new RegExp(`(${name}\\s*=\\s*)[\\d.-]+;`, 'g');
+            // console.log("Regex", regex);
             updatedCode = updatedCode.replace(regex, `$1${value};`);
+            console.log("Updated code", updatedCode);
         });
+
+        worker?.postMessage({ scadCode: updatedCode, outputFile: 'output.stl' });
         
         setOpenscad(updatedCode);
         console.log('Applied changes:', parameters);
@@ -407,7 +131,7 @@ const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
             const newParams = JSON.parse(JSON.stringify(prevParams));
             let current = newParams;
             
-            // Navigate to the parent of the target parameter
+            // Navigate to tsehe parent of the target parameter
             for (let i = 0; i < paramPath.length - 1; i++) {
                 if (current[paramPath[i]]?.parameters) {
                     current = current[paramPath[i]].parameters;
@@ -420,9 +144,14 @@ const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
                 current[lastIndex].value = newValue;
             }
             
+            // console.log("Returning new params", newParams)
             return newParams;
         });
     };
+
+    useEffect(() => {
+      console.log('Openscad code:', openscad);
+    }, [openscad]);
     
     return isVisible ? (
         <div className="absolute right-0 top-0 w-[300px] max-w-[90vw] h-full bg-[#F6F5F0] border-l border-gray-200 shadow-lg z-50 flex flex-col">
@@ -445,7 +174,7 @@ const ToolBar: React.FC<ToolBarProps> = ({ isVisible, setIsVisible }) => {
 
             {/* Parameters Section */}
             <div className="flex-1 px-3 py-2 space-y-3 overflow-y-auto overflow-x-hidden custom-scrollbar">
-                {parameters.map((parameter, index) => (
+                {parameters && parameters.map((parameter, index) => (
                     <div key={`${parameter.name}-${index}`} className="bg-white rounded-lg shadow-sm p-2">
                         <ParameterGroup 
                             parameter={parameter} 
