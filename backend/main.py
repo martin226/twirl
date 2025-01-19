@@ -152,7 +152,7 @@ async def post_followup_message(
     print("Project messages", project.messages)
     
     original_prompt = project.messages[0].content
-    openscad_output = await db.get_artifact_by_message(project.messages[-1].id)
+    openscad_output = await db.get_artifact_by_message(sorted(project.messages, key=lambda x: x.id)[-1].id)
     
     file_content = await image_data.read() if image_data else None
 

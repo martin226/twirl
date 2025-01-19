@@ -9,9 +9,9 @@ import { usePdrStore, useStateStore } from '../contexts/store';
 import { useIsMouseHovering } from '../contexts/IsMouseHovering';
 import LoadingPage from './LoadingPage';
 
-const Stats = dynamic(() => import('@react-three/drei').then((mod) => mod.Stats), {
-    ssr: false
-});
+// const Stats = dynamic(() => import('@react-three/drei').then((mod) => mod.Stats), {
+//     ssr: false
+// });
 
 interface ChatProps {
     project: any;
@@ -281,7 +281,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                             ${isMouseHovering ? 'bg-blue-700' : 'bg-gray-400'}`}></div>
                         <div className={`text-xs font-sans italic transition-colors duration-500
                             ${isMouseHovering ? 'text-blue-300' : 'text-gray-500'}`}>
-                            Est. 2025
+                            Twirl
                         </div>
                         <div className={`h-px w-20 transition-colors duration-500
                             ${isMouseHovering ? 'bg-blue-700' : 'bg-gray-400'}`}></div>
@@ -301,7 +301,7 @@ const Chat: React.FC<ChatProps> = ({ project, user, toolbarVisible, setToolbarVi
                     className={`absolute inset-0 overflow-y-auto space-y-4 custom-scrollbar transition-opacity duration-500
                         ${showChatLog ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
                 >
-                    <Stats parent={messageAreaRef} className="!absolute" />
+                    {/* <Stats parent={messageAreaRef} className="!absolute" /> */}
                     <Canvas>
                         <ModelViewer />
                     </Canvas>
