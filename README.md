@@ -2,7 +2,7 @@
 
 **YouTube Demo:** https://youtu.be/8JtZbi48wHM
 
-![twirl.png](https://i.ibb.co/16pM51f/bridge.png)
+![twirl.png](https://i.ibb.co/fqZYrYn/twirl-train.png)
 
 What if you could describe something, like a chair or a cup, and have it physically created?
 
